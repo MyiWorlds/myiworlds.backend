@@ -20,6 +20,7 @@
     "faker": "^4.1.0",
     "graphql": "^0.11.7",
     "graphql-relay": "^0.5.3",
+    "graphql-type-json": "^0.1.4",
     "handlebars": "^4.0.10",
     "handlebars-layouts": "^3.1.4",
     "i18next": "^10.0.1",
@@ -70,19 +71,14 @@
     "setupTestFrameworkScriptFile": "<rootDir>/tools/jest.setup.js"
   },
   "lint-staged": {
-    "*.js": [
-      "eslint --fix",
-      "git add --force"
-    ],
-    "*.{json,gyp}": [
-      "prettier --parser json --write",
-      "git add --force"
-    ]
+    "*.js": ["eslint --fix", "git add --force"],
+    "*.{json,gyp}": ["prettier --parser json --write", "git add --force"]
   },
   "scripts": {
     "precommit": "lint-staged",
     "lint": "eslint --ignore-path .gitignore --ignore-pattern \"!**/.*\" .",
-    "fix": "eslint --ignore-path .gitignore --ignore-pattern \"!**/.*\" --fix .",
+    "fix":
+      "eslint --ignore-path .gitignore --ignore-pattern \"!**/.*\" --fix .",
     "check": "flow check",
     "test": "node --no-warnings node_modules/.bin/jest",
     "test-watch": "node --no-warnings node_modules/.bin/jest --watch",

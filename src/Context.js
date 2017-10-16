@@ -8,6 +8,7 @@
  */
 
 /* @flow */
+/* eslint-disable no-underscore-dangle */
 
 import DataLoader from 'dataloader';
 import type { request as Request } from 'express';
@@ -15,6 +16,8 @@ import type { t as Translator } from 'i18next';
 
 import db from './db';
 import { mapTo, mapToMany, mapToValues } from './utils';
+
+import { getEntityByKey, getEntitiesByKeys } from './gcp/datastore';
 
 class Context {
   request: Request;
@@ -37,90 +40,20 @@ class Context {
    * For more information visit https://github.com/facebook/dataloader
    */
 
-  userById = new DataLoader(keys =>
-    db
-      .table('users')
-      .whereIn('id', keys)
-      .select()
-      .then(mapTo(keys, x => x.id, 'User')),
+  userByKey = new DataLoader(keys =>
+    getEntityByKey('Users', keys, this.request.user._id),
   );
 
-  emailById = new DataLoader(keys =>
-    db
-      .table('emails')
-      .whereIn('id', keys)
-      .select()
-      .then(mapTo(keys, x => x.id, 'Email')),
+  usersByKeys = new DataLoader(keys =>
+    getEntitiesByKeys('Users', keys, this.request.user._id),
   );
 
-  emailsByUserId = new DataLoader(keys =>
-    db
-      .table('emails')
-      .whereIn('user_id', keys)
-      .select()
-      .then(mapToMany(keys, x => x.user_id, 'Email')),
+  circleByKey = new DataLoader(keys =>
+    getEntityByKey('Users', keys, this.request.user._id),
   );
 
-  storyById = new DataLoader(keys =>
-    db
-      .table('stories')
-      .whereIn('id', keys)
-      .select()
-      .then(mapTo(keys, x => x.id, 'Story')),
-  );
-
-  storyCommentsCount = new DataLoader(keys =>
-    db
-      .table('stories')
-      .leftJoin('comments', 'stories.id', 'comments.story_id')
-      .whereIn('stories.id', keys)
-      .groupBy('stories.id')
-      .select('stories.id', db.raw('count(comments.story_id)'))
-      .then(mapToValues(keys, x => x.id, x => x.count)),
-  );
-
-  storyPointsCount = new DataLoader(keys =>
-    db
-      .table('stories')
-      .leftJoin('story_points', 'stories.id', 'story_points.story_id')
-      .whereIn('stories.id', keys)
-      .groupBy('stories.id')
-      .select('stories.id', db.raw('count(story_points.story_id)'))
-      .then(mapToValues(keys, x => x.id, x => x.count)),
-  );
-
-  commentById = new DataLoader(keys =>
-    db
-      .table('comments')
-      .whereIn('id', keys)
-      .select()
-      .then(mapTo(keys, x => x.id, 'Comment')),
-  );
-
-  commentsByStoryId = new DataLoader(keys =>
-    db
-      .table('comments')
-      .whereIn('story_id', keys)
-      .select()
-      .then(mapToMany(keys, x => x.story_id, 'Comment')),
-  );
-
-  commentsByParentId = new DataLoader(keys =>
-    db
-      .table('comments')
-      .whereIn('parent_id', keys)
-      .select()
-      .then(mapToMany(keys, x => x.parent_id, 'Comment')),
-  );
-
-  commentPointsCount = new DataLoader(keys =>
-    db
-      .table('comments')
-      .leftJoin('comment_points', 'comments.id', 'comment_points.comment_id')
-      .whereIn('comments.id', keys)
-      .groupBy('comments.id')
-      .select('comments.id', db.raw('count(comment_points.comment_id)'))
-      .then(mapToValues(keys, x => x.id, x => x.count)),
+  circlesByKeys = new DataLoader(keys =>
+    getEntitiesByKeys('Circles', keys, this.request.user._id),
   );
 
   /*
