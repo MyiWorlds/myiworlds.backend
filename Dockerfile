@@ -7,7 +7,7 @@ WORKDIR /usr/src/app
 COPY . .
 
 # Install dependencies
-RUN apk add --no-cache libsodium && \
+RUN apk add --no-cache libsodium libc6-compat && \
   yarn install --production --no-progress && \
   yarn cache clean
 

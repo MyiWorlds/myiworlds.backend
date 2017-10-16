@@ -72,6 +72,15 @@ This project was bootstraped with [Node.js API Starter Kit][nodejskit] ([support
 
 Just clone the repo and run `docker-compose up`:
 
+If you get errors about grpc unable to resolve path, then:
+```
+  rm -rf ./node_modules
+  docker-compose build --no-cache
+  docker-compose run --rm --no-deps api yarn
+  docker-compose up
+```
+
+
 ```bash
 git clone https://github.com/kriasoft/nodejs-api-starter.git example-api
 cd example-api                  # Change current directory to the newly created one
