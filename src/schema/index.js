@@ -11,19 +11,19 @@
 
 import { GraphQLSchema, GraphQLObjectType } from 'graphql';
 
-import { me } from './User';
 import { node, nodes } from './Node';
-import { stories, createCircle, updateCircle } from './Circle';
-import { createUser, updateUser } from './User';
+import { Circle, createCircle, updateCircle, deleteCircle } from './Circle';
+// import { User } from './User';
+// import { createUser, updateUser } from './User';
 
 export default new GraphQLSchema({
   query: new GraphQLObjectType({
     name: 'Query',
     fields: {
-      me,
+      // User,
+      Circle,
       node,
       nodes,
-      stories,
     },
   }),
   mutation: new GraphQLObjectType({
@@ -31,8 +31,9 @@ export default new GraphQLSchema({
     fields: {
       createCircle,
       updateCircle,
-      createUser,
-      updateUser,
+      deleteCircle,
+      // createUser,
+      // updateUser,
     },
   }),
 });

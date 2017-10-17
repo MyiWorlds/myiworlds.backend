@@ -20,29 +20,28 @@ import {
 } from 'graphql';
 import { globalIdField } from 'graphql-relay';
 
-import CircleType from './CircleType';
-import { nodeInterface } from './Node';
+import CircleType from '../Circle';
+import { nodeInterface } from '../Node';
 
-import getCircleByKey from '../gcp/datastore';
+import getCircleByKey from '../../gcp/datastore';
 
 export default new GraphQLObjectType({
   name: 'User',
   interfaces: [nodeInterface],
   description: 'user who can create and interact with circles.',
 
-  fields: {
+  fields: () => ({
     id: globalIdField(),
-
     _id: { type: new GraphQLNonNull(GraphQLID) },
-    username: { type: new GraphQLNonNull(GraphQLString) },
+    displayName: { type: new GraphQLNonNull(GraphQLString) },
     email: { type: new GraphQLNonNull(GraphQLString) },
     emailConfirmed: { type: GraphQLBoolean },
     ui: {
       description: 'The users default user inteface',
       type: CircleType,
-      resolve: async (circle, args, { loaders }) => {
+      resolve: async (circle, args, { circleByKey }) => {
         if (circle.rating) {
-          return loaders.pageLoader.load(circle.ui);
+          return circleByKey.load(circle.ui);
         }
         return null;
       },
@@ -50,9 +49,9 @@ export default new GraphQLObjectType({
     styles: {
       type: new GraphQLList(CircleType),
       description: 'Styles a user wants to override specific content types',
-      resolve: async (user, args, { loaders }) => {
+      resolve: async (user, args, { circlesByKeys }) => {
         if (user.styles) {
-          return await loaders.circleLoader.loadMany(user.styles);
+          return circlesByKeys.loadMany(user.styles);
         }
         return null;
       },
@@ -78,5 +77,5 @@ export default new GraphQLObjectType({
         return null;
       },
     },
-  },
+  }),
 });

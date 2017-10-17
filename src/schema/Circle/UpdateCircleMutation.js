@@ -7,11 +7,8 @@ import {
   GraphQLList,
 } from 'graphql';
 import GraphQLJSON from 'graphql-type-json';
-import {
-  updateEntity,
-  getEntityByKey,
-} from '../../GoogleCloudPlatform/StorageAndDatabases/Datastore/index';
-import CircleType from '../../types/CircleType';
+import { updateEntity, getEntityByKey } from '../../gcp/datastore';
+import CircleType from './CircleType';
 
 const userId = 'viewer000000000000000000000000000001';
 
@@ -55,15 +52,16 @@ const UpdateCircleDataMutation = mutationWithClientMutationId({
     },
     latestVersionOfCircle: {
       type: CircleType,
-      resolve: async payload => getEntityByKey(
-        payload.latestVersionOfEntity.newKind,
-        payload.latestVersionOfEntity.new_id,
-        userId,
-      ).then(response => response.entity),
+      resolve: async payload =>
+        getEntityByKey(
+          payload.latestVersionOfEntity.newKind,
+          payload.latestVersionOfEntity.new_id,
+          userId,
+        ).then(response => response.entity),
     },
   },
 
-  mutateAndGetPayload: async (inputFields) => {
+  mutateAndGetPayload: async inputFields => {
     const entityToUpdate = [];
 
     const requiredFields = [
@@ -122,13 +120,12 @@ const UpdateCircleDataMutation = mutationWithClientMutationId({
       return field;
     }
 
-    Object.keys(inputFields).forEach((prop) => {
+    Object.keys(inputFields).forEach(prop => {
       const object = buildField(prop);
       entityToUpdate.push(object);
     });
 
     return updateEntity(entityToUpdate, userId);
   },
-
 });
 export default UpdateCircleDataMutation;

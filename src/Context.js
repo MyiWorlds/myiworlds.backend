@@ -40,16 +40,16 @@ class Context {
    * For more information visit https://github.com/facebook/dataloader
    */
 
-  userByKey = new DataLoader(keys =>
-    getEntityByKey('Users', keys, this.request.user._id),
+  userByKey = new DataLoader(key =>
+    getEntityByKey('Users', key, this.request.user._id),
   );
 
   usersByKeys = new DataLoader(keys =>
     getEntitiesByKeys('Users', keys, this.request.user._id),
   );
 
-  circleByKey = new DataLoader(keys =>
-    getEntityByKey('Users', keys, this.request.user._id),
+  circleByKey = new DataLoader(key =>
+    getEntityByKey('Users', key, this.request.user._id),
   );
 
   circlesByKeys = new DataLoader(keys =>

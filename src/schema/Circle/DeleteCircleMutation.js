@@ -5,7 +5,7 @@ import {
   GraphQLBoolean,
   GraphQLInt,
 } from 'graphql';
-import { deleteEntity } from '../../GoogleCloudPlatform/StorageAndDatabases/Datastore/index';
+import { deleteEntity } from '../../gcp/datastore';
 
 const userId = 'viewer000000000000000000000000000001';
 

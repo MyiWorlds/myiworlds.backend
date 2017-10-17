@@ -10,7 +10,7 @@ export default async function createEntity(entity) {
   let dsKey = null;
 
   try {
-    entity.map((entityFeilds) => {
+    entity.map(entityFeilds => {
       if (entityFeilds.name === '_id') {
         dsKey = entityFeilds.value;
 

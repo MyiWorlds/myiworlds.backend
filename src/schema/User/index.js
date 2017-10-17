@@ -1,16 +1,13 @@
-import { GraphQLObjectType as ObjectType } from 'graphql';
+import UserType from './UserType';
+import User from './User';
+// import CreateUserMutation from './CreateUserMutation';
+// import UpdateUserMutation from './UpdateUserMutation';
+// import DeleteUserMutation from './DeleteUserMutation';
 
-import CreateUserMutation from './CreateUserMutation';
-import UpdateUserMutation from './UpdateUserMutation';
-import DeleteUserMutation from './DeleteUserMutation';
-
-const Mutation = new ObjectType({
-  name: 'Mutation',
-  fields: {
-    createUser: CreateUserMutation,
-    updateUser: UpdateUserMutation,
-    deleteUser: DeleteUserMutation,
-  },
-});
-
-export default Mutation;
+export default {
+  User,
+  UserType,
+  // CreateCircleMutation,
+  // UpdateCircleMutation,
+  // DeleteCircleMutation,
+};

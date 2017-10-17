@@ -11,7 +11,9 @@ export default async function deleteEntity(kind, _id, viewerId) {
     clonesDeleted: false,
     wasDeleted: false,
   };
-  const checkIfExists = await datastoreClient.get(datastoreClient.key([kind, _id]));
+  const checkIfExists = await datastoreClient.get(
+    datastoreClient.key([kind, _id]),
+  );
 
   try {
     if (checkIfExists[0] !== undefined) {
@@ -34,16 +36,19 @@ export default async function deleteEntity(kind, _id, viewerId) {
         if (clones[0].length > 0) {
           const cloneEntitiesToDelete = [];
 
-          clones[0].forEach(entity => cloneEntitiesToDelete.push(entity[datastoreClient.KEY]));
+          clones[0].forEach(entity =>
+            cloneEntitiesToDelete.push(entity[datastoreClient.KEY]),
+          );
 
-          await datastoreClient.delete(cloneEntitiesToDelete)
-          .then(() => {
+          await datastoreClient.delete(cloneEntitiesToDelete).then(() => {
             response.clonesDeleted = true;
             response.numberOfClones = clones[0].length;
           });
         }
 
-        const delEntity = await datastoreClient.delete(datastoreClient.key([kind, _id]));
+        const delEntity = await datastoreClient.delete(
+          datastoreClient.key([kind, _id]),
+        );
 
         if (delEntity[0].mutationResults) {
           response.message = 'Entity was deleted';

@@ -22,8 +22,8 @@ const { nodeInterface, nodeField: node, nodesField: nodes } = nodeDefinitions(
     return null;
   },
   obj => {
-    if (obj.__type === 'User') return require('./UserType').default;
-    if (obj.__type === 'Circle') return require('./CircleType').default;
+    if (obj.__type === 'User') return require('./User/UserType').default;
+    if (obj.__type === 'Circle') return require('./Circle/CircleType').default;
 
     return null;
   },

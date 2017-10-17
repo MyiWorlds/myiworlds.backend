@@ -22,5 +22,6 @@ module.exports = {
       },
     ],
     'flowtype/define-flow-type': 1,
+    'no-underscore-dangle': 0,
   },
 };

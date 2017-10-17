@@ -8,11 +8,8 @@ import {
 } from 'graphql';
 import GraphQLJSON from 'graphql-type-json';
 import uuid from 'uuid/v1';
-import {
-  createEntity,
-  getEntityByKey,
-} from '../../GoogleCloudPlatform/StorageAndDatabases/Datastore/index';
-import CircleType from '../../types/CircleType';
+import { createEntity } from '../../gcp/datastore';
+import CircleType from './CircleType';
 
 const userId = 'viewer000000000000000000000000000001';
 
@@ -55,7 +52,7 @@ const CreateCircleDataMutation = mutationWithClientMutationId({
     },
   },
 
-  mutateAndGetPayload: async (inputFields) => {
+  mutateAndGetPayload: async inputFields => {
     const entityToCreate = [];
 
     const requiredFields = [
@@ -72,7 +69,10 @@ const CreateCircleDataMutation = mutationWithClientMutationId({
       let field;
 
       function customIdLogic() {
-        if (!inputFields._id || (inputFields._id !== '' || inputFields._id !== null)) {
+        if (
+          !inputFields._id ||
+          (inputFields._id !== '' || inputFields._id !== null)
+        ) {
           field = {
             name,
             value: uuid(),
@@ -127,43 +127,43 @@ const CreateCircleDataMutation = mutationWithClientMutationId({
       return field;
     }
 
-    Object.keys(inputFields).forEach((prop) => {
+    Object.keys(inputFields).forEach(prop => {
       const object = buildField(prop);
       entityToCreate.push(object);
     });
 
-    return createEntity(entityToCreate);
+    return createEntity('Circles', entityToCreate, userId);
   },
 });
 
 export default CreateCircleDataMutation;
 
-    // function buildField(name) {
-    //   let field;
-    //   switch (name) {
-    //     case 'type':
-    //     case 'creator':
-    //     case 'dateCreated':
-    //     case 'dateUpdated':
-    //     case 'slug':
-    //     case 'title':
-    //     case 'subtitle':
-    //     case 'description':
-    //     case 'public':
-    //     case 'tags':
-    //     case 'order':
-    //     // Fields you want to be indexed
-    //       field = {
-    //         name,
-    //         value: inputFields[name],
-    //       };
-    //       break;
-    //     default:
-    //       field = {
-    //         name,
-    //         value: inputFields[name],
-    //         excludeFromIndexes: true,
-    //       };
-    //   }
-    //   return field;
-    // }
+// function buildField(name) {
+//   let field;
+//   switch (name) {
+//     case 'type':
+//     case 'creator':
+//     case 'dateCreated':
+//     case 'dateUpdated':
+//     case 'slug':
+//     case 'title':
+//     case 'subtitle':
+//     case 'description':
+//     case 'public':
+//     case 'tags':
+//     case 'order':
+//     // Fields you want to be indexed
+//       field = {
+//         name,
+//         value: inputFields[name],
+//       };
+//       break;
+//     default:
+//       field = {
+//         name,
+//         value: inputFields[name],
+//         excludeFromIndexes: true,
+//       };
+//   }
+//   return field;
+// }

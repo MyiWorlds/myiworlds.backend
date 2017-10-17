@@ -17,7 +17,7 @@ export default async function cloneToNewEntity(entityObject) {
   entity.push(moveOld_id);
 
   function buildEntityWithNewIndexes() {
-    nameValues.forEach((nameValueArray) => {
+    nameValues.forEach(nameValueArray => {
       const name = nameValueArray[0];
       const value = nameValueArray[1];
       const builtEntityPropertyObject = {};

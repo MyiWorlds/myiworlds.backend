@@ -12,9 +12,9 @@
 
 import UserType from './UserType';
 
-export const me = {
+export const User = {
   type: UserType,
-  resolve(root, args, { user, userById }) {
-    return user && userById.load(user.id);
+  resolve(root, args, { user, userByKey }) {
+    return user && userByKey.load(user._id);
   },
 };

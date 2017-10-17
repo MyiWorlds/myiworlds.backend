@@ -16,27 +16,31 @@ export default async function getEntitiesByKeys(kind, _ids, viewerId) {
       const sorted = [];
 
       const getEntities = await datastoreClient.get(keys);
-      _ids.forEach(_id => sorted.push(getEntities[0].filter(item => item._id === _id)[0]));
+      _ids.forEach(_id =>
+        sorted.push(getEntities[0].filter(item => item._id === _id)[0]),
+      );
 
       // Removes undefined values
       // getEntities = sorted.filter(Boolean);
 
-      getEntities[0].forEach((entity) => {
-        if (
-          entity.public === true ||
-          viewerId === entity.creator ||
-          (entity.viewers && entity.viewers.includes(viewerId)) ||
-          entity._id === viewerId
-        ) {
-          response.entities.push(entity);
-        } else {
-          response.entities.push({
-            _id: entity._id,
-            type: 'PERMISSION_ERROR',
-            title: 'Not enough permissions',
-          });
-        }
-      }).then(() => (response.message = 'I got everything I could'));
+      getEntities[0]
+        .forEach(entity => {
+          if (
+            entity.public === true ||
+            viewerId === entity.creator ||
+            (entity.viewers && entity.viewers.includes(viewerId)) ||
+            entity._id === viewerId
+          ) {
+            response.entities.push(entity);
+          } else {
+            response.entities.push({
+              _id: entity._id,
+              type: 'PERMISSION_ERROR',
+              title: 'Not enough permissions',
+            });
+          }
+        })
+        .then(() => (response.message = 'I got everything I could'));
     }
   } catch (error) {
     response = {

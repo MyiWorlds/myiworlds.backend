@@ -11,7 +11,7 @@ export default async function updateEntity(entityToUpdate, viewerId) {
   let kind = null;
   let dsKey = null;
 
-  entityToUpdate.map((entityFeilds) => {
+  entityToUpdate.map(entityFeilds => {
     if (entityFeilds.name === '_id') {
       if (!entityFeilds.value) {
         return (response.message = 'You cannot edit that anymore');
@@ -34,16 +34,21 @@ export default async function updateEntity(entityToUpdate, viewerId) {
   };
 
   try {
-    await datastoreClient.get(key).then(async (entity) => {
-      if ((viewerId === entity[0].creator) || (entity[0].editors.includes(viewerId))) {
+    await datastoreClient.get(key).then(async entity => {
+      if (
+        viewerId === entity[0].creator ||
+        entity[0].editors.includes(viewerId)
+      ) {
         const createdCloneEntity = await cloneToNewEntity(entity[0]);
-        const updatedEntity = await datastoreClient.update(newEntity)
+        const updatedEntity = await datastoreClient
+          .update(newEntity)
           .then(() => datastoreClient.get(key));
 
         response.latestVersionOfEntity = createdCloneEntity;
         response.updatedEntity = updatedEntity[0];
       } else {
-        response.message = 'You do not have the required permissions to view this';
+        response.message =
+          'You do not have the required permissions to view this';
       }
     });
   } catch (error) {

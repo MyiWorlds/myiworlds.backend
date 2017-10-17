@@ -12,8 +12,8 @@ export default async function createEntities(items) {
   let kind = null;
 
   try {
-    const entities = items.map((entity) => {
-      entity.map((entityFeilds) => {
+    const entities = items.map(entity => {
+      entity.map(entityFeilds => {
         if (entityFeilds.name === '_id') {
           if (entityFeilds.value === '') {
             entityFeilds.value = uuid();

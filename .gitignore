@@ -12,3 +12,8 @@ docker-compose.override.yml
 !.vscode/snippets
 !.vscode/launch.json
 !.vscode/settings.json
+
+# Google Cloud Platform service keys.  Except the example key and README
+src/gcp/config/serviceKeys/*
+!src/gcp/config/serviceKeys/gcp-CLOUDPRODUCTNAME-PERMISSIONLEVEL-service-key.json
+!src/gcp/config/serviceKeys/README.md
