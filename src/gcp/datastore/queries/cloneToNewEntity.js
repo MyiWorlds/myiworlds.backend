@@ -1,5 +1,5 @@
 import uuid from 'uuid/v1';
-import datastoreClient from './dbconnection';
+import datastoreClient from '../dbconnection';
 
 /* eslint-disable camelcase */
 export default async function cloneToNewEntity(entityObject) {

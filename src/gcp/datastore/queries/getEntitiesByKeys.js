@@ -1,4 +1,4 @@
-import datastoreClient from './dbconnection';
+import datastoreClient from '../dbconnection';
 
 /* eslint-disable camelcase */
 export default async function getEntitiesByKeys(kind, _ids, viewerId) {
@@ -23,24 +23,24 @@ export default async function getEntitiesByKeys(kind, _ids, viewerId) {
       // Removes undefined values
       // getEntities = sorted.filter(Boolean);
 
-      getEntities[0]
-        .forEach(entity => {
-          if (
-            entity.public === true ||
-            viewerId === entity.creator ||
-            (entity.viewers && entity.viewers.includes(viewerId)) ||
-            entity._id === viewerId
-          ) {
-            response.entities.push(entity);
-          } else {
-            response.entities.push({
-              _id: entity._id,
-              type: 'PERMISSION_ERROR',
-              title: 'Not enough permissions',
-            });
-          }
-        })
-        .then(() => (response.message = 'I got everything I could'));
+      getEntities[0].forEach(entity => {
+        if (
+          entity.public === true ||
+          viewerId === entity.creator ||
+          (entity.viewers && entity.viewers.includes(viewerId)) ||
+          entity._id === viewerId
+        ) {
+          response.entities.push(entity);
+        } else {
+          response.entities.push({
+            _id: entity._id,
+            type: 'PERMISSION_ERROR',
+            title: 'Not enough permissions',
+          });
+        }
+      });
+
+      response.message = 'I got everything I could';
     }
   } catch (error) {
     response = {

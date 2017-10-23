@@ -1,4 +1,4 @@
-import datastoreClient from './dbconnection';
+import datastoreClient from '../dbconnection';
 
 /* Caution: Be careful when passing a Cloud Datastore cursor
 to a client, such as in a web form. Although the client cannot
@@ -37,22 +37,23 @@ export default async function getEntities(
     }
 
     await datastoreClient.runQuery(query).then(queryResults => {
-      response.entities = [];
       if (queryResults[0]) {
-        queryResults
-          .forEach(entity => {
-            if (
-              entity[0] !== [] ||
-              (entity[0].public && entity[0].public === true) ||
-              entity[0].public === undefined ||
-              viewerId === entity[0].creator ||
-              (entity[0].viewers && entity[0].viewers.includes(viewerId))
-            ) {
-              response.entities.push(entity);
-            }
-          })
-          .then(() => (response.messsage = 'I got everything I could'));
+        queryResults.forEach(entity => {
+          if (
+            entity[0] !== [] ||
+            (entity[0].public && entity[0].public === true) ||
+            entity[0].public === undefined ||
+            viewerId === entity[0].creator ||
+            (entity[0].viewers && entity[0].viewers.includes(viewerId))
+          ) {
+            response.entities.push(entity);
+          }
+        });
       }
+      response = {
+        messsage: 'I got everything I could',
+        entities: response.entities[0],
+      };
     });
   } catch (error) {
     response = {

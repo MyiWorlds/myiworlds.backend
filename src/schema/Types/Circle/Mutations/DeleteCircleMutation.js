@@ -5,11 +5,11 @@ import {
   GraphQLBoolean,
   GraphQLInt,
 } from 'graphql';
-import { deleteEntity } from '../../gcp/datastore';
+import { deleteEntity } from '../../../../gcp/datastore/queries';
 
 const userId = 'viewer000000000000000000000000000001';
 
-const DeleteCircleDataMutation = mutationWithClientMutationId({
+const DeleteCircleMutation = mutationWithClientMutationId({
   name: 'deleteCircle',
 
   inputFields: {
@@ -44,4 +44,4 @@ const DeleteCircleDataMutation = mutationWithClientMutationId({
   mutateAndGetPayload: async ({ _id }) => deleteEntity('Circles', _id, userId),
 });
 
-export default DeleteCircleDataMutation;
+export default DeleteCircleMutation;

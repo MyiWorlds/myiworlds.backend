@@ -1,8 +1,8 @@
-import datastoreClient from './dbconnection';
+import datastoreClient from '../dbconnection';
 
 export default async function createEntity(entity) {
   console.time('Time to createEntity');
-  const response = {
+  let response = {
     message: null,
     createdEntity: null,
   };
@@ -34,10 +34,13 @@ export default async function createEntity(entity) {
       .insert(newEntity)
       .then(() => datastoreClient.get(key));
 
-    response.message = 'You successfully created a entity';
-    response.createdEntity = createAndGet[0];
+    response = {
+      message: 'I successfully created that for you',
+      createdEntity: createAndGet[0],
+    };
   } catch (error) {
-    response.message = 'There was a error I did not plan for';
+    response.message =
+      'Sorry, I am not sure what went wrong.  I sent my creators a message to upgrade me.';
     console.error([error, entity[0]]);
   }
   console.timeEnd('Time to createEntity');

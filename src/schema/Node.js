@@ -14,16 +14,17 @@ import { nodeDefinitions, fromGlobalId } from 'graphql-relay';
 
 const { nodeInterface, nodeField: node, nodesField: nodes } = nodeDefinitions(
   (globalId, context) => {
-    const { type, id } = fromGlobalId(globalId);
+    const { type, _id } = fromGlobalId(globalId);
 
-    if (type === 'User') return context.userById.load(id);
-    if (type === 'Circle') return context.circleBy_id.load(id);
+    if (type === 'User') return context.userByKey.load(_id);
+    if (type === 'Circle') return context.circleByKey.load(_id);
 
     return null;
   },
   obj => {
-    if (obj.__type === 'User') return require('./User/UserType').default;
-    if (obj.__type === 'Circle') return require('./Circle/CircleType').default;
+    if (obj.__type === 'User') return require('./Types/User/UserType').default;
+    if (obj.__type === 'Circle')
+      return require('./Types/Circle/CircleType').default;
 
     return null;
   },

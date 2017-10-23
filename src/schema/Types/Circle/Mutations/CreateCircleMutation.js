@@ -7,23 +7,25 @@ import {
   GraphQLList,
 } from 'graphql';
 import GraphQLJSON from 'graphql-type-json';
-import { updateEntity, getEntityByKey } from '../../gcp/datastore';
-import CircleType from './CircleType';
+import uuid from 'uuid/v1';
+import { createEntity } from '../../../../gcp/datastore/queries';
+import CircleType from '../CircleType';
 
 const userId = 'viewer000000000000000000000000000001';
 
-const UpdateCircleDataMutation = mutationWithClientMutationId({
-  name: 'updateCircle',
+const CreateCircleMutation = mutationWithClientMutationId({
+  name: 'createCircle',
   inputFields: {
-    _id: { type: new GraphQLNonNull(GraphQLString) },
-    pathFull: { type: GraphQLString },
-    pathName: { type: GraphQLString },
+    _id: { type: GraphQLString },
+    slug: { type: GraphQLString },
+    slugName: { type: GraphQLString },
     public: { type: GraphQLBoolean },
+    requirePW: { type: GraphQLBoolean },
+    password: { type: GraphQLString },
     viewers: { type: new GraphQLList(GraphQLString) },
     type: { type: new GraphQLNonNull(GraphQLString) },
-    styles: { type: GraphQLString },
+    styles: { type: new GraphQLList(GraphQLString) },
     tags: { type: new GraphQLList(GraphQLString) },
-    order: { type: GraphQLInt },
     title: { type: GraphQLString },
     subtitle: { type: GraphQLString },
     description: { type: GraphQLString },
@@ -44,26 +46,26 @@ const UpdateCircleDataMutation = mutationWithClientMutationId({
   outputFields: {
     message: {
       type: GraphQLString,
-      resolve: payload => payload.message,
+      resolve: response => response.message,
     },
-    updatedCircle: {
+    createdCircle: {
       type: CircleType,
-      resolve: payload => payload.updatedEntity,
-    },
-    latestVersionOfCircle: {
-      type: CircleType,
-      resolve: async payload =>
-        getEntityByKey(
-          payload.latestVersionOfEntity.newKind,
-          payload.latestVersionOfEntity.new_id,
-          userId,
-        ).then(response => response.entity),
+      resolve: async payload => payload.createdEntity,
     },
   },
 
   mutateAndGetPayload: async inputFields => {
-    const entityToUpdate = [];
+    if (
+      userId !== inputFields.creator ||
+      (inputFields.editors && !inputFields.editors.includes(userId))
+    ) {
+      return {
+        message:
+          'Sorry, you must be the creator or have editing permissions to do that.',
+      };
+    }
 
+    const entityToCreate = [];
     const requiredFields = [
       {
         name: 'kind',
@@ -72,10 +74,27 @@ const UpdateCircleDataMutation = mutationWithClientMutationId({
       },
     ];
 
-    entityToUpdate.push(requiredFields[0]);
+    entityToCreate.push(requiredFields[0]);
 
     function buildField(name) {
       let field;
+
+      function customIdLogic() {
+        if (
+          !inputFields._id ||
+          (inputFields._id !== '' || inputFields._id !== null)
+        ) {
+          field = {
+            name,
+            value: uuid(),
+          };
+        } else {
+          field = {
+            name,
+            value: inputFields[name],
+          };
+        }
+      }
 
       function indexedField() {
         field = {
@@ -92,27 +111,18 @@ const UpdateCircleDataMutation = mutationWithClientMutationId({
         };
       }
 
-      // TEMPORARY Will be passed by frontend
-      // creation date is not from when saved, but exact time the user pressed create
-      function date() {
-        field = {
-          name,
-          value: new Date(),
-        };
-      }
-
       const entityData = {
-        _id: indexedField,
+        _id: customIdLogic,
         type: indexedField,
         creator: indexedField,
-        dateUpdated: date,
+        dateCreated: indexedField,
+        dateUpdated: indexedField,
         slug: indexedField,
         title: indexedField,
         subtitle: indexedField,
         description: indexedField,
         public: indexedField,
         tags: indexedField,
-        order: indexedField,
         default: notIndexedField,
       };
       (entityData[name] || entityData.default)();
@@ -122,10 +132,11 @@ const UpdateCircleDataMutation = mutationWithClientMutationId({
 
     Object.keys(inputFields).forEach(prop => {
       const object = buildField(prop);
-      entityToUpdate.push(object);
+      entityToCreate.push(object);
     });
 
-    return updateEntity(entityToUpdate, userId);
+    return createEntity(entityToCreate);
   },
 });
-export default UpdateCircleDataMutation;
+
+export default CreateCircleMutation;

@@ -1,9 +1,9 @@
-import datastoreClient from './dbconnection';
+import datastoreClient from '../dbconnection';
 import cloneToNewEntity from './cloneToNewEntity';
 
-export default async function updateEntity(entityToUpdate, viewerId) {
+export default async function updateEntity(entityToUpdate, userId) {
   console.time('updateEntity time to complete');
-  const response = {
+  let response = {
     message: '',
     updatedCircle: null,
     latestVersionOfEntity: null,
@@ -14,7 +14,11 @@ export default async function updateEntity(entityToUpdate, viewerId) {
   entityToUpdate.map(entityFeilds => {
     if (entityFeilds.name === '_id') {
       if (!entityFeilds.value) {
-        return (response.message = 'You cannot edit that anymore');
+        response = {
+          message:
+            'There should have been an auto generated ID given to me, there was nothing.  Something has gone wrong',
+        };
+        return response;
       }
       dsKey = entityFeilds.value;
       return dsKey;
@@ -36,24 +40,33 @@ export default async function updateEntity(entityToUpdate, viewerId) {
   try {
     await datastoreClient.get(key).then(async entity => {
       if (
-        viewerId === entity[0].creator ||
-        entity[0].editors.includes(viewerId)
+        (entity[0].creator && userId === entity[0].creator) ||
+        (entity[0].editors && entity[0].editors.includes(userId))
       ) {
         const createdCloneEntity = await cloneToNewEntity(entity[0]);
         const updatedEntity = await datastoreClient
           .update(newEntity)
           .then(() => datastoreClient.get(key));
 
-        response.latestVersionOfEntity = createdCloneEntity;
-        response.updatedEntity = updatedEntity[0];
+        response = {
+          message: 'I successfully updated that for you',
+          latestVersionOfEntity: createdCloneEntity,
+          updatedEntity: updatedEntity[0],
+        };
       } else {
-        response.message =
-          'You do not have the required permissions to view this';
+        response = {
+          message: 'Sorry, you must be the creator or an editor to update this',
+        };
       }
     });
   } catch (error) {
-    response.message = 'Sorry, that entity no longer exists';
-    console.error([error, entityToUpdate, viewerId]);
+    response = {
+      message: 'Sorry, I was unable to find that',
+      updatedCircle: null,
+      latestVersionOfEntity: null,
+    };
+    response.message = 'Sorry, that no longer exists';
+    console.error([error, entityToUpdate, userId]);
   }
   console.timeEnd('updateEntity time to complete');
   return response;

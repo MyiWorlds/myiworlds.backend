@@ -27,9 +27,9 @@ export default {
     // and need to create new Entities (models) inside the database
     // NOTE: You do not want this kind of permission in your production app
     gcpDatastoreOwnerServiceKeyPath:
-      './src/gcp/config/serviceKeys/gcp-datastore-owner-service-key.json',
+      './gcp/config/serviceKeys/gcp-datastore-owner-service-key.json',
     // User key is for when you only need to read/write to the existing Entities (models)
     gcpDatastoreUserServiceKeyPath:
-      './src/gcp/config/serviceKeys/gcp-datastore-user-service-key.json',
+      './gcp/config/serviceKeys/gcp-datastore-user-service-key.json',
   },
 };

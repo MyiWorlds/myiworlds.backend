@@ -18,28 +18,29 @@ import {
   GraphQLList,
 } from 'graphql';
 import {
+  connectionDefinitions,
   connectionArgs,
   connectionFromArray,
   globalIdField,
 } from 'graphql-relay';
 import GraphQLJSON from 'graphql-type-json';
-import { nodeInterface } from '../Node';
-import UserType from '../User';
+import { nodeInterface } from '../../Node';
+import UserType from '../User/UserType';
 
 const CircleType = new GraphQLObjectType({
   name: 'Circle',
-  description: 'Everycircle you see can be placed inside a circle.',
+  description: 'Every circle you see can be placed inside a circle.',
   interfaces: [nodeInterface],
 
   fields: () => ({
     id: globalIdField('Circle', circle => circle._id),
     _id: {
       description:
-        'A unique id used to instantly locate this circle inside the database',
+        'A unique id used to instantly locate this inside the database',
       type: GraphQLID,
     },
     ui: {
-      description: 'If a user interface is not set.',
+      description: 'If a user interface is not set',
       type: CircleType,
       resolve: async (circle, args, { circleByKey }) => {
         if (circle.rating) {
@@ -61,16 +62,14 @@ const CircleType = new GraphQLObjectType({
       description: 'Is this circle visable to the public?',
       type: GraphQLBoolean,
     },
-    viewers: {
-      description: 'Who is allowed to see this node?',
-      type: new GraphQLList(UserType),
-      resolve: (circle, args, { usersByKeys }) =>
-        usersByKeys.loadMany(circle.Users),
-    },
     type: {
       description:
         'The type of data this node is holding, it allows the frontend to choose the perfect component to show you.',
       type: new GraphQLNonNull(GraphQLString),
+    },
+    settings: {
+      description: 'The settings of this circle.  Will be used as an object.',
+      type: GraphQLString,
     },
     rating: {
       type: CircleType,
@@ -83,13 +82,21 @@ const CircleType = new GraphQLObjectType({
     },
     styles: {
       type: new GraphQLList(CircleType),
-      resolve: (circle, args, { circlesByKeys }) =>
-        circlesByKeys.loadMany(circle.styles),
+      resolve: (circle, args, { circlesByKeys }) => {
+        if (circle.styles && circle.styles.length > 0) {
+          return circlesByKeys.loadMany(circle.styles);
+        }
+        return null;
+      },
     },
     tags: {
       type: new GraphQLList(CircleType),
-      resolve: (circle, args, { circlesByKeys }) =>
-        circlesByKeys.loadMany(circle.tags),
+      resolve: (circle, args, { circlesByKeys }) => {
+        if (circle.tags && circle.tags.length > 0) {
+          return circlesByKeys.loadMany(circle.tags);
+        }
+        return null;
+      },
     },
     title: { type: GraphQLString },
     subtitle: { type: GraphQLString },
@@ -105,10 +112,25 @@ const CircleType = new GraphQLObjectType({
         return null;
       },
     },
+    viewers: {
+      description: 'Who is allowed to see this node?',
+      type: new GraphQLList(UserType),
+      resolve: async (circle, args, { usersByKeys }) => {
+        if (circle.viewers && circle.viewers.length > 0) {
+          return usersByKeys.loadMany(circle.viewers);
+        }
+        return null;
+      },
+    },
     creator: {
       description: 'The User who created this piece of content',
       type: UserType,
-      resolve: (circle, args, { userByKey }) => userByKey.load(circle.creator),
+      resolve: (circle, args, { userByKey }) => {
+        if (circle.creator) {
+          return userByKey.load(circle.creator);
+        }
+        return null;
+      },
     },
     editors: {
       description: 'Users that can edit this circle',
@@ -122,16 +144,21 @@ const CircleType = new GraphQLObjectType({
     },
     dateCreated: { type: GraphQLString },
     dateUpdated: { type: GraphQLString },
+
+    // Circle content types below
     string: { type: GraphQLString },
+    text: { type: GraphQLString },
     blob: { type: GraphQLJSON },
     number: { type: GraphQLInt },
     boolean: { type: GraphQLBoolean },
+    date: { type: GraphQLString },
+    geoPoint: { type: GraphQLString },
     line: {
       description:
         'When you want to point to a single circle type.  Normally used for changing a node but without actually changing it.',
       type: CircleType,
       resolve: (circle, args, { circleByKey }) => {
-        if (circle.array) {
+        if (circle.line) {
           return circleByKey.load(circle.line);
         }
         return null;
@@ -142,7 +169,7 @@ const CircleType = new GraphQLObjectType({
         "When you want to connect lots of Circles, but don't need pagination (used for TONS of results) ",
       type: new GraphQLList(CircleType),
       resolve: (circle, args, { circlesByKeys }) => {
-        if (circle.array) {
+        if (circle.lines && circle.lines.length > 0) {
           return circlesByKeys.loadMany(circle.lines);
         }
         return null;
@@ -154,7 +181,7 @@ const CircleType = new GraphQLObjectType({
       type: require('./CircleConnection').default, // eslint-disable-line global-require
       args: connectionArgs,
       resolve: async (circle, { ...args }, { circlesByKeys }) => {
-        if (circle.array) {
+        if (circle.linesMany) {
           const linesMany = await circlesByKeys.loadMany(circle.linesMany);
           const connection = connectionFromArray(linesMany, args);
           return connection;

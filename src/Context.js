@@ -17,7 +17,7 @@ import type { t as Translator } from 'i18next';
 import db from './db';
 import { mapTo, mapToMany, mapToValues } from './utils';
 
-import { getEntityByKey, getEntitiesByKeys } from './gcp/datastore';
+import { getEntityByKey, getEntitiesByKeys } from './gcp/datastore/queries';
 
 class Context {
   request: Request;
@@ -41,19 +41,35 @@ class Context {
    */
 
   userByKey = new DataLoader(key =>
-    getEntityByKey('Users', key, this.request.user._id),
+    getEntityByKey(
+      'Viewers',
+      key[0],
+      'viewer000000000000000000000000000001',
+    ).then(response => [response.entity]),
   );
 
   usersByKeys = new DataLoader(keys =>
-    getEntitiesByKeys('Users', keys, this.request.user._id),
+    getEntitiesByKeys(
+      'Viewers',
+      keys,
+      'viewer000000000000000000000000000001',
+    ).then(response => response.entities),
   );
 
   circleByKey = new DataLoader(key =>
-    getEntityByKey('Users', key, this.request.user._id),
+    getEntityByKey(
+      'Circles',
+      key[0],
+      'viewer000000000000000000000000000001',
+    ).then(response => [response.entity]),
   );
 
   circlesByKeys = new DataLoader(keys =>
-    getEntitiesByKeys('Circles', keys, this.request.user._id),
+    getEntitiesByKeys(
+      'Circles',
+      keys,
+      'viewer000000000000000000000000000001',
+    ).then(response => response.entities),
   );
 
   /*

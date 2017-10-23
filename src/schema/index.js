@@ -12,16 +12,20 @@
 import { GraphQLSchema, GraphQLObjectType } from 'graphql';
 
 import { node, nodes } from './Node';
-import { Circle, createCircle, updateCircle, deleteCircle } from './Circle';
-// import { User } from './User';
-// import { createUser, updateUser } from './User';
+import { circle } from './Types/Circle/Queries/Circle';
+import { user } from './Types/User/Queries/User';
+import createCircle from './Types/Circle/Mutations/CreateCircleMutation';
+import updateCircle from './Types/Circle/Mutations/UpdateCircleMutation';
+import deleteCircle from './Types/Circle/Mutations/DeleteCircleMutation';
+
+import createUser from './Types/User/Mutations/CreateUserMutation';
 
 export default new GraphQLSchema({
   query: new GraphQLObjectType({
     name: 'Query',
     fields: {
-      // User,
-      Circle,
+      user,
+      circle,
       node,
       nodes,
     },
@@ -32,7 +36,7 @@ export default new GraphQLSchema({
       createCircle,
       updateCircle,
       deleteCircle,
-      // createUser,
+      createUser,
       // updateUser,
     },
   }),
