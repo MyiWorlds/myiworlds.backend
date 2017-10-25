@@ -29,9 +29,6 @@ const CreateUserMutation = mutationWithClientMutationId({
     // Make sure username is lowercase
     inputFields.username = inputFields.username.toLowerCase();
 
-    const passwordTest = await passwordHash(inputFields.password);
-    console.log('passwordTest', passwordTest);
-
     const checkUsername = await getEntities(
       'Users',
       [
@@ -45,6 +42,7 @@ const CreateUserMutation = mutationWithClientMutationId({
       null,
       null,
     );
+
     const checkEmail = await getEntities(
       'Users',
       [
@@ -59,6 +57,7 @@ const CreateUserMutation = mutationWithClientMutationId({
       null,
     );
 
+    // Check the username/email and build a message response if one is taken
     if (checkUsername.entities[0] || checkEmail.entities[0]) {
       const username = checkUsername.entities[0] ? 'Username ' : '';
       const email = checkEmail.entities[0] ? 'Email ' : '';
@@ -75,7 +74,7 @@ const CreateUserMutation = mutationWithClientMutationId({
     const requiredFields = [
       {
         name: '_id',
-        value: uuid(),
+        value: await uuid(),
       },
       {
         name: 'kind',
@@ -113,13 +112,16 @@ const CreateUserMutation = mutationWithClientMutationId({
       entityToCreate.push(field);
     });
 
+    let hash = await passwordHash(inputFields.password);
+    hash = Buffer.from(hash).toString('base64');
+
     function buildField(name) {
       let field;
 
-      async function encryptPassword() {
+      function encryptPassword() {
         field = {
           name,
-          value: await passwordHash(inputFields[name]),
+          value: hash,
           excludeFromIndexes: true,
         };
       }
@@ -142,7 +144,7 @@ const CreateUserMutation = mutationWithClientMutationId({
       const entityData = {
         username: indexedField,
         email: indexedField,
-        pasword: encryptPassword,
+        password: encryptPassword,
         balance: notIndexedField,
         default: notIndexedField,
       };

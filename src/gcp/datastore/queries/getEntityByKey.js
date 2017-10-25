@@ -1,6 +1,6 @@
 import datastoreClient from '../dbconnection';
 
-export default async function getEntityByKey(kind, _id, viewerId) {
+export default async function getEntityByKey(kind, _id, userId) {
   console.time('getEntityByKey time to complete: ');
 
   let response = {
@@ -14,9 +14,9 @@ export default async function getEntityByKey(kind, _id, viewerId) {
     if (
       result &&
       (result[0].public ||
-        viewerId === result[0].creator ||
-        (result[0].viewers && result[0].viewers.includes(viewerId)) ||
-        _id === viewerId)
+        userId === result[0].creator ||
+        (result[0].viewers && result[0].viewers.includes(userId)) ||
+        _id === userId)
     ) {
       response = {
         message: 'Got it! Heres the entity',
@@ -34,7 +34,7 @@ export default async function getEntityByKey(kind, _id, viewerId) {
       inputs: {
         kind,
         _id,
-        viewerId,
+        userId,
       },
     };
   }
