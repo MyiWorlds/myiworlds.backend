@@ -5,17 +5,13 @@ import { createEntity, getEntities } from '../../../../gcp/datastore/queries';
 import UserType from '../UserType';
 import { passwordHash } from '../../../../utils/index';
 
-const userId = 'viewer000000000000000000000000000001';
-
 const CreateUserMutation = mutationWithClientMutationId({
   name: 'createUser',
   inputFields: {
     username: { type: new GraphQLNonNull(GraphQLString) },
     email: { type: new GraphQLNonNull(GraphQLString) },
     password: { type: new GraphQLNonNull(GraphQLString) },
-    ui: { type: GraphQLString },
-    watching: { type: GraphQLString },
-    balance: { type: GraphQLString },
+    dateCreated: { type: GraphQLString },
   },
 
   outputFields: {
@@ -33,44 +29,47 @@ const CreateUserMutation = mutationWithClientMutationId({
     // Make sure username is lowercase
     inputFields.username = inputFields.username.toLowerCase();
 
-    // const checkUsername = () =>
-    //   getEntities(
-    //     'Users',
-    //     [
-    //       {
-    //         property: 'username',
-    //         condition: '=',
-    //         value: inputFields.username,
-    //       },
-    //     ],
-    //     1,
-    //     null,
-    //     null,
-    //   );
+    const passwordTest = await passwordHash(inputFields.password);
+    console.log('passwordTest', passwordTest);
 
-    // const checkEmail = () =>
-    //   getEntities(
-    //     'Users',
-    //     [
-    //       {
-    //         property: 'email',
-    //         condition: '=',
-    //         value: inputFields.username,
-    //       },
-    //     ],
-    //     1,
-    //     null,
-    //     null,
-    //   );
+    const checkUsername = await getEntities(
+      'Users',
+      [
+        {
+          property: 'username',
+          condition: '=',
+          value: inputFields.username,
+        },
+      ],
+      1,
+      null,
+      null,
+    );
+    const checkEmail = await getEntities(
+      'Users',
+      [
+        {
+          property: 'email',
+          condition: '=',
+          value: inputFields.email,
+        },
+      ],
+      1,
+      null,
+      null,
+    );
 
-    // await checkUsername();
-    // await checkEmail();
-    // console.log(checkUsername.entities, checkEmail.entities);
-    // if (checkUsername.entities || checkEmail.entities) {
-    //   return {
-    //     message: 'Username or email are already in use',
-    //   };
-    // }
+    if (checkUsername.entities[0] || checkEmail.entities[0]) {
+      const username = checkUsername.entities[0] ? 'Username ' : '';
+      const email = checkEmail.entities[0] ? 'Email ' : '';
+      const message =
+        checkUsername.entities[0] && checkEmail.entities[0]
+          ? `${username}and ${email}`
+          : username + email;
+      return {
+        message: `${message}is already in use`,
+      };
+    }
 
     const entityToCreate = [];
     const requiredFields = [
@@ -93,6 +92,21 @@ const CreateUserMutation = mutationWithClientMutationId({
         value: `${inputFields.username}/private`,
         excludeFromIndexes: true,
       },
+      {
+        name: 'balance',
+        value: 0,
+        excludeFromIndexes: true,
+      },
+      {
+        name: 'level',
+        value: 0,
+        excludeFromIndexes: true,
+      },
+      {
+        name: 'rating',
+        value: 0,
+        excludeFromIndexes: true,
+      },
     ];
 
     requiredFields.forEach(field => {
@@ -105,7 +119,7 @@ const CreateUserMutation = mutationWithClientMutationId({
       async function encryptPassword() {
         field = {
           name,
-          value: passwordHash(inputFields[name]),
+          value: await passwordHash(inputFields[name]),
           excludeFromIndexes: true,
         };
       }
@@ -129,7 +143,6 @@ const CreateUserMutation = mutationWithClientMutationId({
         username: indexedField,
         email: indexedField,
         pasword: encryptPassword,
-        ui: indexedField,
         balance: notIndexedField,
         default: notIndexedField,
       };
