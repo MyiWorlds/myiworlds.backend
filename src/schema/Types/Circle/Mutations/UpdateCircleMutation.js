@@ -12,7 +12,9 @@ import {
   getEntityByKey,
 } from '../../../../gcp/datastore/queries';
 import CircleType from '../CircleType';
+import { passwordHash } from '../../../../utils/index';
 
+// Pull from context
 const userId = 'viewer00000000000000000000000000001';
 
 const UpdateCircleMutation = mutationWithClientMutationId({
@@ -66,6 +68,8 @@ const UpdateCircleMutation = mutationWithClientMutationId({
 
   mutateAndGetPayload: async inputFields => {
     const entityToUpdate = [];
+    // Need to get the actual saved entity (passwords wont be supplied from frontend)
+    const getCircle = await getEntityByKey('Circles', inputFields._id, userId);
 
     const requiredFields = [
       {
@@ -83,24 +87,15 @@ const UpdateCircleMutation = mutationWithClientMutationId({
       function indexedField() {
         field = {
           name,
-          value: inputFields[name],
+          value: getCircle[name],
         };
       }
 
       function notIndexedField() {
         field = {
           name,
-          value: inputFields[name],
+          value: getCircle[name],
           excludeFromIndexes: true,
-        };
-      }
-
-      // TEMPORARY Will be passed by frontend
-      // creation date is not from when saved, but exact time the user pressed create
-      function date() {
-        field = {
-          name,
-          value: new Date(),
         };
       }
 
@@ -108,7 +103,9 @@ const UpdateCircleMutation = mutationWithClientMutationId({
         _id: indexedField,
         type: indexedField,
         creator: indexedField,
-        dateUpdated: date,
+        editors: indexedField,
+        dateUpdated: indexedField,
+        dateCreated: indexedField,
         slug: indexedField,
         title: indexedField,
         subtitle: indexedField,
@@ -116,6 +113,7 @@ const UpdateCircleMutation = mutationWithClientMutationId({
         public: indexedField,
         tags: indexedField,
         order: indexedField,
+
         default: notIndexedField,
       };
       (entityData[name] || entityData.default)();
@@ -123,7 +121,7 @@ const UpdateCircleMutation = mutationWithClientMutationId({
       return field;
     }
 
-    Object.keys(inputFields).forEach(prop => {
+    Object.keys(getCircle).forEach(prop => {
       const object = buildField(prop);
       entityToUpdate.push(object);
     });

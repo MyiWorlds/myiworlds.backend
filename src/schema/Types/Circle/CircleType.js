@@ -18,7 +18,6 @@ import {
   GraphQLList,
 } from 'graphql';
 import {
-  connectionDefinitions,
   connectionArgs,
   connectionFromArray,
   globalIdField,

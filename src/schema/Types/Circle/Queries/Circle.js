@@ -5,6 +5,9 @@ import { GraphQLString } from 'graphql';
 import CircleType from '../CircleType';
 import { getEntities } from '../../../../gcp/datastore/queries';
 
+// Pull from context
+const userId = 'viewer00000000000000000000000000001';
+
 export const circle = {
   name: 'Circle',
   type: CircleType,
@@ -16,13 +19,13 @@ export const circle = {
       'Circles',
       [
         {
-          property: '_id',
+          property: 'slug',
           condition: '=',
-          value: '0fd2aab0-b7a9-11e7-bf27-9790433b5050',
+          value: slug,
         },
       ],
       1,
       null,
-      'viewer000000000000000000000000000001',
+      userId,
     ).then(response => response.entities[0]),
 };
