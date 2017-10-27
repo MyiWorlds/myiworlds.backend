@@ -1,49 +1,44 @@
 import { mutationWithClientMutationId } from 'graphql-relay';
 import { GraphQLString, GraphQLNonNull } from 'graphql';
 import uuid from 'uuid/v1';
-import { createEntity, getEntities } from '../../../../gcp/datastore/queries';
+import {
+  updateEntity,
+  getEntityByKey,
+  getEntities,
+} from '../../../../gcp/datastore/queries';
 import UserType from '../UserType';
 import { passwordHash } from '../../../../utils/index';
 
-const CreateUserMutation = mutationWithClientMutationId({
-  name: 'createUser',
+// Get from context
+const userId = 'viewer00000000000000000000000000001';
+
+// This mutation will most likely only be called after visiting a page from email
+const UpdatePasswordMutation = mutationWithClientMutationId({
+  name: 'updatePassword',
   inputFields: {
-    username: { type: new GraphQLNonNull(GraphQLString) },
     email: { type: new GraphQLNonNull(GraphQLString) },
     password: { type: new GraphQLNonNull(GraphQLString) },
-    dateCreated: { type: GraphQLString },
   },
 
   outputFields: {
     message: {
       type: GraphQLString,
-      resolve: response => response.message,
+      resolve: payload => payload.message,
     },
-    createdUser: {
+    latestVersionOfPassword: {
       type: UserType,
-      resolve: async payload => payload.createdEntity,
+      resolve: async payload =>
+        getEntityByKey(
+          payload.latestVersionOfEntity.newKind,
+          payload.latestVersionOfEntity.new_id,
+          userId,
+        ).then(response => response.entity),
     },
   },
 
   mutateAndGetPayload: async inputFields => {
-    // Make sure username is lowercase
-    inputFields.username = inputFields.username.toLowerCase();
-
-    const checkUsername = await getEntities(
-      'Users',
-      [
-        {
-          property: 'username',
-          condition: '=',
-          value: inputFields.username,
-        },
-      ],
-      1,
-      null,
-      null,
-    );
-
-    const checkEmail = await getEntities(
+    const entityToUpdate = [];
+    const getUser = await getEntities(
       'Users',
       [
         {
@@ -55,22 +50,8 @@ const CreateUserMutation = mutationWithClientMutationId({
       1,
       null,
       null,
-    );
+    ).then(response => response.entities[0]);
 
-    // Check the username/email and build a message response if one is taken
-    if (checkUsername.entities[0] || checkEmail.entities[0]) {
-      const username = checkUsername.entities[0] ? 'Username ' : '';
-      const email = checkEmail.entities[0] ? 'Email ' : '';
-      const message =
-        checkUsername.entities[0] && checkEmail.entities[0]
-          ? `${username}and ${email}`
-          : username + email;
-      return {
-        message: `${message}is already in use`,
-      };
-    }
-
-    const entityToCreate = [];
     const requiredFields = [
       {
         name: '_id',
@@ -109,7 +90,7 @@ const CreateUserMutation = mutationWithClientMutationId({
     ];
 
     requiredFields.forEach(field => {
-      entityToCreate.push(field);
+      entityToUpdate.push(field);
     });
 
     let hash = await passwordHash(inputFields.password);
@@ -129,14 +110,14 @@ const CreateUserMutation = mutationWithClientMutationId({
       function indexedField() {
         field = {
           name,
-          value: inputFields[name],
+          value: getUser[name],
         };
       }
 
       function notIndexedField() {
         field = {
           name,
-          value: inputFields[name],
+          value: getUser[name],
           excludeFromIndexes: true,
         };
       }
@@ -154,13 +135,12 @@ const CreateUserMutation = mutationWithClientMutationId({
       return field;
     }
 
-    Object.keys(inputFields).forEach(prop => {
+    Object.keys(getUser).forEach(prop => {
       const object = buildField(prop);
-      entityToCreate.push(object);
+      entityToUpdate.push(object);
     });
 
-    return createEntity(entityToCreate);
+    return updateEntity(entityToUpdate, userId);
   },
 });
-
-export default CreateUserMutation;
+export default UpdatePasswordMutation;
