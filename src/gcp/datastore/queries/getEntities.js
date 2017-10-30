@@ -56,15 +56,18 @@ export default async function getEntities(
       };
     });
   } catch (error) {
-    response = {
-      message: 'getEntities error',
-      entities: [],
-      error,
-      kind,
-      filters,
-      numberOfResults,
-      pageCursor,
-    };
+    error.entities = response.entities;
+    error.kind = kind;
+    throw error;
+    // response = {
+    //   message: 'getEntities error',
+    //   entities: [],
+    //   error,
+    //   kind,
+    //   filters,
+    //   numberOfResults,
+    //   pageCursor,
+    // };
   }
   console.time('getEntities time to complete');
   return response;

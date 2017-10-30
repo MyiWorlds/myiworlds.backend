@@ -6,7 +6,6 @@ import datastoreClient from '../dbconnection';
 // query them and then only insert the ones you can
 export default async function createEntities(items) {
   console.time('Time to createEntities');
-
   let response = null;
   let dsKey = null;
   let kind = null;
@@ -19,7 +18,6 @@ export default async function createEntities(items) {
             entityFeilds.value = uuid();
           }
           dsKey = entityFeilds.value;
-
           return dsKey;
         }
         if (entityFeilds.name === 'kind') {

@@ -7,9 +7,12 @@ import {
   GraphQLList,
 } from 'graphql';
 import GraphQLJSON from 'graphql-type-json';
-import uuid from 'uuid/v1';
-import { createEntity } from '../../../../gcp/datastore/queries';
+import {
+  createEntity,
+  getEntityByKey,
+} from '../../../../gcp/datastore/queries';
 import CircleType from '../CircleType';
+import circleFieldBuilder from './circleFieldBuilder';
 
 const userId = 'viewer000000000000000000000000000001';
 
@@ -20,7 +23,7 @@ const CreateCircleMutation = mutationWithClientMutationId({
     slug: { type: GraphQLString },
     slugName: { type: GraphQLString },
     public: { type: GraphQLBoolean },
-    requirePW: { type: GraphQLBoolean },
+    passwordRequired: { type: GraphQLBoolean },
     password: { type: GraphQLString },
     viewers: { type: new GraphQLList(GraphQLString) },
     type: { type: new GraphQLNonNull(GraphQLString) },
@@ -50,91 +53,21 @@ const CreateCircleMutation = mutationWithClientMutationId({
     },
     createdCircle: {
       type: CircleType,
-      resolve: async payload => payload.createdEntity,
+      resolve: async payload =>
+        getEntityByKey('Circles', payload.createdEntityId, userId).then(
+          response => response.entity,
+        ),
     },
   },
 
   mutateAndGetPayload: async inputFields => {
-    if (
-      userId !== inputFields.creator ||
-      (inputFields.editors && !inputFields.editors.includes(userId))
-    ) {
+    if (userId !== inputFields.creator) {
       return {
-        message:
-          'Sorry, you must be the creator or have editing permissions to do that.',
+        message: 'Sorry, your id does not equal the creators.',
       };
     }
 
-    const entityToCreate = [];
-    const requiredFields = [
-      {
-        name: 'kind',
-        value: 'Circles',
-        excludeFromIndexes: true,
-      },
-    ];
-
-    entityToCreate.push(requiredFields[0]);
-
-    function buildField(name) {
-      let field;
-
-      function customIdLogic() {
-        if (
-          !inputFields._id ||
-          (inputFields._id !== '' || inputFields._id !== null)
-        ) {
-          field = {
-            name,
-            value: uuid(),
-          };
-        } else {
-          field = {
-            name,
-            value: inputFields[name],
-          };
-        }
-      }
-
-      function indexedField() {
-        field = {
-          name,
-          value: inputFields[name],
-        };
-      }
-
-      function notIndexedField() {
-        field = {
-          name,
-          value: inputFields[name],
-          excludeFromIndexes: true,
-        };
-      }
-
-      const entityData = {
-        _id: customIdLogic,
-        type: indexedField,
-        creator: indexedField,
-        dateCreated: indexedField,
-        dateUpdated: indexedField,
-        slug: indexedField,
-        title: indexedField,
-        subtitle: indexedField,
-        description: indexedField,
-        public: indexedField,
-        tags: indexedField,
-
-        default: notIndexedField,
-      };
-      (entityData[name] || entityData.default)();
-
-      return field;
-    }
-
-    Object.keys(inputFields).forEach(prop => {
-      const object = buildField(prop);
-      entityToCreate.push(object);
-    });
+    const entityToCreate = circleFieldBuilder(inputFields);
 
     return createEntity(entityToCreate);
   },

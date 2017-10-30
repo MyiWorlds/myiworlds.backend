@@ -22,7 +22,7 @@ export const user = {
   },
   resolve: async (query, { _id }) =>
     getEntityByKey(
-      'Viewers',
+      'Users',
       'viewer000000000000000000000000000001',
       'viewer000000000000000000000000000001',
     ).then(response => response.entity),

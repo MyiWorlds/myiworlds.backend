@@ -4,7 +4,7 @@ export default async function createEntity(entity) {
   console.time('Time to createEntity');
   let response = {
     message: null,
-    createdEntity: null,
+    createdEntityId: null,
   };
   let kind = null;
   let dsKey = null;
@@ -30,13 +30,13 @@ export default async function createEntity(entity) {
       data,
     };
 
-    const createAndGet = await datastoreClient
+    await datastoreClient
       .insert(newEntity)
-      .then(() => datastoreClient.get(key));
+      .then(response => console.log('response', response));
 
     response = {
       message: 'I successfully created that for you',
-      createdEntity: createAndGet[0],
+      createdEntityId: dsKey,
     };
   } catch (error) {
     response.message =

@@ -19,7 +19,7 @@ export const circle = {
       'Circles',
       [
         {
-          property: 'slug',
+          property: '_id',
           condition: '=',
           value: slug,
         },

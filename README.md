@@ -80,6 +80,8 @@ If you get errors about grpc unable to resolve path, then:
   docker-compose up
 ```
 
+docker-compose run <api> yarn add ...
+
 
 ```bash
 git clone https://github.com/kriasoft/nodejs-api-starter.git example-api

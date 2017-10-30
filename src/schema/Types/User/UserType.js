@@ -14,7 +14,6 @@ import {
   GraphQLObjectType,
   GraphQLBoolean,
   GraphQLString,
-  GraphQLInt,
   GraphQLNonNull,
   GraphQLID,
 } from 'graphql';
@@ -22,7 +21,6 @@ import { globalIdField } from 'graphql-relay';
 
 import CircleType from '../Circle/CircleType';
 import { nodeInterface } from '../../Node';
-// import getCircleByKey from '../../gcp/datastore';
 
 export default new GraphQLObjectType({
   name: 'User',
@@ -30,22 +28,27 @@ export default new GraphQLObjectType({
   interfaces: [nodeInterface],
 
   fields: () => ({
-    id: globalIdField(),
+    id: globalIdField('User', user => user._id),
     _id: { type: new GraphQLNonNull(GraphQLID) },
     username: { type: new GraphQLNonNull(GraphQLString) },
     email: { type: new GraphQLNonNull(GraphQLString) },
     emailConfirmed: { type: GraphQLBoolean },
+    dateCreated: { type: GraphQLString },
     level: {
-      description:
-        'Users account level. Higher rank has more unlocked services with a greator discount',
-      type: new GraphQLNonNull(GraphQLInt),
+      type: CircleType,
+      resolve: (user, args, { circleByKey }) => {
+        if (user.level) {
+          return circleByKey.load(user.level);
+        }
+        return null;
+      },
     },
     balance: {
       description: 'The users currently oweing balance',
       type: CircleType,
-      resolve: async (circle, args, { circleByKey }) => {
-        if (circle.balance) {
-          return circleByKey.load(circle.balance);
+      resolve: (user, args, { circleByKey }) => {
+        if (user.balance) {
+          return circleByKey.load(user.balance);
         }
         return null;
       },
@@ -53,9 +56,9 @@ export default new GraphQLObjectType({
     rating: {
       description: 'The Users rating',
       type: CircleType,
-      resolve: async (circle, args, { circleByKey }) => {
-        if (circle.rating) {
-          return circleByKey.load(circle.rating);
+      resolve: (user, args, { circleByKey }) => {
+        if (user.rating) {
+          return circleByKey.load(user.rating);
         }
         return null;
       },
@@ -63,9 +66,9 @@ export default new GraphQLObjectType({
     ui: {
       description: 'How the user wants to view the system.',
       type: CircleType,
-      resolve: (user, args, { userByKey }) => {
+      resolve: (user, args, { circleByKey }) => {
         if (user.ui) {
-          return userByKey.load(user.ui);
+          return circleByKey.load(user.ui);
         }
         return null;
       },
@@ -73,9 +76,9 @@ export default new GraphQLObjectType({
     homePublic: {
       description: 'The home circle of myiworlds.com/user/userName.',
       type: CircleType,
-      resolve: (user, args, { userByKey }) => {
-        if (user.home) {
-          return userByKey.load(user.home);
+      resolve: (user, args, { circleByKey }) => {
+        if (user.homePublic) {
+          return circleByKey.load(user.homePublic);
         }
         return null;
       },
@@ -83,20 +86,30 @@ export default new GraphQLObjectType({
     homePrivate: {
       description: 'The home circle of myiworlds.com/user/userName.',
       type: CircleType,
-      resolve: (user, args, { userByKey }) => {
-        if (user.home) {
-          return userByKey.load(user.home);
+      resolve: (user, args, { circleByKey }) => {
+        if (user.homePrivate) {
+          return circleByKey.load(user.homePrivate);
         }
         return null;
       },
     },
-    watching: {
+    following: {
       description:
         'All circles created by this user, they are not stored on the user object but its own node in the graph to prevent overloading this.  No concepts of friends, just things you follow, it could be a friends page though.',
       type: CircleType,
-      resolve: (user, args, { userByKey }) => {
-        if (user.line) {
-          return userByKey.load(user.line);
+      resolve: (user, args, { circleByKey }) => {
+        if (user.following) {
+          return circleByKey.load(user.following);
+        }
+        return null;
+      },
+    },
+    notifications: {
+      description: 'Contains a list of notifications.',
+      type: CircleType,
+      resolve: (user, args, { circleByKey }) => {
+        if (user.notifications) {
+          return circleByKey.load(user.notifications);
         }
         return null;
       },

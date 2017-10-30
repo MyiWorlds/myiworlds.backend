@@ -53,12 +53,16 @@ const CircleType = new GraphQLObjectType({
       type: GraphQLString,
     },
     slugName: {
-      type: GraphQLString,
       description:
         'The name of this slug without creators name before it. This allows shared Users to edit the title, but not the root path.  This is stored incase the creators name changes',
+      type: GraphQLString,
     },
     public: {
       description: 'Is this circle visable to the public?',
+      type: GraphQLBoolean,
+    },
+    passwordRequired: {
+      description: 'Does it require a password to view?',
       type: GraphQLBoolean,
     },
     type: {
@@ -81,18 +85,18 @@ const CircleType = new GraphQLObjectType({
     },
     styles: {
       type: new GraphQLList(CircleType),
-      resolve: (circle, args, { circlesByKeys }) => {
+      resolve: (circle, args, { circleByKey }) => {
         if (circle.styles && circle.styles.length > 0) {
-          return circlesByKeys.loadMany(circle.styles);
+          return circleByKey.loadMany(circle.styles);
         }
         return null;
       },
     },
     tags: {
       type: new GraphQLList(CircleType),
-      resolve: (circle, args, { circlesByKeys }) => {
+      resolve: (circle, args, { circleByKey }) => {
         if (circle.tags && circle.tags.length > 0) {
-          return circlesByKeys.loadMany(circle.tags);
+          return circleByKey.loadMany(circle.tags);
         }
         return null;
       },
@@ -167,9 +171,9 @@ const CircleType = new GraphQLObjectType({
       description:
         "When you want to connect lots of Circles, but don't need pagination (used for TONS of results) ",
       type: new GraphQLList(CircleType),
-      resolve: (circle, args, { circlesByKeys }) => {
+      resolve: (circle, args, { circleByKey }) => {
         if (circle.lines && circle.lines.length > 0) {
-          return circlesByKeys.loadMany(circle.lines);
+          return circleByKey.loadMany(circle.lines);
         }
         return null;
       },
@@ -179,9 +183,9 @@ const CircleType = new GraphQLObjectType({
         'When you need to connect lots of Circles together, but you only want to show a certain amount at a time',
       type: require('./CircleConnection').default, // eslint-disable-line global-require
       args: connectionArgs,
-      resolve: async (circle, { ...args }, { circlesByKeys }) => {
-        if (circle.linesMany) {
-          const linesMany = await circlesByKeys.loadMany(circle.linesMany);
+      resolve: async (circle, { ...args }, { circleByKey }) => {
+        if (circle.linesMany && circle.linesMany.length > 0) {
+          const linesMany = await circleByKey.loadMany(circle.linesMany);
           const connection = connectionFromArray(linesMany, args);
           return connection;
         }

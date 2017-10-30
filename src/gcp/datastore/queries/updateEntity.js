@@ -44,14 +44,12 @@ export default async function updateEntity(entityToUpdate, userId) {
         (entity[0].editors && entity[0].editors.includes(userId))
       ) {
         const createdCloneEntity = await cloneToNewEntity(entity[0]);
-        const updatedEntity = await datastoreClient
-          .update(newEntity)
-          .then(() => datastoreClient.get(key));
+        await datastoreClient.update(newEntity);
 
         response = {
           message: 'I successfully updated that for you',
           latestVersionOfEntity: createdCloneEntity,
-          updatedEntity: updatedEntity[0],
+          updatedEntityId: dsKey,
         };
       } else {
         response = {

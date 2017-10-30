@@ -7,7 +7,6 @@ export default async function getEntityByKey(kind, _id, userId) {
     message: '',
     entity: null,
   };
-
   try {
     const key = await datastoreClient.key([kind, _id]);
     const result = await datastoreClient.get(key);
@@ -16,7 +15,8 @@ export default async function getEntityByKey(kind, _id, userId) {
       (result[0].public ||
         userId === result[0].creator ||
         (result[0].viewers && result[0].viewers.includes(userId)) ||
-        _id === userId)
+        _id === userId ||
+        (result[0].kind === 'Users' && userId === 'new-user'))
     ) {
       response = {
         message: 'Got it! Heres the entity',

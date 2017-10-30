@@ -25,7 +25,7 @@ const UpdatePasswordMutation = mutationWithClientMutationId({
       type: GraphQLString,
       resolve: payload => payload.message,
     },
-    latestVersionOfPassword: {
+    latestVersionOfUser: {
       type: UserType,
       resolve: async payload =>
         getEntityByKey(

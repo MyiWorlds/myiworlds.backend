@@ -12,7 +12,6 @@ import {
   getEntityByKey,
 } from '../../../../gcp/datastore/queries';
 import CircleType from '../CircleType';
-import { passwordHash } from '../../../../utils/index';
 
 // Pull from context
 const userId = 'viewer00000000000000000000000000001';
@@ -24,6 +23,7 @@ const UpdateCircleMutation = mutationWithClientMutationId({
     slug: { type: GraphQLString },
     slugName: { type: GraphQLString },
     public: { type: GraphQLBoolean },
+    passwordRequired: { type: GraphQLBoolean },
     viewers: { type: new GraphQLList(GraphQLString) },
     type: { type: new GraphQLNonNull(GraphQLString) },
     styles: { type: GraphQLString },
@@ -53,7 +53,10 @@ const UpdateCircleMutation = mutationWithClientMutationId({
     },
     updatedCircle: {
       type: CircleType,
-      resolve: payload => payload.updatedEntity,
+      resolve: async payload =>
+        getEntityByKey('Circles', payload.createdEntityId, userId).then(
+          response => response.entity,
+        ),
     },
     latestVersionOfCircle: {
       type: CircleType,
@@ -67,6 +70,15 @@ const UpdateCircleMutation = mutationWithClientMutationId({
   },
 
   mutateAndGetPayload: async inputFields => {
+    if (
+      userId !== inputFields.creator &&
+      (inputFields.editors && inputFields.editors.includes(userId) === false)
+    ) {
+      return {
+        message: 'Sorry, you must be the creator.',
+      };
+    }
+
     const entityToUpdate = [];
     // Need to get the actual saved entity (passwords wont be supplied from frontend)
     const getCircle = await getEntityByKey('Circles', inputFields._id, userId);

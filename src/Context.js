@@ -14,10 +14,10 @@ import DataLoader from 'dataloader';
 import type { request as Request } from 'express';
 import type { t as Translator } from 'i18next';
 
-import db from './db';
-import { mapTo, mapToMany, mapToValues } from './utils';
+// import db from './db';
+// import { mapTo, mapToMany, mapToValues } from './utils';
 
-import { getEntityByKey, getEntitiesByKeys } from './gcp/datastore/queries';
+import { getEntitiesByKeys } from './gcp/datastore/queries';
 
 class Context {
   request: Request;
@@ -40,31 +40,15 @@ class Context {
    * For more information visit https://github.com/facebook/dataloader
    */
 
-  userByKey = new DataLoader(key =>
-    getEntityByKey(
-      'Viewers',
-      key[0],
-      'viewer000000000000000000000000000001',
-    ).then(response => [response.entity]),
-  );
-
-  usersByKeys = new DataLoader(keys =>
+  userByKey = new DataLoader(keys =>
     getEntitiesByKeys(
-      'Viewers',
+      'Users',
       keys,
       'viewer000000000000000000000000000001',
     ).then(response => response.entities),
   );
 
-  circleByKey = new DataLoader(key =>
-    getEntityByKey(
-      'Circles',
-      key[0],
-      'viewer000000000000000000000000000001',
-    ).then(response => [response.entity]),
-  );
-
-  circlesByKeys = new DataLoader(keys =>
+  circleByKey = new DataLoader(keys =>
     getEntitiesByKeys(
       'Circles',
       keys,
