@@ -8,25 +8,33 @@
  */
 
 /* @flow */
-/* eslint-disable global-require, no-underscore-dangle */
+/* eslint-disable global-require */
 
 import { nodeDefinitions, fromGlobalId } from 'graphql-relay';
+import { assignType, getType } from '../utils';
 
 const { nodeInterface, nodeField: node, nodesField: nodes } = nodeDefinitions(
   (globalId, context) => {
     const { type, _id } = fromGlobalId(globalId);
 
-    if (type === 'User') return context.userByKey.load(_id);
-    if (type === 'Circle') return context.circleByKey.load(_id);
-
-    return null;
+    switch (type) {
+      case 'User':
+        return context.userByKey.load(_id).then(assignType('User'));
+      case 'Circle':
+        return context.circleByKey.load(_id).then(assignType('Circle'));
+      default:
+        return null;
+    }
   },
   obj => {
-    if (obj.__type === 'User') return require('./Types/User/UserType').default;
-    if (obj.__type === 'Circle')
-      return require('./Types/Circle/CircleType').default;
-
-    return null;
+    switch (getType(obj)) {
+      case 'User':
+        return require('./Types/User/UserType').default;
+      case 'Circle':
+        return require('./Types/Circle/CircleType').default;
+      default:
+        return null;
+    }
   },
 );
 
