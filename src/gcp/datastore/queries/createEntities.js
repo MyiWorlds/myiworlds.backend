@@ -36,11 +36,11 @@ export default async function createEntities(items) {
     response = await datastoreClient.insert(entities);
   } catch (error) {
     response = {
-      type: 'ERROR',
-      title: 'createEntities error',
-      page: 'slug-to-redirect-page',
+      message:
+        'createEntities had an error. Sorry, I am not sure what went wrong.  I sent my creators a message to upgrade me.',
       array: [error, items],
     };
+    console.error([error, items]);
   }
   console.timeEnd('Time to createEntities');
   return response[0];

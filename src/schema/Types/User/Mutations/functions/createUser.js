@@ -5,13 +5,13 @@ import {
   getEntities,
 } from '../../../../../gcp/datastore/queries';
 import { passwordHash } from '../../../../../utils/index';
-import circleFieldBuilder from '../../../Circle/Mutations/circleFieldBuilder';
+import circleFieldBuilder from '../../../Circle/Mutations/functions/circleFieldBuilder';
 
 export default async function createUser(inputFields) {
   // Make sure username is lowercase
   inputFields.username = inputFields.username.toLowerCase();
 
-  const checkUsername = await getEntities(
+  const checkUsernameDoesNotExist = await getEntities(
     'Users',
     [
       {
@@ -25,7 +25,7 @@ export default async function createUser(inputFields) {
     null,
   );
 
-  const checkEmail = await getEntities(
+  const checkEmailDoesNotExist = await getEntities(
     'Users',
     [
       {
@@ -40,20 +40,27 @@ export default async function createUser(inputFields) {
   );
 
   // Check the username/email and build a message response if one is taken
-  if (checkUsername.entities[0] || checkEmail.entities[0]) {
-    const username = checkUsername.entities[0] ? 'Username ' : '';
-    const email = checkEmail.entities[0] ? 'Email ' : '';
+  if (
+    checkUsernameDoesNotExist.entities[0] ||
+    checkEmailDoesNotExist.entities[0]
+  ) {
+    const usernameMessage = checkUsernameDoesNotExist.entities[0]
+      ? 'Username '
+      : '';
+    const emailMessage = checkEmailDoesNotExist.entities[0] ? 'Email ' : '';
     const message =
-      checkUsername.entities[0] && checkEmail.entities[0]
-        ? `${username}and ${email}`
-        : username + email;
+      checkUsernameDoesNotExist.entities[0] &&
+      checkEmailDoesNotExist.entities[0]
+        ? `${usernameMessage}and ${emailMessage}`
+        : usernameMessage + emailMessage;
     return {
       message: `${message}is already in use`,
     };
   }
 
+  // Generate IDs for the entities we are going to create
   // For testing without have context
-  const userId = 'viewer000000000000000000000000000001';
+  const userId = 'davey';
   // const userId = await uuid();
   const levelId = await uuid();
   const balanceId = await uuid();
@@ -67,7 +74,7 @@ export default async function createUser(inputFields) {
   let hashedPassword = await passwordHash(inputFields.password);
   hashedPassword = Buffer.from(hashedPassword).toString('base64');
 
-  const level = circleFieldBuilder({
+  const level = await circleFieldBuilder({
     _id: levelId,
     kind: 'Circles',
     public: true,
@@ -79,7 +86,7 @@ export default async function createUser(inputFields) {
     number: 0,
   });
 
-  const balance = circleFieldBuilder({
+  const balance = await circleFieldBuilder({
     _id: balanceId,
     kind: 'Circles',
     public: false,
@@ -91,7 +98,7 @@ export default async function createUser(inputFields) {
     viewers: [userId],
   });
 
-  const rating = circleFieldBuilder({
+  const rating = await circleFieldBuilder({
     _id: ratingId,
     kind: 'Circles',
     public: true,
@@ -103,7 +110,7 @@ export default async function createUser(inputFields) {
     number: 0,
   });
 
-  const ui = circleFieldBuilder({
+  const ui = await circleFieldBuilder({
     _id: uiId,
     kind: 'Circles',
     public: true,
@@ -116,12 +123,13 @@ export default async function createUser(inputFields) {
     editors: [userId],
   });
 
-  const homePublic = circleFieldBuilder({
+  const homePublic = await circleFieldBuilder({
     _id: homePublicId,
     kind: 'Circles',
     public: true,
     type: 'LINESMANY',
     title: `${inputFields.username}'s Home`,
+    slug: `/${inputFields.username}`,
     creator: 'myiworlds',
     dateCreated: Date.now(),
     dateUpdated: Date.now(),
@@ -129,12 +137,13 @@ export default async function createUser(inputFields) {
     editors: [userId],
   });
 
-  const homePrivate = circleFieldBuilder({
+  const homePrivate = await circleFieldBuilder({
     _id: homePrivateId,
     kind: 'Circles',
     public: false,
     type: 'LINESMANY',
     title: `${inputFields.username}'s Private Home`,
+    slug: `/private/${inputFields.username}`,
     creator: 'myiworlds',
     dateCreated: Date.now(),
     dateUpdated: Date.now(),
@@ -142,7 +151,7 @@ export default async function createUser(inputFields) {
     editors: [userId],
   });
 
-  const following = circleFieldBuilder({
+  const following = await circleFieldBuilder({
     _id: followingId,
     kind: 'Circles',
     public: true,
@@ -155,7 +164,7 @@ export default async function createUser(inputFields) {
     editors: [userId],
   });
 
-  const notifications = circleFieldBuilder({
+  const notifications = await circleFieldBuilder({
     _id: notificationsId,
     kind: 'Circles',
     public: true,

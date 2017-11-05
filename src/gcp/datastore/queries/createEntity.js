@@ -30,9 +30,7 @@ export default async function createEntity(entity) {
       data,
     };
 
-    await datastoreClient
-      .insert(newEntity)
-      .then(response => console.log('response', response));
+    await datastoreClient.insert(newEntity);
 
     response = {
       message: 'I successfully created that for you',

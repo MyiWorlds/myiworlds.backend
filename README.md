@@ -80,8 +80,11 @@ If you get errors about grpc unable to resolve path, then:
   docker-compose up
 ```
 
-docker-compose run <api> yarn add ...
-
+Installing Directly to your Docker Container
+```
+docker-compose ps // Find out what the project is running on 
+docker-compose run <api> yarn add <package> // Add the name you found in ps in api and install pkg u want
+```
 
 ```bash
 git clone https://github.com/kriasoft/nodejs-api-starter.git example-api

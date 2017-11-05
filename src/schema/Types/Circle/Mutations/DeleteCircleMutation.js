@@ -7,7 +7,7 @@ import {
 } from 'graphql';
 import { deleteEntity } from '../../../../gcp/datastore/queries';
 
-const userId = 'viewer000000000000000000000000000001';
+const userId = 'davey';
 
 const DeleteCircleMutation = mutationWithClientMutationId({
   name: 'deleteCircle',

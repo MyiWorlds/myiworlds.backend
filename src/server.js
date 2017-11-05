@@ -37,6 +37,7 @@ function handleExit(options, err) {
       }
     });
   }
+  // if (err) console.error(err);
   if (err) errors.report(err);
   if (options.exit) process.exit();
 }

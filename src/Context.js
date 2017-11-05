@@ -13,11 +13,13 @@
 import DataLoader from 'dataloader';
 import type { request as Request } from 'express';
 import type { t as Translator } from 'i18next';
+import { getEntitiesByKeys } from './gcp/datastore/queries';
 
 // import db from './db';
 // import { mapTo, mapToMany, mapToValues } from './utils';
 
-import { getEntitiesByKeys } from './gcp/datastore/queries';
+// Get from context
+const userId = 'davey';
 
 class Context {
   request: Request;
@@ -41,19 +43,15 @@ class Context {
    */
 
   userByKey = new DataLoader(keys =>
-    getEntitiesByKeys(
-      'Users',
-      keys,
-      'viewer000000000000000000000000000001',
-    ).then(response => response.entities),
+    getEntitiesByKeys('Users', keys, userId).then(
+      response => response.entities,
+    ),
   );
 
   circleByKey = new DataLoader(keys =>
-    getEntitiesByKeys(
-      'Circles',
-      keys,
-      'viewer000000000000000000000000000001',
-    ).then(response => response.entities),
+    getEntitiesByKeys('Circles', keys, userId).then(
+      response => response.entities,
+    ),
   );
 
   /*

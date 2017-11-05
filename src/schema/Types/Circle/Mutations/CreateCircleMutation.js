@@ -12,9 +12,9 @@ import {
   getEntityByKey,
 } from '../../../../gcp/datastore/queries';
 import CircleType from '../CircleType';
-import circleFieldBuilder from './circleFieldBuilder';
+import circleFieldBuilder from './functions/circleFieldBuilder';
 
-const userId = 'viewer000000000000000000000000000001';
+const userId = 'davey';
 
 const CreateCircleMutation = mutationWithClientMutationId({
   name: 'createCircle',
@@ -67,7 +67,7 @@ const CreateCircleMutation = mutationWithClientMutationId({
       };
     }
 
-    const entityToCreate = circleFieldBuilder(inputFields);
+    const entityToCreate = await circleFieldBuilder(inputFields);
 
     return createEntity(entityToCreate);
   },

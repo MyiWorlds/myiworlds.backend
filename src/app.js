@@ -130,6 +130,7 @@ app.use(
     pretty: process.env.NODE_ENV !== 'production',
     formatError: error => {
       errors.report(error);
+      // console.error(error);
       return {
         message: error.message,
         state: error.originalError && error.originalError.state,

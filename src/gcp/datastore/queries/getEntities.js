@@ -59,15 +59,6 @@ export default async function getEntities(
     error.entities = response.entities;
     error.kind = kind;
     throw error;
-    // response = {
-    //   message: 'getEntities error',
-    //   entities: [],
-    //   error,
-    //   kind,
-    //   filters,
-    //   numberOfResults,
-    //   pageCursor,
-    // };
   }
   console.time('getEntities time to complete');
   return response;

@@ -7,14 +7,12 @@ import {
   GraphQLList,
 } from 'graphql';
 import GraphQLJSON from 'graphql-type-json';
-import {
-  updateEntity,
-  getEntityByKey,
-} from '../../../../gcp/datastore/queries';
+import { getEntityByKey } from '../../../../gcp/datastore/queries';
 import CircleType from '../CircleType';
+import updateCircle from './functions/updateCircle';
 
 // Pull from context
-const userId = 'viewer00000000000000000000000000001';
+const userId = 'davey';
 
 const UpdateCircleMutation = mutationWithClientMutationId({
   name: 'updateCircle',
@@ -69,76 +67,6 @@ const UpdateCircleMutation = mutationWithClientMutationId({
     },
   },
 
-  mutateAndGetPayload: async inputFields => {
-    if (
-      userId !== inputFields.creator &&
-      (inputFields.editors && inputFields.editors.includes(userId) === false)
-    ) {
-      return {
-        message: 'Sorry, you must be the creator.',
-      };
-    }
-
-    const entityToUpdate = [];
-    // Need to get the actual saved entity (passwords wont be supplied from frontend)
-    const getCircle = await getEntityByKey('Circles', inputFields._id, userId);
-
-    const requiredFields = [
-      {
-        name: 'kind',
-        value: 'Circles',
-        excludeFromIndexes: true,
-      },
-    ];
-
-    entityToUpdate.push(requiredFields[0]);
-
-    function buildField(name) {
-      let field;
-
-      function indexedField() {
-        field = {
-          name,
-          value: getCircle[name],
-        };
-      }
-
-      function notIndexedField() {
-        field = {
-          name,
-          value: getCircle[name],
-          excludeFromIndexes: true,
-        };
-      }
-
-      const entityData = {
-        _id: indexedField,
-        type: indexedField,
-        creator: indexedField,
-        editors: indexedField,
-        dateUpdated: indexedField,
-        dateCreated: indexedField,
-        slug: indexedField,
-        title: indexedField,
-        subtitle: indexedField,
-        description: indexedField,
-        public: indexedField,
-        tags: indexedField,
-        order: indexedField,
-
-        default: notIndexedField,
-      };
-      (entityData[name] || entityData.default)();
-
-      return field;
-    }
-
-    Object.keys(getCircle).forEach(prop => {
-      const object = buildField(prop);
-      entityToUpdate.push(object);
-    });
-
-    return updateEntity(entityToUpdate, userId);
-  },
+  mutateAndGetPayload: async inputFields => updateCircle(inputFields, userId),
 });
 export default UpdateCircleMutation;

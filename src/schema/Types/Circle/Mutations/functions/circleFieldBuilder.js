@@ -1,10 +1,25 @@
 import uuid from 'uuid/v1';
+import { passwordHash } from '../../../../../utils/index';
 
-export default function circleFieldBuilder(inputFields) {
+export default async function circleFieldBuilder(inputFields) {
   const entityToCreate = [];
+
+  let hash;
+  if (inputFields.password !== undefined) {
+    hash = await passwordHash(inputFields.password);
+    hash = Buffer.from(hash).toString('base64');
+  }
 
   function buildField(name) {
     let field;
+
+    function encryptPassword() {
+      field = {
+        name,
+        value: hash,
+        excludeFromIndexes: true,
+      };
+    }
 
     function customIdLogic() {
       if (
@@ -42,14 +57,14 @@ export default function circleFieldBuilder(inputFields) {
       _id: customIdLogic,
       type: indexedField,
       creator: indexedField,
-      dateCreated: indexedField,
+      editors: indexedField,
+      password: encryptPassword,
       dateUpdated: indexedField,
+      dateCreated: indexedField,
       slug: indexedField,
-      title: indexedField,
-      subtitle: indexedField,
-      description: indexedField,
       public: indexedField,
       tags: indexedField,
+      order: indexedField,
 
       default: notIndexedField,
     };
