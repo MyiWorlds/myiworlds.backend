@@ -7,12 +7,9 @@ import {
   GraphQLList,
 } from 'graphql';
 import GraphQLJSON from 'graphql-type-json';
-import {
-  createEntity,
-  getEntityByKey,
-} from '../../../../gcp/datastore/queries';
+import { getEntityByKey } from '../../../../gcp/datastore/queries';
 import CircleType from '../CircleType';
-import circleFieldBuilder from './functions/circleFieldBuilder';
+import createCircle from './functions/createCircle';
 
 const userId = 'davey';
 
@@ -60,17 +57,7 @@ const CreateCircleMutation = mutationWithClientMutationId({
     },
   },
 
-  mutateAndGetPayload: async inputFields => {
-    if (userId !== inputFields.creator) {
-      return {
-        message: 'Sorry, your id does not equal the creators.',
-      };
-    }
-
-    const entityToCreate = await circleFieldBuilder(inputFields);
-
-    return createEntity(entityToCreate);
-  },
+  mutateAndGetPayload: async inputFields => createCircle(inputFields, userId),
 });
 
 export default CreateCircleMutation;

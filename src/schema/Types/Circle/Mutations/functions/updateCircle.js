@@ -2,8 +2,10 @@ import {
   updateEntity,
   getEntityByKey,
 } from '../../../../../gcp/datastore/queries';
+import { passwordHash } from '../../../../../utils/index';
 
 export default async function updateCircle(inputFields, userId) {
+  // Have a feeling this should be a || instead of &&
   if (
     userId !== inputFields.creator &&
     (inputFields.editors && inputFields.editors.includes(userId) === false)
@@ -14,27 +16,54 @@ export default async function updateCircle(inputFields, userId) {
   }
 
   const entityToUpdate = [];
-  // Need to get the actual saved entity (passwords wont be supplied from frontend)
+
   const getCircle = await getEntityByKey(
     'Circles',
     inputFields._id,
     userId,
   ).then(response => response.entity);
 
+  if (getCircle === undefined) {
+    const response = {
+      message: 'The id you gave me no longer exists',
+    };
+    return response;
+  }
+
+  let hash;
+  if (inputFields.password && getCircle.creator === userId) {
+    hash = await passwordHash(inputFields.password);
+    hash = Buffer.from(hash).toString('base64');
+  }
+  if (inputFields.password && getCircle.creator !== userId) {
+    const response = {
+      message: 'You must be the creator to edit the password',
+    };
+    return response;
+  }
+
   function buildField(name) {
     let field;
+
+    function encryptPassword() {
+      field = {
+        name,
+        value: hash,
+        excludeFromIndexes: true,
+      };
+    }
 
     function indexedField() {
       field = {
         name,
-        value: getCircle[name],
+        value: inputFields[name] ? inputFields[name] : getCircle[name],
       };
     }
 
     function notIndexedField() {
       field = {
         name,
-        value: getCircle[name],
+        value: inputFields[name] ? inputFields[name] : getCircle[name],
         excludeFromIndexes: true,
       };
     }
@@ -43,13 +72,11 @@ export default async function updateCircle(inputFields, userId) {
       _id: indexedField,
       type: indexedField,
       creator: indexedField,
+      password: inputFields.password ? encryptPassword : notIndexedField,
       editors: indexedField,
       dateUpdated: indexedField,
       dateCreated: indexedField,
       slug: indexedField,
-      title: indexedField,
-      subtitle: indexedField,
-      description: indexedField,
       public: indexedField,
       tags: indexedField,
       order: indexedField,
@@ -61,7 +88,9 @@ export default async function updateCircle(inputFields, userId) {
     return field;
   }
 
-  Object.keys(getCircle).forEach(prop => {
+  const entityToBuild = Object.assign({}, getCircle, inputFields);
+
+  Object.keys(entityToBuild).forEach(prop => {
     const object = buildField(prop);
     entityToUpdate.push(object);
   });

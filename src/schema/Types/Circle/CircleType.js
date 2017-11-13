@@ -92,15 +92,7 @@ const CircleType = new GraphQLObjectType({
         return null;
       },
     },
-    tags: {
-      type: new GraphQLList(CircleType),
-      resolve: (circle, args, { circleByKey }) => {
-        if (circle.tags && circle.tags.length > 0) {
-          return circleByKey.loadMany(circle.tags);
-        }
-        return null;
-      },
-    },
+    tags: { type: new GraphQLList(GraphQLString) },
     title: { type: GraphQLString },
     subtitle: { type: GraphQLString },
     description: { type: GraphQLString },
@@ -118,9 +110,9 @@ const CircleType = new GraphQLObjectType({
     viewers: {
       description: 'Who is allowed to see this node?',
       type: new GraphQLList(UserType),
-      resolve: async (circle, args, { usersByKeys }) => {
+      resolve: async (circle, args, { userByKey }) => {
         if (circle.viewers && circle.viewers.length > 0) {
-          return usersByKeys.loadMany(circle.viewers);
+          return userByKey.loadMany(circle.viewers);
         }
         return null;
       },
@@ -138,9 +130,9 @@ const CircleType = new GraphQLObjectType({
     editors: {
       description: 'Users that can edit this circle',
       type: new GraphQLList(UserType),
-      resolve: async (circle, args, { usersByKeys }) => {
+      resolve: async (circle, args, { userByKey }) => {
         if (circle.editors) {
-          return usersByKeys.loadMany(circle.editors);
+          return userByKey.loadMany(circle.editors);
         }
         return null;
       },

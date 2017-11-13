@@ -4,12 +4,17 @@ import {
 } from '../../../../../gcp/datastore/queries';
 import { passwordHash } from '../../../../../utils/index';
 
-export default async function updateCirclePassword(inputFields, userId) {
+export default async function updateUser(inputFields, userId) {
   const entityToUpdate = [];
-  const getCircle = await getEntityByKey('Circles', inputFields._id, userId);
+  const getUser = await getEntityByKey('Users', inputFields._id, userId).then(
+    response => response.entity,
+  );
 
-  let hash = await passwordHash(inputFields.password);
-  hash = Buffer.from(hash).toString('base64');
+  let hash;
+  if (inputFields.password) {
+    hash = await passwordHash(inputFields.password);
+    hash = Buffer.from(hash).toString('base64');
+  }
 
   function buildField(name) {
     let field;
@@ -25,30 +30,25 @@ export default async function updateCirclePassword(inputFields, userId) {
     function indexedField() {
       field = {
         name,
-        value: getCircle[name],
+        value: inputFields[name] ? inputFields[name] : getUser[name],
       };
     }
 
     function notIndexedField() {
       field = {
         name,
-        value: getCircle[name],
+        value: inputFields[name] ? inputFields[name] : getUser[name],
         excludeFromIndexes: true,
       };
     }
 
     const entityData = {
       _id: indexedField,
-      type: indexedField,
-      creator: indexedField,
-      editors: indexedField,
-      password: encryptPassword,
-      dateUpdated: indexedField,
+      username: indexedField,
+      email: indexedField,
+      password: inputFields.password ? encryptPassword : notIndexedField,
       dateCreated: indexedField,
-      slug: indexedField,
-      public: indexedField,
-      tags: indexedField,
-      order: indexedField,
+      dateUpdated: indexedField,
 
       default: notIndexedField,
     };
@@ -57,7 +57,7 @@ export default async function updateCirclePassword(inputFields, userId) {
     return field;
   }
 
-  Object.keys(getCircle).forEach(prop => {
+  Object.keys(getUser).forEach(prop => {
     const object = buildField(prop);
     entityToUpdate.push(object);
   });

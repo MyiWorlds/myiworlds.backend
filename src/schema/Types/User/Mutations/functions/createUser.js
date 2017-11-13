@@ -59,7 +59,7 @@ export default async function createUser(inputFields) {
   }
 
   // Generate IDs for the entities we are going to create
-  // For testing without have context
+  // For testing userId is set, this should be generated
   const userId = 'davey';
   // const userId = await uuid();
   const levelId = await uuid();
@@ -129,7 +129,7 @@ export default async function createUser(inputFields) {
     public: true,
     type: 'LINESMANY',
     title: `${inputFields.username}'s Home`,
-    slug: `/${inputFields.username}`,
+    slug: `${inputFields.username}`,
     creator: 'myiworlds',
     dateCreated: Date.now(),
     dateUpdated: Date.now(),
@@ -143,7 +143,7 @@ export default async function createUser(inputFields) {
     public: false,
     type: 'LINESMANY',
     title: `${inputFields.username}'s Private Home`,
-    slug: `/private/${inputFields.username}`,
+    slug: `private/${inputFields.username}`,
     creator: 'myiworlds',
     dateCreated: Date.now(),
     dateUpdated: Date.now(),
@@ -177,6 +177,7 @@ export default async function createUser(inputFields) {
     editors: [userId],
   });
 
+  // Create the default fields each user requires
   await createEntities([
     level,
     balance,
@@ -207,6 +208,11 @@ export default async function createUser(inputFields) {
       value: inputFields.email,
     },
     {
+      name: 'emailConfirmed',
+      value: false,
+      excludeFromIndexes: true,
+    },
+    {
       name: 'password',
       value: hashedPassword,
       excludeFromIndexes: true,
@@ -214,6 +220,10 @@ export default async function createUser(inputFields) {
     {
       name: 'dateCreated',
       value: inputFields.dateCreated,
+    },
+    {
+      name: 'dateUpdated',
+      value: inputFields.dateUpdated,
     },
     {
       name: 'level',
@@ -228,6 +238,11 @@ export default async function createUser(inputFields) {
     {
       name: 'rating',
       value: ratingId,
+      excludeFromIndexes: true,
+    },
+    {
+      name: 'uiEnabled',
+      value: false,
       excludeFromIndexes: true,
     },
     {

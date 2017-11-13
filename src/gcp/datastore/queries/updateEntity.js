@@ -5,7 +5,7 @@ export default async function updateEntity(entityToUpdate, userId) {
   console.time('updateEntity time to complete');
   let response = {
     message: '',
-    updatedCircle: null,
+    updatedEntityId: null,
     latestVersionOfEntity: null,
   };
   let kind = null;
@@ -41,7 +41,8 @@ export default async function updateEntity(entityToUpdate, userId) {
     await datastoreClient.get(key).then(async entity => {
       if (
         (entity[0].creator && userId === entity[0].creator) ||
-        (entity[0].editors && entity[0].editors.includes(userId))
+        (entity[0].editors && entity[0].editors.includes(userId)) ||
+        userId === entity[0]._id
       ) {
         const createdCloneEntity = await cloneToNewEntity(entity[0]);
         await datastoreClient.update(newEntity);
@@ -60,12 +61,13 @@ export default async function updateEntity(entityToUpdate, userId) {
   } catch (error) {
     response = {
       message: 'Sorry, I was unable to find that',
-      updatedCircle: null,
+      updatedEntityId: null,
       latestVersionOfEntity: null,
     };
     response.message = 'Sorry, that no longer exists';
     console.error([error, entityToUpdate, userId]);
   }
+
   console.timeEnd('updateEntity time to complete');
   return response;
 }

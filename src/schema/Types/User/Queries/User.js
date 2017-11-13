@@ -21,9 +21,5 @@ export const user = {
     _id: { type: GraphQLString },
   },
   resolve: async (query, { _id }) =>
-    getEntityByKey(
-      'Users',
-      'viewer000000000000000000000000000001',
-      'viewer000000000000000000000000000001',
-    ).then(response => response.entity),
+    getEntityByKey('Users', _id, 'davey').then(response => response.entity),
 };

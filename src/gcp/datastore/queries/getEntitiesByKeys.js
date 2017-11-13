@@ -13,18 +13,34 @@ export default async function getEntitiesByKeys(kind, _ids, viewerId) {
     if (_ids && _ids.length > 0) {
       const dsKeys = _ids.map(_id => [kind, _id]);
       const keys = dsKeys.map(key => datastoreClient.key(key));
-      const sorted = [];
-
       const getEntities = await datastoreClient.get(keys);
-      _ids.forEach(_id =>
-        sorted.push(getEntities[0].filter(item => item._id === _id)[0]),
-      );
 
-      // Removes undefined values
-      // getEntities = sorted.filter(Boolean);
+      // Transform undefined into objects
+      const itemsById = getEntities[0].reduce((lookupTable, item) => {
+        lookupTable[item._id] = item;
+        return lookupTable;
+      }, {});
 
-      getEntities[0].forEach(entity => {
-        if (
+      const sortedEntities = _ids.reduce((matchingItems, _id) => {
+        const item = itemsById[_id];
+
+        if (item) {
+          matchingItems.push(item);
+        }
+        if (item === undefined) {
+          matchingItems.push({ _id, type: 'DOES_NOT_EXIST' });
+        }
+
+        return matchingItems;
+      }, []);
+
+      sortedEntities.forEach(entity => {
+        if (entity.type === 'DOES_NOT_EXIST') {
+          response.entities.push({
+            _id: entity._id,
+            type: entity.type,
+          });
+        } else if (
           entity.public === true ||
           viewerId === entity.creator ||
           (entity.viewers && entity.viewers.includes(viewerId)) ||

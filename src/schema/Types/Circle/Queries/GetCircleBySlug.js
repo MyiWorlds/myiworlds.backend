@@ -8,8 +8,8 @@ import { getEntities } from '../../../../gcp/datastore/queries';
 // Pull from context
 const userId = 'davey';
 
-export const circle = {
-  name: 'Circle',
+export const getCircleBySlug = {
+  name: 'GetCircleBySlug',
   type: CircleType,
   args: {
     slug: { type: GraphQLString },

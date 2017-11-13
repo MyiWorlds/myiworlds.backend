@@ -11,12 +11,15 @@ export default async function getEntityByKey(kind, _id, userId) {
     const key = await datastoreClient.key([kind, _id]);
     const result = await datastoreClient.get(key);
     if (
-      result &&
-      (result[0].public ||
-        userId === result[0].creator ||
-        (result[0].viewers && result[0].viewers.includes(userId)) ||
-        _id === userId ||
-        (result[0].kind === 'Users' && userId === 'new-user'))
+      (result &&
+        // For getting circles
+        (result[0].public ||
+          userId === result[0].creator ||
+          (result[0].viewers && result[0].viewers.includes(userId)) ||
+          _id === userId ||
+          (result[0].kind === 'Users' && userId === 'new-user'))) ||
+      // For getting users
+      result[0].Users_id === userId
     ) {
       response = {
         message: 'Got it! Heres the entity',

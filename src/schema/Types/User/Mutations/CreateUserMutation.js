@@ -10,7 +10,8 @@ const CreateUserMutation = mutationWithClientMutationId({
     username: { type: new GraphQLNonNull(GraphQLString) },
     email: { type: new GraphQLNonNull(GraphQLString) },
     password: { type: new GraphQLNonNull(GraphQLString) },
-    dateCreated: { type: GraphQLString },
+    dateCreated: { type: new GraphQLNonNull(GraphQLString) },
+    dateUpdated: { type: new GraphQLNonNull(GraphQLString) },
   },
 
   outputFields: {

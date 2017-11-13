@@ -17,7 +17,10 @@ export default async function deleteEntity(kind, _id, userId) {
 
   try {
     if (checkIfExists[0] !== undefined) {
-      if (userId === checkIfExists[0].creator) {
+      if (
+        userId === checkIfExists[0].creator ||
+        userId === checkIfExists[0]._id
+      ) {
         const clones = await getEntities(
           `${kind}-clones`,
           [

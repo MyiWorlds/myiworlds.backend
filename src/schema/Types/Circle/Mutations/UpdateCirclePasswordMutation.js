@@ -2,16 +2,17 @@ import { mutationWithClientMutationId } from 'graphql-relay';
 import { GraphQLString, GraphQLNonNull } from 'graphql';
 import { getEntityByKey } from '../../../../gcp/datastore/queries';
 import CircleType from '../CircleType';
-import updateCirclePassword from './functions/updateCirclePassword';
+import updateCircle from './functions/updateCircle';
 
 // Pull from context
 const userId = 'davey';
 
-const UpdateCircleMutation = mutationWithClientMutationId({
-  name: 'updateCircle',
+const UpdateCirclePasswordMutation = mutationWithClientMutationId({
+  name: 'updateCirclePassword',
   inputFields: {
     _id: { type: new GraphQLNonNull(GraphQLString) },
     password: { type: GraphQLString },
+    dateUpdated: { type: new GraphQLNonNull(GraphQLString) },
   },
 
   outputFields: {
@@ -21,23 +22,33 @@ const UpdateCircleMutation = mutationWithClientMutationId({
     },
     updatedCircle: {
       type: CircleType,
-      resolve: async payload =>
-        getEntityByKey('Circles', payload.createdEntityId, userId).then(
-          response => response.entity,
-        ),
+      resolve: async payload => {
+        if (payload.updatedEntityId) {
+          return getEntityByKey(
+            'Circles',
+            payload.updatedEntityId,
+            userId,
+          ).then(response => response.entity);
+        }
+        return null;
+      },
     },
     latestVersionOfCircle: {
       type: CircleType,
-      resolve: async payload =>
-        getEntityByKey(
-          payload.latestVersionOfEntity.newKind,
-          payload.latestVersionOfEntity.new_id,
-          userId,
-        ).then(response => response.entity),
+      resolve: async payload => {
+        if (payload.latestVersionOfEntity) {
+          return getEntityByKey(
+            payload.latestVersionOfEntity.newKind,
+            payload.latestVersionOfEntity.new_id,
+            userId,
+          ).then(response => response.entity);
+        }
+        return null;
+      },
     },
   },
 
-  mutateAndGetPayload: async inputFields =>
-    updateCirclePassword(inputFields, userId),
+  mutateAndGetPayload: async inputFields => updateCircle(inputFields, userId),
 });
-export default UpdateCircleMutation;
+
+export default UpdateCirclePasswordMutation;

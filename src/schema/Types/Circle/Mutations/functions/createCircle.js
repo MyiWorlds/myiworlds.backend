@@ -1,7 +1,14 @@
 import uuid from 'uuid/v1';
 import { passwordHash } from '../../../../../utils/index';
+import { createEntity } from '../../../../../gcp/datastore/queries';
 
-export default async function circleFieldBuilder(inputFields) {
+export default async function createCircle(inputFields, userId) {
+  if (userId !== inputFields.creator) {
+    return {
+      message: 'Sorry, your id does not match the creator of this circles id.',
+    };
+  }
+
   const entityToCreate = [];
 
   let hash;
@@ -87,6 +94,5 @@ export default async function circleFieldBuilder(inputFields) {
     const object = buildField(prop);
     entityToCreate.push(object);
   });
-
-  return entityToCreate;
+  return createEntity(entityToCreate);
 }

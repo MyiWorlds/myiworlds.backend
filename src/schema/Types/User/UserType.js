@@ -8,6 +8,7 @@
  */
 
 /* @flow */
+
 /* eslint-disable no-underscore-dangle */
 
 import {
@@ -34,6 +35,7 @@ export default new GraphQLObjectType({
     email: { type: new GraphQLNonNull(GraphQLString) },
     emailConfirmed: { type: GraphQLBoolean },
     dateCreated: { type: GraphQLString },
+    dateUpdated: { type: GraphQLString },
     level: {
       type: CircleType,
       resolve: (user, args, { circleByKey }) => {
@@ -63,6 +65,7 @@ export default new GraphQLObjectType({
         return null;
       },
     },
+    uiEnabled: { type: GraphQLBoolean },
     ui: {
       description: 'How the user wants to view the system.',
       type: CircleType,

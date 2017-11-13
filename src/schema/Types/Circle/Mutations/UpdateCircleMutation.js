@@ -24,7 +24,7 @@ const UpdateCircleMutation = mutationWithClientMutationId({
     passwordRequired: { type: GraphQLBoolean },
     viewers: { type: new GraphQLList(GraphQLString) },
     type: { type: new GraphQLNonNull(GraphQLString) },
-    styles: { type: GraphQLString },
+    styles: { type: new GraphQLList(GraphQLString) },
     tags: { type: new GraphQLList(GraphQLString) },
     order: { type: GraphQLInt },
     title: { type: GraphQLString },
@@ -51,19 +51,29 @@ const UpdateCircleMutation = mutationWithClientMutationId({
     },
     updatedCircle: {
       type: CircleType,
-      resolve: async payload =>
-        getEntityByKey('Circles', payload.createdEntityId, userId).then(
-          response => response.entity,
-        ),
+      resolve: async payload => {
+        if (payload.updatedEntityId) {
+          return getEntityByKey(
+            'Circles',
+            payload.updatedEntityId,
+            userId,
+          ).then(response => response.entity);
+        }
+        return null;
+      },
     },
     latestVersionOfCircle: {
       type: CircleType,
-      resolve: async payload =>
-        getEntityByKey(
-          payload.latestVersionOfEntity.newKind,
-          payload.latestVersionOfEntity.new_id,
-          userId,
-        ).then(response => response.entity),
+      resolve: async payload => {
+        if (payload.latestVersionOfEntity) {
+          return getEntityByKey(
+            payload.latestVersionOfEntity.newKind,
+            payload.latestVersionOfEntity.new_id,
+            userId,
+          ).then(response => response.entity);
+        }
+        return null;
+      },
     },
   },
 
