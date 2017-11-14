@@ -5,7 +5,7 @@ import {
   getEntities,
 } from '../../../../../gcp/datastore/queries';
 import { passwordHash } from '../../../../../utils/index';
-import circleFieldBuilder from '../../../Circle/Mutations/functions/circleFieldBuilder';
+import buildCircle from '../../../Circle/Mutations/functions/buildCircle';
 
 export default async function createUser(inputFields) {
   // Make sure username is lowercase
@@ -60,8 +60,8 @@ export default async function createUser(inputFields) {
 
   // Generate IDs for the entities we are going to create
   // For testing userId is set, this should be generated
-  const userId = 'davey';
-  // const userId = await uuid();
+  // const userId = 'davey';
+  const userId = await uuid();
   const levelId = await uuid();
   const balanceId = await uuid();
   const ratingId = await uuid();
@@ -74,7 +74,7 @@ export default async function createUser(inputFields) {
   let hashedPassword = await passwordHash(inputFields.password);
   hashedPassword = Buffer.from(hashedPassword).toString('base64');
 
-  const level = await circleFieldBuilder({
+  const level = await buildCircle({
     _id: levelId,
     kind: 'Circles',
     public: true,
@@ -86,96 +86,117 @@ export default async function createUser(inputFields) {
     number: 0,
   });
 
-  const balance = await circleFieldBuilder({
-    _id: balanceId,
-    kind: 'Circles',
-    public: false,
-    type: 'NUMBER_LINESMANY',
-    title: 'Account Balance',
-    creator: 'myiworlds',
-    dateCreated: Date.now(),
-    dateUpdated: Date.now(),
-    viewers: [userId],
-  });
+  const balance = await buildCircle(
+    {
+      _id: balanceId,
+      kind: 'Circles',
+      public: false,
+      type: 'NUMBER_LINESMANY',
+      title: 'Account Balance',
+      creator: 'myiworlds',
+      dateCreated: Date.now(),
+      dateUpdated: Date.now(),
+      viewers: [userId],
+    },
+    userId,
+  );
 
-  const rating = await circleFieldBuilder({
-    _id: ratingId,
-    kind: 'Circles',
-    public: true,
-    type: 'NUMBER_LINESMANY',
-    title: 'Rating',
-    creator: 'myiworlds',
-    dateCreated: Date.now(),
-    dateUpdated: Date.now(),
-    number: 0,
-  });
+  const rating = await buildCircle(
+    {
+      _id: ratingId,
+      kind: 'Circles',
+      public: true,
+      type: 'NUMBER_LINESMANY',
+      title: 'Rating',
+      creator: 'myiworlds',
+      dateCreated: Date.now(),
+      dateUpdated: Date.now(),
+      number: 0,
+    },
+    userId,
+  );
 
-  const ui = await circleFieldBuilder({
-    _id: uiId,
-    kind: 'Circles',
-    public: true,
-    type: 'LINES',
-    title: 'User Interface',
-    creator: 'myiworlds',
-    dateCreated: Date.now(),
-    dateUpdated: Date.now(),
-    viewers: [userId],
-    editors: [userId],
-  });
+  const ui = await buildCircle(
+    {
+      _id: uiId,
+      kind: 'Circles',
+      public: true,
+      type: 'LINES',
+      title: 'User Interface',
+      creator: 'myiworlds',
+      dateCreated: Date.now(),
+      dateUpdated: Date.now(),
+      viewers: [userId],
+      editors: [userId],
+    },
+    userId,
+  );
 
-  const homePublic = await circleFieldBuilder({
-    _id: homePublicId,
-    kind: 'Circles',
-    public: true,
-    type: 'LINESMANY',
-    title: `${inputFields.username}'s Home`,
-    slug: `${inputFields.username}`,
-    creator: 'myiworlds',
-    dateCreated: Date.now(),
-    dateUpdated: Date.now(),
-    viewers: [userId],
-    editors: [userId],
-  });
+  const homePublic = await buildCircle(
+    {
+      _id: homePublicId,
+      kind: 'Circles',
+      public: true,
+      type: 'LINESMANY',
+      title: `${inputFields.username}'s Home`,
+      slug: `${inputFields.username}`,
+      creator: 'myiworlds',
+      dateCreated: Date.now(),
+      dateUpdated: Date.now(),
+      viewers: [userId],
+      editors: [userId],
+    },
+    userId,
+  );
 
-  const homePrivate = await circleFieldBuilder({
-    _id: homePrivateId,
-    kind: 'Circles',
-    public: false,
-    type: 'LINESMANY',
-    title: `${inputFields.username}'s Private Home`,
-    slug: `private/${inputFields.username}`,
-    creator: 'myiworlds',
-    dateCreated: Date.now(),
-    dateUpdated: Date.now(),
-    viewers: [userId],
-    editors: [userId],
-  });
+  const homePrivate = await buildCircle(
+    {
+      _id: homePrivateId,
+      kind: 'Circles',
+      public: false,
+      type: 'LINESMANY',
+      title: `${inputFields.username}'s Private Home`,
+      slug: `private/${inputFields.username}`,
+      creator: 'myiworlds',
+      dateCreated: Date.now(),
+      dateUpdated: Date.now(),
+      viewers: [userId],
+      editors: [userId],
+    },
+    userId,
+  );
 
-  const following = await circleFieldBuilder({
-    _id: followingId,
-    kind: 'Circles',
-    public: true,
-    type: 'LINESMANY',
-    title: 'Following',
-    creator: 'myiworlds',
-    dateCreated: Date.now(),
-    dateUpdated: Date.now(),
-    viewers: [userId],
-    editors: [userId],
-  });
+  const following = await buildCircle(
+    {
+      _id: followingId,
+      kind: 'Circles',
+      public: true,
+      type: 'LINESMANY',
+      title: 'Following',
+      creator: 'myiworlds',
+      dateCreated: Date.now(),
+      dateUpdated: Date.now(),
+      viewers: [userId],
+      editors: [userId],
+    },
+    userId,
+  );
 
-  const notifications = await circleFieldBuilder({
-    _id: notificationsId,
-    kind: 'Circles',
-    public: true,
-    type: 'LINESMANY',
-    title: 'Notifications',
-    creator: 'myiworlds',
-    dateCreated: Date.now(),
-    dateUpdated: Date.now(),
-    viewers: [userId],
-    editors: [userId],
-  });
+  const notifications = await buildCircle(
+    {
+      _id: notificationsId,
+      kind: 'Circles',
+      public: true,
+      type: 'LINESMANY',
+      title: 'Notifications',
+      creator: 'myiworlds',
+      dateCreated: Date.now(),
+      dateUpdated: Date.now(),
+      viewers: [userId],
+      editors: [userId],
+    },
+    userId,
+  );
 
   // Create the default fields each user requires
   await createEntities([

@@ -1,3 +1,6 @@
+## Want to talk about contributing or ask questions? Best place is on our Discord Channel
+https://discord.gg/28Gjv7S
+
 # Node.js API Starter Kit &nbsp; <a href="https://github.com/kriasoft/nodejs-api-starter/stargazers"><img src="https://img.shields.io/github/stars/kriasoft/nodejs-api-starter.svg?style=social&label=Star&maxAge=3600" height="20"></a> <a href="https://twitter.com/ReactStarter"><img src="https://img.shields.io/twitter/follow/ReactStarter.svg?style=social&label=Follow&maxAge=3600" height="20"></a>
 
 Boilerplate and tooling for authoring **data API** backends with **[Node.js][node]** and
