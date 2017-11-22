@@ -7,7 +7,6 @@ export default async function createCircle(inputFields, userId) {
       message: 'Sorry, your id does not match the creator of this circles id.',
     };
   }
-
   const builtCircle = await buildCircle(inputFields, userId);
 
   return createEntity(builtCircle);

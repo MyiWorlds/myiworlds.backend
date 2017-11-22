@@ -15,17 +15,19 @@ export const getCircleBySlug = {
     slug: { type: GraphQLString },
   },
   resolve: async (query, { slug }) => {
-    let search = slug;
-    if (search === undefined || search === '' || search === null) {
-      search = '/';
+    let searchSlug = slug;
+
+    if (searchSlug === undefined || searchSlug === '' || searchSlug === null) {
+      searchSlug = '/';
     }
+
     return getEntities(
       'Circles',
       [
         {
           property: 'slug',
           condition: '=',
-          value: search.toLowerCase(),
+          value: searchSlug.toLowerCase(),
         },
       ],
       1,
