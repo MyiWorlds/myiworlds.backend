@@ -2,7 +2,6 @@ import {
   updateEntity,
   getEntityByKey,
 } from '../../../../../gcp/datastore/queries';
-import { passwordHash } from '../../../../../utils/index';
 
 export default async function updateCircle(inputFields, userId) {
   // Have a feeling this should be a || instead of &&
@@ -30,10 +29,12 @@ export default async function updateCircle(inputFields, userId) {
     return response;
   }
 
+  // hashedPassword was removed from this project, need to find a way to do this now
   let hash;
   if (inputFields.password && getCircle.creator === userId) {
-    hash = await passwordHash(inputFields.password);
-    hash = Buffer.from(hash).toString('base64');
+    hash = inputFields.password;
+    // hash = await passwordHash(inputFields.password);
+    // hash = Buffer.from(hash).toString('base64');
   }
   if (inputFields.password && getCircle.creator !== userId) {
     const response = {
