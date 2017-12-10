@@ -1,13 +1,14 @@
 import uuid from 'uuid/v1';
-import { passwordHash } from '../../../../../utils/index';
 
 export default async function buildCircle(inputFields) {
   const entityToCreate = [];
 
+  // hashedPassword was removed from this project, need to find a way to do this now
   let hash;
   if (inputFields.password !== undefined) {
-    hash = await passwordHash(inputFields.password);
-    hash = Buffer.from(hash).toString('base64');
+    // hash = await passwordHash(inputFields.password);
+    // hash = Buffer.from(hash).toString('base64');
+    hash = inputFields.password;
   }
 
   function buildField(name) {

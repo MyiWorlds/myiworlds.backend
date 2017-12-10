@@ -2,7 +2,6 @@ import {
   updateEntity,
   getEntityByKey,
 } from '../../../../../gcp/datastore/queries';
-import { passwordHash } from '../../../../../utils/index';
 
 export default async function updateUser(inputFields, userId) {
   const entityToUpdate = [];
@@ -11,9 +10,11 @@ export default async function updateUser(inputFields, userId) {
   );
 
   let hash;
+  // hashedPassword was removed from this project, need to find a way to do this now
   if (inputFields.password) {
-    hash = await passwordHash(inputFields.password);
-    hash = Buffer.from(hash).toString('base64');
+    hash = inputFields.password;
+    // hash = await passwordHash(inputFields.password);
+    // hash = Buffer.from(hash).toString('base64');
   }
 
   function buildField(name) {
@@ -30,14 +31,20 @@ export default async function updateUser(inputFields, userId) {
     function indexedField() {
       field = {
         name,
-        value: inputFields[name] ? inputFields[name] : getUser[name],
+        value:
+          inputFields[name] !== undefined || null
+            ? inputFields[name]
+            : getUser[name],
       };
     }
 
     function notIndexedField() {
       field = {
         name,
-        value: inputFields[name] ? inputFields[name] : getUser[name],
+        value:
+          inputFields[name] !== undefined || null
+            ? inputFields[name]
+            : getUser[name],
         excludeFromIndexes: true,
       };
     }

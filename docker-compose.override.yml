@@ -1,0 +1,7 @@
+version: '3'
+
+services:
+  # To allow auto refresh when you make changes on Windows 10
+  api:
+    environment:
+      - CHOKIDAR_USEPOLLING=true

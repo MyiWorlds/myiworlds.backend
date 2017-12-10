@@ -4,7 +4,6 @@ import {
   createEntities,
   getEntities,
 } from '../../../../../gcp/datastore/queries';
-import { passwordHash } from '../../../../../utils/index';
 import buildCircle from '../../../Circle/Mutations/functions/buildCircle';
 
 export default async function createUser(inputFields) {
@@ -71,8 +70,10 @@ export default async function createUser(inputFields) {
   const followingId = await uuid();
   const notificationsId = await uuid();
 
-  let hashedPassword = await passwordHash(inputFields.password);
-  hashedPassword = Buffer.from(hashedPassword).toString('base64');
+  // hashedPassword was removed from this project, need to find a way to do this now
+  const hashedPassword = inputFields.password;
+  // let hashedPassword = await passwordHash(inputFields.password);
+  // hashedPassword = Buffer.from(hashedPassword).toString('base64');
 
   const level = await buildCircle({
     _id: levelId,

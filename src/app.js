@@ -25,7 +25,8 @@ import i18nextMiddleware, {
 import i18nextBackend from 'i18next-node-fs-backend';
 import expressGraphQL from 'express-graphql';
 import PrettyError from 'pretty-error';
-import { printSchema } from 'graphql';
+import { printSchema, GraphQLError } from 'graphql';
+
 import email from './email';
 import redis from './redis';
 import passport from './passport';
@@ -128,11 +129,11 @@ app.use(
     context: new Context(req),
     graphiql: process.env.NODE_ENV !== 'production',
     pretty: process.env.NODE_ENV !== 'production',
-    formatError: error => {
-      errors.report(error);
-      // console.error(error);
+    formatError: (error: GraphQLError) => {
+      errors.report(error.originalError || error);
       return {
         message: error.message,
+        code: error.originalError && error.originalError.code,
         state: error.originalError && error.originalError.state,
         locations: error.locations,
         path: error.path,
