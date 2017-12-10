@@ -31,14 +31,20 @@ export default async function updateUser(inputFields, userId) {
     function indexedField() {
       field = {
         name,
-        value: inputFields[name] ? inputFields[name] : getUser[name],
+        value:
+          inputFields[name] !== undefined || null
+            ? inputFields[name]
+            : getUser[name],
       };
     }
 
     function notIndexedField() {
       field = {
         name,
-        value: inputFields[name] ? inputFields[name] : getUser[name],
+        value:
+          inputFields[name] !== undefined || null
+            ? inputFields[name]
+            : getUser[name],
         excludeFromIndexes: true,
       };
     }

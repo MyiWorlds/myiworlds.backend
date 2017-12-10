@@ -2,7 +2,7 @@ import datastoreClient from '../dbconnection';
 
 /* eslint-disable camelcase */
 export default async function getEntitiesByKeys(kind, _ids, viewerId) {
-  console.time('getEntitiesByKey TTC: ');
+  console.time('getEntitiesByKeys TTC: ');
   let response = {
     message: '',
     _ids: [],
@@ -66,6 +66,6 @@ export default async function getEntitiesByKeys(kind, _ids, viewerId) {
       number: 0,
     };
   }
-  console.timeEnd('getEntitiesByKey TTC: ');
+  console.timeEnd('getEntitiesByKeys TTC: ');
   return response;
 }

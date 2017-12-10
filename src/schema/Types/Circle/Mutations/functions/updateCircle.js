@@ -57,14 +57,20 @@ export default async function updateCircle(inputFields, userId) {
     function indexedField() {
       field = {
         name,
-        value: inputFields[name] ? inputFields[name] : getCircle[name],
+        value:
+          inputFields[name] !== undefined || null
+            ? inputFields[name]
+            : getCircle[name],
       };
     }
 
     function notIndexedField() {
       field = {
         name,
-        value: inputFields[name] ? inputFields[name] : getCircle[name],
+        value:
+          inputFields[name] !== undefined || null
+            ? inputFields[name]
+            : getCircle[name],
         excludeFromIndexes: true,
       };
     }
