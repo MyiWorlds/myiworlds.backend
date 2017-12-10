@@ -6,28 +6,29 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE.txt file in the root directory of this source tree.
  */
-// import ErrorReporting from '@google-cloud/error-reporting';
-// import credentials from './gcp/config/serviceKeys/erros-writer-credentials.json';
 
 /* @flow */
-// ErrorReporting({
-//   projectId: credentials.project_id,
-//   credentials,
-//   ignoreEnvironmentCheck: true,
-//   logLevel: 2,
-//   reportRejections: true,
-//   serviceContext: {
-//     service: 'api',
-//     // TODO: Set the correct version (number)
-//     version: process.env.ERROR_REPORTING_CREDENTIALS ? 'latest' : 'local',
-//   },
-// });
+
+import credentials from './gcp/config/serviceKeys/erros-writer-credentials.json';
+import ErrorReporting from '@google-cloud/error-reporting';
 
 // TODO: Log the error to Google Stackdriver, Rollbar etc.
 function report(error: Error) {
   // eslint-disable-next-line no-console
   console.error(error);
-  // ErrorReporting();
+
+  ErrorReporting({
+    projectId: credentials.project_id,
+    credentials,
+    ignoreEnvironmentCheck: true,
+    logLevel: 2,
+    reportRejections: true,
+    serviceContext: {
+      service: 'api',
+      // TODO: Set the correct version (number)
+      version: process.env.ERROR_REPORTING_CREDENTIALS ? 'latest' : 'local',
+    },
+  });
 }
 
 export class ValidationError extends Error {
