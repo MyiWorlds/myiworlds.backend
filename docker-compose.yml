@@ -57,7 +57,8 @@ services:
       - db:/var/lib/postgresql/data
       - ./postgres-initdb.sh:/docker-entrypoint-initdb.d/initdb.sh
     ports:
-      - "127.0.0.1:5432:5432" # you can override it via docker-compose.override.yml
+      # - "127.0.0.1:5432:5432" # you can override it via docker-compose.override.yml
+      - "5432" # Fixed new permissions error on Windows 10
 
   # Distributed in-memory cache
   redis:

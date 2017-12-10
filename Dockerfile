@@ -1,4 +1,4 @@
-FROM node:8.9.1-alpine
+FROM node:8.9.1
 
 ARG NODE_ENV=production
 ENV NODE_ENV=$NODE_ENV
