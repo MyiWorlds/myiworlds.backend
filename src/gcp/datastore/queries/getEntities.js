@@ -51,13 +51,11 @@ export default async function getEntities(
         });
       }
       response = {
-        messsage: 'I got everything I could',
+        messsage: 'SUCCESS: getEntities got everything it could',
         entities: response.entities[0],
       };
     });
   } catch (error) {
-    error.entities = response.entities;
-    error.kind = kind;
     throw error;
   }
   console.time('getEntities time to complete');

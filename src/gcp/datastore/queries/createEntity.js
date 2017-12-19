@@ -6,8 +6,11 @@ export default async function createEntity(entity) {
     message: null,
     createdEntityId: null,
   };
+  let data = entity;
   let kind = null;
   let dsKey = null;
+  let isDateCreated = false;
+  let isDateUpdated = false;
 
   try {
     entity.map(entityFeilds => {
@@ -20,11 +23,37 @@ export default async function createEntity(entity) {
         kind = entityFeilds.value;
         return kind;
       }
+
+      // if (
+      //   (entityFeilds.name === 'dateCreated' && entityFeilds.value === '') ||
+      //   entityFeilds.value === null ||
+      //   entityFeilds.value === undefined
+      // ) {
+      //   return (isDateCreated = true), (entityFeilds.value = Date.now());
+      // }
+
+      // if (
+      //   entityField.name === 'dateUpdated' &&
+      //   (entityField.value === '' || entityField.value === null || undefined)
+      // ) {
+      //   return (isDateUpdated = true), (entityFeilds.value = Date.now());
+      // }
+
       return null;
     });
 
+    // if (isDateCreated === false) {
+    //   entity
+    //     .find(entityFields.name === 'dateCreated')
+    //     .then(field => (field.value = Date.now()));
+    // }
+    // if (isDateUpdated === false) {
+    //   entity
+    //     .find(entityFields.name === 'dateUpdated')
+    //     .then(field => (field.value = Date.now()));
+    // }
+
     const key = datastoreClient.key([kind, dsKey]);
-    const data = entity;
     const newEntity = {
       key,
       data,
@@ -33,13 +62,11 @@ export default async function createEntity(entity) {
     await datastoreClient.insert(newEntity);
 
     response = {
-      message: 'I successfully created that for you',
+      message: 'SUCCESS: createEntity',
       createdEntityId: dsKey,
     };
   } catch (error) {
-    response.message =
-      'Sorry, I am not sure what went wrong.  I sent my creators a message to upgrade me.';
-    console.error([error, entity[0]]);
+    throw error;
   }
   console.timeEnd('Time to createEntity');
   return response;

@@ -54,12 +54,7 @@ export default async function cloneToNewEntity(entityObject) {
       newKind,
     };
   } catch (error) {
-    response = {
-      type: 'ERROR',
-      title: 'cloneToNewEntity',
-      page: 'slug-to-redirect-page',
-      array: [error, entityObject],
-    };
+    throw error;
   }
   console.timeEnd('cloneToNewEntity time to complete');
   return response;

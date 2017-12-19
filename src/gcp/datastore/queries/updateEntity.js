@@ -48,24 +48,19 @@ export default async function updateEntity(entityToUpdate, userId) {
         await datastoreClient.update(newEntity);
 
         response = {
-          message: 'I successfully updated that for you',
+          message: 'SUCCESS: updateEntity updated that for you',
           latestVersionOfEntity: createdCloneEntity,
           updatedEntityId: dsKey,
         };
       } else {
         response = {
-          message: 'Sorry, you must be the creator or an editor to update this',
+          message:
+            'PERMISSIONS: updateEntity Sorry, you must be the creator or an editor to update this',
         };
       }
     });
   } catch (error) {
-    response = {
-      message: 'Sorry, I was unable to find that',
-      updatedEntityId: null,
-      latestVersionOfEntity: null,
-    };
-    response.message = 'Sorry, that no longer exists';
-    console.error([error, entityToUpdate, userId]);
+    throw error;
   }
 
   console.timeEnd('updateEntity time to complete');

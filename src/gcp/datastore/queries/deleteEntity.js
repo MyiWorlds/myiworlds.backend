@@ -55,21 +55,21 @@ export default async function deleteEntity(kind, _id, userId) {
 
         if (delEntity[0].mutationResults) {
           response.message =
-            'I successfully deleted that and its clones for you';
+            'SUCCESS: deleteEntity worked.  I successfully deleted that and its clones for you';
           response.wasDeleted = true;
         } else {
-          response.message = 'I had an error deleting that';
+          response.message =
+            'ERROR: deleteEntity failed. I had an error deleting that';
         }
       } else {
-        response.message = 'Sorry, you must be the creator to delete this';
+        response.message =
+          'PERMISSIONS_ERROR: deleteEntity Sorry, you must be the creator to delete this';
       }
     } else {
-      response.message = 'Sorry, that no longer exists';
+      response.message = 'ERROR: deleteEntity That no longer exists';
     }
   } catch (error) {
-    response.message =
-      'Sorry, I am not sure what went wrong.  I sent my creators a message to upgrade me.';
-    console.error([error, kind, _id, userId]);
+    throw error;
   }
   console.timeEnd('deleteEntity time to complete');
   return response;

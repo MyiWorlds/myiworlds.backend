@@ -6,7 +6,7 @@ import {
 } from '../../../../../gcp/datastore/queries';
 import buildCircle from '../../../Circle/Mutations/functions/buildCircle';
 
-export default async function createUser(inputFields) {
+export default async function createUser(inputFields, passedInUser_id) {
   // Make sure username is lowercase
   inputFields.username = inputFields.username.toLowerCase();
 
@@ -24,34 +24,36 @@ export default async function createUser(inputFields) {
     null,
   );
 
-  const checkEmailDoesNotExist = await getEntities(
-    'Users',
-    [
-      {
-        property: 'email',
-        condition: '=',
-        value: inputFields.email,
-      },
-    ],
-    1,
-    null,
-    null,
-  );
+  // Going to be moving it to its own Kind
+  // const checkEmailDoesNotExist = await getEntities(
+  //   'Users',
+  //   [
+  //     {
+  //       property: 'email',
+  //       condition: '=',
+  //       value: inputFields.email,
+  //     },
+  //   ],
+  //   1,
+  //   null,
+  //   null,
+  // );
 
   // Check the username/email and build a message response if one is taken
   if (
-    checkUsernameDoesNotExist.entities[0] ||
-    checkEmailDoesNotExist.entities[0]
+    checkUsernameDoesNotExist.entities[0]
+    // || checkEmailDoesNotExist.entities[0]
   ) {
     const usernameMessage = checkUsernameDoesNotExist.entities[0]
       ? 'Username '
       : '';
-    const emailMessage = checkEmailDoesNotExist.entities[0] ? 'Email ' : '';
-    const message =
-      checkUsernameDoesNotExist.entities[0] &&
-      checkEmailDoesNotExist.entities[0]
-        ? `${usernameMessage}and ${emailMessage}`
-        : usernameMessage + emailMessage;
+    // const emailMessage = checkEmailDoesNotExist.entities[0] ? 'Email ' : '';
+    const message = checkUsernameDoesNotExist.entities[0]
+      ? // && checkEmailDoesNotExist.entities[0]
+        // ? `${usernameMessage}and ${emailMessage}`
+        `${usernameMessage}`
+      : // : usernameMessage + emailMessage;
+        usernameMessage;
     return {
       message: `${message}is already in use`,
     };
@@ -60,7 +62,12 @@ export default async function createUser(inputFields) {
   // Generate IDs for the entities we are going to create
   // For testing userId is set, this should be generated
   // const userId = 'davey';
-  const userId = await uuid();
+  let userId;
+  if (passedInUser_id) {
+    userId = passedInUser_id;
+  } else {
+    userId = await uuid();
+  }
   const levelId = await uuid();
   const balanceId = await uuid();
   const ratingId = await uuid();

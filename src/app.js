@@ -131,6 +131,11 @@ app.use(
     pretty: process.env.NODE_ENV !== 'production',
     formatError: (error: GraphQLError) => {
       errors.report(error.originalError || error);
+
+      if (process.env.NODE_ENV !== 'production') {
+        console.error(error);
+      }
+
       return {
         message: error.message,
         code: error.originalError && error.originalError.code,

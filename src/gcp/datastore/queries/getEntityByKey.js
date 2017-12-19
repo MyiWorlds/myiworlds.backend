@@ -22,24 +22,17 @@ export default async function getEntityByKey(kind, _id, userId) {
       result[0].Users_id === userId
     ) {
       response = {
-        message: 'Got it! Heres the entity',
+        message: 'SUCCESS: getEntityByKey. Got it! Heres the entity',
         entity: result[0],
       };
     } else {
       response = {
-        message: 'Sorry, the creator has not allowed you to see this',
+        message:
+          'PERMISSIONS_ERROR: getEntityByKey was not able to return anything.  The creator has not allowed you to see this',
       };
     }
   } catch (error) {
-    response = {
-      message: 'getEntityByKey had a actual error, something is wrong',
-      error,
-      inputs: {
-        kind,
-        _id,
-        userId,
-      },
-    };
+    throw error;
   }
   console.timeEnd('getEntityByKey time to complete: ');
   return response;

@@ -12,23 +12,21 @@
 import credentials from './gcp/config/serviceKeys/erros-writer-credentials.json';
 import ErrorReporting from '@google-cloud/error-reporting';
 
-// TODO: Log the error to Google Stackdriver, Rollbar etc.
-function report(error: Error) {
-  // eslint-disable-next-line no-console
-  console.error(error);
+const stackdriverErrorReporting = ErrorReporting({
+  projectId: credentials.project_id,
+  credentials,
+  ignoreEnvironmentCheck: true,
+  logLevel: 2,
+  reportRejections: true,
+  serviceContext: {
+    service: 'api',
+    // TODO: Set the correct version (number)
+    version: process.env.ERROR_REPORTING_CREDENTIALS ? 'latest' : 'local',
+  },
+});
 
-  ErrorReporting({
-    projectId: credentials.project_id,
-    credentials,
-    ignoreEnvironmentCheck: true,
-    logLevel: 2,
-    reportRejections: true,
-    serviceContext: {
-      service: 'api',
-      // TODO: Set the correct version (number)
-      version: process.env.ERROR_REPORTING_CREDENTIALS ? 'latest' : 'local',
-    },
-  });
+function report(error: Error) {
+  stackdriverErrorReporting.report(error);
 }
 
 export class ValidationError extends Error {

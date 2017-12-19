@@ -56,15 +56,10 @@ export default async function getEntitiesByKeys(kind, _ids, viewerId) {
         }
       });
 
-      response.message = 'I got everything I could';
+      response.message = 'SUCCESS: getEntities returned everything it had';
     }
   } catch (error) {
-    response = {
-      message: 'Something went wrong getting those Entities',
-      _ids: [],
-      entities: [],
-      number: 0,
-    };
+    throw error;
   }
   console.timeEnd('getEntitiesByKeys TTC: ');
   return response;
