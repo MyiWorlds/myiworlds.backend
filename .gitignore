@@ -5,6 +5,7 @@ build
 node_modules
 npm-debug.log
 yarn-error.log
+docker-compose.yml
 
 # Editors and IDEs
 .vscode/*
