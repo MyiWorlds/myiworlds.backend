@@ -17,6 +17,7 @@ import {
   GraphQLString,
   GraphQLNonNull,
   GraphQLID,
+  GraphQLInt,
 } from 'graphql';
 import { globalIdField } from 'graphql-relay';
 
@@ -31,11 +32,11 @@ export default new GraphQLObjectType({
   fields: () => ({
     id: globalIdField('User', user => user._id),
     _id: { type: new GraphQLNonNull(GraphQLID) },
-    username: { type: new GraphQLNonNull(GraphQLString) },
+    username: { type: GraphQLString },
     email: { type: new GraphQLNonNull(GraphQLString) },
     emailConfirmed: { type: GraphQLBoolean },
-    dateCreated: { type: GraphQLString },
-    dateUpdated: { type: GraphQLString },
+    dateCreated: { type: GraphQLInt },
+    dateUpdated: { type: GraphQLInt },
     level: {
       type: CircleType,
       resolve: (user, args, { circleByKey }) => {

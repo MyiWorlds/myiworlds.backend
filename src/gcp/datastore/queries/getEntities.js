@@ -44,7 +44,8 @@ export default async function getEntities(
             (entity[0].public && entity[0].public === true) ||
             entity[0].public === undefined ||
             viewerId === entity[0].creator ||
-            (entity[0].viewers && entity[0].viewers.includes(viewerId))
+            (entity[0].viewers && entity[0].viewers.includes(viewerId)) ||
+            viewerId === 'SERVER'
           ) {
             response.entities.push(entity);
           }
@@ -53,6 +54,7 @@ export default async function getEntities(
       response = {
         messsage: 'SUCCESS: getEntities got everything it could',
         entities: response.entities[0],
+        cursor: response.entities[1],
       };
     });
   } catch (error) {

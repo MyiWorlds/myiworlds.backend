@@ -30,6 +30,7 @@ const CreateCircleMutation = mutationWithClientMutationId({
     subtitle: { type: GraphQLString },
     description: { type: GraphQLString },
     media: { type: GraphQLString },
+    icon: { type: GraphQLString },
     creator: { type: new GraphQLNonNull(GraphQLString) },
     editors: { type: new GraphQLList(GraphQLString) },
     dateCreated: { type: GraphQLString },
@@ -51,7 +52,7 @@ const CreateCircleMutation = mutationWithClientMutationId({
     createdCircle: {
       type: CircleType,
       resolve: async payload =>
-        getEntityByKey('Circles', payload.createdEntityId, userId).then(
+        await getEntityByKey('Circles', payload.createdEntityId, userId).then(
           response => response.entity,
         ),
     },

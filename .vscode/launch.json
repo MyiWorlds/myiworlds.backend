@@ -23,12 +23,19 @@
       "localRoot": "${workspaceRoot}",
       "remoteRoot": "/usr/src/app",
       "restart": true
+    },
+    {
+      "name": "Chrome",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}"
     }
-  ],
+  ],
   "compounds": [
     {
-      "name": "Run/Server",
-      "configurations": ["Run", "Server"]
+      "name": "Server/Chrome",
+      "configurations": ["Server", "Chrome"]
     }
   ]
 }

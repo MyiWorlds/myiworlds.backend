@@ -20,3 +20,10 @@ indexes:
   - name: _id
   - name: dateUpdated
     direction: asc
+
+- kind: Circles
+  ancestor: no
+  properties:
+  - name: creator
+  - name: dateUpdated
+    direction: desc

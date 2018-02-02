@@ -9,13 +9,13 @@
 
 /* @flow */
 /* eslint-disable no-param-reassign, no-underscore-dangle, max-len */
-// TODO: Create new function inside Logins, also make it accompany emails (implement a type field)
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { Strategy as FacebookStrategy } from 'passport-facebook';
 import { Strategy as TwitterStrategy } from 'passport-twitter';
 import uuid from 'uuid/v1';
 import db from './db';
+import datastoreClient from './gcp/datastore/dbconnection';
 
 import {
   getEntityByKey,
@@ -28,7 +28,7 @@ import createUser from './schema/Types/User/Mutations/functions/createUser';
 passport.serializeUser((user, done) => {
   done(null, {
     id: user._id,
-    displayName: user.displayName,
+    // Might need to add a boolean for if the account was just created
   });
 });
 
@@ -41,24 +41,13 @@ passport.deserializeUser((user, done) => {
 async function login(req, provider, profile, tokens) {
   let user;
 
-  if (req.user) {
-    // user = await db
-    //   .table('users')
-    //   .where({ id: req.user.id })
-    //   .first();
-    user = await getEntityByKey('Users', req.user._id, req.user._id).then(
-      response => response.entity,
-    );
+  if (req.user && req.user._id) {
+    const key = await datastoreClient.key(['Users', req.user._id]);
+    [user] = await datastoreClient.get(key);
   }
 
   if (!user) {
-    // user = await db
-    //   .table('logins')
-    //   .innerJoin('users', 'users.id', 'logins.user_id')
-    //   .where({ 'logins.provider': provider, 'logins.id': profile.id })
-    //   .first('users.*');
-
-    user = await getEntities(
+    const login = await getEntities(
       'Logins',
       [
         {
@@ -74,156 +63,58 @@ async function login(req, provider, profile, tokens) {
       ],
       999,
       null,
-      req.user._id,
+      'SERVER',
     );
 
-    // If there is no user but there is profiles that have verified accounts.
-    if (
-      !user &&
-      profile.emails &&
-      profile.emails.length &&
-      profile.emails[0].verified === true
-    ) {
-      // user = await db
-      //   .table('users')
-      //   .innerJoin('emails', 'emails.user_id', 'users.id')
-      //   .where({
-      //     'emails.email': profile.emails[0].value,
-      //     'emails.verified': true,
-      //   })
-      //   .first('users.*');
-
-      user = await getEntities(
-        'Emails',
-        [
-          {
-            property: 'Users_id',
-            condition: '=',
-            value: user._id,
-          },
-          {
-            property: 'verified',
-            condition: '=',
-            value: true,
-          },
-        ],
-        999,
-        null,
-        user._id,
-      );
+    if (login && login.entities && login.entities.length > 0) {
+      const key = await datastoreClient.key([
+        'Users',
+        login.entities[0].creator,
+      ]);
+      [user] = await datastoreClient.get(key);
     }
   }
 
   let generatedUserId;
 
   if (!user) {
-    // eslint-disable-next-line prefer-destructuring
-    // user = (await db
-    //   .table('users')
-    //   .insert({
-    //     display_name: profile.displayName,
-    //     image_url:
-    //       profile.photos && profile.photos.length
-    //         ? profile.photos[0].value
-    //         : null,
-    //   })
-    //   .returning('*'))[0];
     generatedUserId = uuid();
 
-    user = await createUser({
-      _id: generatedUserId,
-      username: profile.displayName,
-    }).then(() => getEntityByKey('Users', generatedUserId, generatedUserId));
-
-    if (profile.emails && profile.emails.length) {
-      // await db.table('emails').insert(
-      //   profile.emails.map(x => ({
-      //     user_id: user.id,
-      //     email: x.value,
-      //     verified: x.verified || false,
-      //   })),
-      // );
-      await createEntity([
-        {
-          name: '_id',
-          value: '',
-        },
-        {
-          name: 'kind',
-          value: 'Emails',
-          excludeFromIndexes: true,
-        },
-        {
-          name: 'Users_id',
-          value: generatedUserId,
-        },
-        {
-          name: 'email',
-          value: profile.email,
-        },
-        {
-          name: 'verified',
-          value: profile.verified || false,
-          excludeFromIndexes: true,
-        },
-        {
-          name: 'dateCreated',
-          value: Date.now(),
-        },
-        {
-          name: 'dateUpdated',
-          value: Date.now(),
-        },
-      ]);
-    }
+    const userKey = await datastoreClient.key(['Users', generatedUserId]);
+    [user] = await createUser(
+      {
+        email: profile.emails[0].value,
+        dateCreated: Date.now(),
+        dateUpdated: Date.now(),
+      },
+      generatedUserId,
+    ).then(() => datastoreClient.get(userKey));
   }
 
-  // const loginKeys = { user_id: user.id, provider, id: profile.id };
-  // const { count } = await db
-  //   .table('logins')
-  //   .where(loginKeys)
-  //   .count('id')
-  //   .first();
-  const count = await getEntities(
+  const logins = await getEntities(
     'Logins',
     [
       {
         property: '_id',
         condition: '=',
-        value: profile._id,
+        value: `${provider}:${profile.id}`,
       },
       {
-        property: 'Users_id',
+        property: 'creator',
         condition: '=',
-        value: generatedUserId,
-      },
-      {
-        property: 'profile_id',
-        condition: '=',
-        value: profile.id,
-      },
-      {
-        property: 'provider',
-        condition: '=',
-        value: provider,
+        value: user._id,
       },
     ],
-    999,
+    1,
     null,
     generatedUserId,
-  ).then(entities => entities[0].length);
+  );
 
-  if (count === '0') {
-    // await db.table('logins').insert({
-    //   ...loginKeys,
-    //   displayName: profile.displayName,
-    //   tokens: JSON.stringify(tokens),
-    //   profile: JSON.stringify(profile._json),
-    // });
-    await createEntity([
+  if (!logins.entities.length) {
+    const createLogin = await createEntity([
       {
         name: '_id',
-        value: '',
+        value: `${provider}:${profile.id}`,
       },
       {
         name: 'kind',
@@ -231,13 +122,16 @@ async function login(req, provider, profile, tokens) {
         excludeFromIndexes: true,
       },
       {
-        name: 'Users_id',
+        name: 'creator',
         value: generatedUserId,
       },
       {
         name: 'provider',
         value: provider,
-        excludeFromIndexes: true,
+      },
+      {
+        name: 'profile',
+        value: profile.id,
       },
       {
         name: 'tokens',
@@ -245,7 +139,7 @@ async function login(req, provider, profile, tokens) {
         excludeFromIndexes: true,
       },
       {
-        name: 'profile',
+        name: 'profileInfo',
         value: profile._json,
         excludeFromIndexes: true,
       },
@@ -259,29 +153,24 @@ async function login(req, provider, profile, tokens) {
       },
     ]);
   } else {
-    // await db
-    //   .table('logins')
-    //   .where(loginKeys)
-    //   .update({
-    //     displayName: profile.displayName,
-    //     tokens: JSON.stringify(tokens),
-    //     profile: JSON.stringify(profile._json),
-    //     updated_at: db.raw('CURRENT_TIMESTAMP'),
-    //   });
     await updateEntity(
       [
         {
           name: '_id',
-          value: profile._id,
+          value: `${provider}:${profile.id}`,
         },
         {
-          name: 'kinds',
+          name: 'kind',
           value: 'Logins',
           excludeFromIndexes: true,
         },
         {
-          name: 'Users_id',
+          name: 'creator',
           value: user._id,
+        },
+        {
+          name: 'profile',
+          value: profile.id,
         },
         {
           name: 'tokens',
@@ -289,13 +178,17 @@ async function login(req, provider, profile, tokens) {
           excludeFromIndexes: true,
         },
         {
-          name: 'profile',
+          name: 'provider',
+          value: provider,
+        },
+        {
+          name: 'profileInfo',
           value: profile._json,
           excludeFromIndexes: true,
         },
         {
           name: 'dateCreated',
-          value: Date.now(),
+          value: logins.entities[0].dateCreated,
         },
         {
           name: 'dateUpdated',
@@ -308,8 +201,6 @@ async function login(req, provider, profile, tokens) {
 
   return {
     id: user._id,
-    displayName: user.displayName,
-    homePublic: user.home,
   };
 }
 

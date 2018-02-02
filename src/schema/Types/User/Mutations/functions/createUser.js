@@ -7,31 +7,17 @@ import {
 import buildCircle from '../../../Circle/Mutations/functions/buildCircle';
 
 export default async function createUser(inputFields, passedInUser_id) {
+  // Add username check to graphql addUsername function
   // Make sure username is lowercase
-  inputFields.username = inputFields.username.toLowerCase();
+  // inputFields.username = inputFields.username.toLowerCase();
 
-  const checkUsernameDoesNotExist = await getEntities(
-    'Users',
-    [
-      {
-        property: 'username',
-        condition: '=',
-        value: inputFields.username,
-      },
-    ],
-    1,
-    null,
-    null,
-  );
-
-  // Going to be moving it to its own Kind
-  // const checkEmailDoesNotExist = await getEntities(
+  // const checkUsernameDoesNotExist = await getEntities(
   //   'Users',
   //   [
   //     {
-  //       property: 'email',
+  //       property: 'username',
   //       condition: '=',
-  //       value: inputFields.email,
+  //       value: inputFields.username,
   //     },
   //   ],
   //   1,
@@ -39,23 +25,25 @@ export default async function createUser(inputFields, passedInUser_id) {
   //   null,
   // );
 
-  // Check the username/email and build a message response if one is taken
-  if (
-    checkUsernameDoesNotExist.entities[0]
-    // || checkEmailDoesNotExist.entities[0]
-  ) {
-    const usernameMessage = checkUsernameDoesNotExist.entities[0]
-      ? 'Username '
-      : '';
-    // const emailMessage = checkEmailDoesNotExist.entities[0] ? 'Email ' : '';
-    const message = checkUsernameDoesNotExist.entities[0]
-      ? // && checkEmailDoesNotExist.entities[0]
-        // ? `${usernameMessage}and ${emailMessage}`
-        `${usernameMessage}`
-      : // : usernameMessage + emailMessage;
-        usernameMessage;
+  // Going to be moving it to its own Kind
+  const checkEmailDoesNotExist = await getEntities(
+    'Users',
+    [
+      {
+        property: 'email',
+        condition: '=',
+        value: inputFields.email,
+      },
+    ],
+    1,
+    null,
+    null,
+  );
+
+  // Check the email and build a message response if one is taken
+  if (checkEmailDoesNotExist.entities[0]) {
     return {
-      message: `${message}is already in use`,
+      message: `Email is already in use`,
     };
   }
 
@@ -72,13 +60,14 @@ export default async function createUser(inputFields, passedInUser_id) {
   const balanceId = await uuid();
   const ratingId = await uuid();
   const uiId = await uuid();
-  const homePublicId = await uuid();
-  const homePrivateId = await uuid();
+  // const homePublicId = await uuid();
+  // const homePrivateId = await uuid();
   const followingId = await uuid();
   const notificationsId = await uuid();
 
+  // Note no longer using Passwords for accounts. Purley social based
   // hashedPassword was removed from this project, need to find a way to do this now
-  const hashedPassword = inputFields.password;
+  // const hashedPassword = inputFields.password;
   // let hashedPassword = await passwordHash(inputFields.password);
   // hashedPassword = Buffer.from(hashedPassword).toString('base64');
 
@@ -140,39 +129,39 @@ export default async function createUser(inputFields, passedInUser_id) {
     userId,
   );
 
-  const homePublic = await buildCircle(
-    {
-      _id: homePublicId,
-      kind: 'Circles',
-      public: true,
-      type: 'LINESMANY',
-      title: `${inputFields.username}'s Home`,
-      slug: `${inputFields.username}`,
-      creator: 'myiworlds',
-      dateCreated: Date.now(),
-      dateUpdated: Date.now(),
-      viewers: [userId],
-      editors: [userId],
-    },
-    userId,
-  );
+  // const homePublic = await buildCircle(
+  //   {
+  //     _id: homePublicId,
+  //     kind: 'Circles',
+  //     public: true,
+  //     type: 'LINESMANY',
+  //     title: `${inputFields.username}'s Home`,
+  //     slug: `${inputFields.username}`,
+  //     creator: 'myiworlds',
+  //     dateCreated: Date.now(),
+  //     dateUpdated: Date.now(),
+  //     viewers: [userId],
+  //     editors: [userId],
+  //   },
+  //   userId,
+  // );
 
-  const homePrivate = await buildCircle(
-    {
-      _id: homePrivateId,
-      kind: 'Circles',
-      public: false,
-      type: 'LINESMANY',
-      title: `${inputFields.username}'s Private Home`,
-      slug: `private/${inputFields.username}`,
-      creator: 'myiworlds',
-      dateCreated: Date.now(),
-      dateUpdated: Date.now(),
-      viewers: [userId],
-      editors: [userId],
-    },
-    userId,
-  );
+  // const homePrivate = await buildCircle(
+  //   {
+  //     _id: homePrivateId,
+  //     kind: 'Circles',
+  //     public: false,
+  //     type: 'LINESMANY',
+  //     title: `${inputFields.username}'s Private Home`,
+  //     slug: `private/${inputFields.username}`,
+  //     creator: 'myiworlds',
+  //     dateCreated: Date.now(),
+  //     dateUpdated: Date.now(),
+  //     viewers: [userId],
+  //     editors: [userId],
+  //   },
+  //   userId,
+  // );
 
   const following = await buildCircle(
     {
@@ -212,8 +201,8 @@ export default async function createUser(inputFields, passedInUser_id) {
     balance,
     rating,
     ui,
-    homePublic,
-    homePrivate,
+    // homePublic,
+    // homePrivate,
     following,
     notifications,
   ]);
@@ -228,10 +217,10 @@ export default async function createUser(inputFields, passedInUser_id) {
       value: 'Users',
       excludeFromIndexes: true,
     },
-    {
-      name: 'username',
-      value: inputFields.username,
-    },
+    // {
+    //   name: 'username',
+    //   value: inputFields.username,
+    // },
     {
       name: 'email',
       value: inputFields.email,
@@ -239,13 +228,13 @@ export default async function createUser(inputFields, passedInUser_id) {
     {
       name: 'emailConfirmed',
       value: false,
-      excludeFromIndexes: true,
     },
-    {
-      name: 'password',
-      value: hashedPassword,
-      excludeFromIndexes: true,
-    },
+    // Deprecating passwords for now
+    // {
+    //   name: 'password',
+    //   value: hashedPassword,
+    //   excludeFromIndexes: true,
+    // },
     {
       name: 'dateCreated',
       value: inputFields.dateCreated,
@@ -279,16 +268,16 @@ export default async function createUser(inputFields, passedInUser_id) {
       value: uiId,
       excludeFromIndexes: true,
     },
-    {
-      name: 'homePublic',
-      value: homePublicId,
-      excludeFromIndexes: true,
-    },
-    {
-      name: 'homePrivate',
-      value: homePrivateId,
-      excludeFromIndexes: true,
-    },
+    // {
+    //   name: 'homePublic',
+    //   value: homePublicId,
+    //   excludeFromIndexes: true,
+    // },
+    // {
+    //   name: 'homePrivate',
+    //   value: homePrivateId,
+    //   excludeFromIndexes: true,
+    // },
     {
       name: 'following',
       value: followingId,

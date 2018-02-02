@@ -8,16 +8,16 @@ export default async function createEntity(entity) {
   };
   let data = entity;
   let kind = null;
-  let dsKey = null;
+  let dsKeyId = null;
   let isDateCreated = false;
   let isDateUpdated = false;
 
   try {
     entity.map(entityFeilds => {
       if (entityFeilds.name === '_id') {
-        dsKey = entityFeilds.value;
+        dsKeyId = entityFeilds.value;
 
-        return dsKey;
+        return dsKeyId;
       }
       if (entityFeilds.name === 'kind') {
         kind = entityFeilds.value;
@@ -53,7 +53,7 @@ export default async function createEntity(entity) {
     //     .then(field => (field.value = Date.now()));
     // }
 
-    const key = datastoreClient.key([kind, dsKey]);
+    const key = datastoreClient.key([kind, dsKeyId]);
     const newEntity = {
       key,
       data,
@@ -63,7 +63,7 @@ export default async function createEntity(entity) {
 
     response = {
       message: 'SUCCESS: createEntity',
-      createdEntityId: dsKey,
+      createdEntityId: dsKeyId,
     };
   } catch (error) {
     throw error;

@@ -13,6 +13,7 @@ import { GraphQLSchema, GraphQLObjectType } from 'graphql';
 
 import { node, nodes } from './Node';
 import { getCircleBySlug } from './Types/Circle/Queries/GetCircleBySlug';
+import { getCirclesByUserKey } from './Types/Circle/Queries/GetCirclesByUserKey';
 import { getCircleByKey } from './Types/Circle/Queries/GetCircleByKey';
 import { user } from './Types/User/Queries/User';
 
@@ -34,6 +35,7 @@ export default new GraphQLSchema({
     name: 'Query',
     fields: {
       user,
+      getCirclesByUserKey,
       getCircleBySlug,
       getCircleByKey,
       node,

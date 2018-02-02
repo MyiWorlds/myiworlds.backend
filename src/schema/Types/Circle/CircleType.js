@@ -72,7 +72,7 @@ const CircleType = new GraphQLObjectType({
     },
     settings: {
       description: 'The settings of this circle.  Will be used as an object.',
-      type: GraphQLString,
+      type: GraphQLJSON,
     },
     rating: {
       type: CircleType,
@@ -98,11 +98,22 @@ const CircleType = new GraphQLObjectType({
     description: { type: GraphQLString },
     media: {
       description:
-        'A piece of media (image/gif/video) that helps identify this piece of content.',
+        'A piece of media (font icon/image/gif/video) that helps identify this piece of content.',
       type: CircleType,
       resolve: async (circle, args, { circleByKey }) => {
         if (circle.media) {
           return circleByKey.load(circle.media);
+        }
+        return null;
+      },
+    },
+    icon: {
+      description:
+        'A piece of icon (font icon/image/gif/video) that helps identify this piece of content.  Defaults to creators display pic',
+      type: CircleType,
+      resolve: async (circle, args, { circleByKey }) => {
+        if (circle.icon) {
+          return circleByKey.load(circle.icon);
         }
         return null;
       },
@@ -137,12 +148,11 @@ const CircleType = new GraphQLObjectType({
         return null;
       },
     },
-    dateCreated: { type: GraphQLString },
-    dateUpdated: { type: GraphQLString },
+    dateCreated: { type: GraphQLInt },
+    dateUpdated: { type: GraphQLInt },
 
     // Circle content types below
     string: { type: GraphQLString },
-    text: { type: GraphQLString },
     blob: { type: GraphQLJSON },
     number: { type: GraphQLInt },
     boolean: { type: GraphQLBoolean },
