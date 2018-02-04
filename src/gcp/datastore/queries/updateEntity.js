@@ -1,4 +1,4 @@
-import datastoreClient from '../dbconnection';
+import datastoreClient from '../datastoreConnection';
 import cloneToNewEntity from './cloneToNewEntity';
 
 export default async function updateEntity(entityToUpdate, userId) {

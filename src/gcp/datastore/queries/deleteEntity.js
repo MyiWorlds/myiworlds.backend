@@ -1,4 +1,4 @@
-import datastoreClient from '../dbconnection';
+import datastoreClient from '../datastoreConnection';
 import getEntities from './getEntities';
 
 // Used for right after creation, until maybe after a few hours then it goes to create only.

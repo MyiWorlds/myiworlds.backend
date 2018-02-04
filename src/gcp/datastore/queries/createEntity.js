@@ -1,4 +1,4 @@
-import datastoreClient from '../dbconnection';
+import datastoreClient from '../datastoreConnection';
 
 export default async function createEntity(entity) {
   console.time('Time to createEntity');

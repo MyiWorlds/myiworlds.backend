@@ -15,7 +15,7 @@ import { Strategy as FacebookStrategy } from 'passport-facebook';
 import { Strategy as TwitterStrategy } from 'passport-twitter';
 import uuid from 'uuid/v1';
 import db from './db';
-import datastoreClient from './gcp/datastore/dbconnection';
+import datastoreClient from './gcp/datastore/datastoreConnection';
 
 import {
   getEntityByKey,

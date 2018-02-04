@@ -1,5 +1,5 @@
 import uuid from 'uuid/v1';
-import datastoreClient from '../dbconnection';
+import datastoreClient from '../datastoreConnection';
 
 // This function updates existing entities with the same id.
 // Try not to use this as it would need to build a new array of _ids

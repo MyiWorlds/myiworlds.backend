@@ -1,4 +1,4 @@
-import datastoreClient from '../dbconnection';
+import datastoreClient from '../datastoreConnection';
 
 export default async function getEntityByKey(kind, _id, userId) {
   console.time('getEntityByKey time to complete: ');

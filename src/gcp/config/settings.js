@@ -7,7 +7,7 @@
  * LICENSE.txt file in the root directory of this source tree.
  */
 
-import projectViewerServiceKey from './serviceKeys/gcp-project-viewer-service-key.json';
+// import projectViewerServiceKey from './serviceKeys/gcp-project-viewer-service-key.json';
 
 if (process.env.BROWSER) {
   throw new Error(
@@ -16,12 +16,17 @@ if (process.env.BROWSER) {
 }
 
 export default {
-  project_id: projectViewerServiceKey.project_id,
+  // Havn't found a need to keey project_id seperate as
+  // just using keyFilename is main usecase
+  // project_id: projectViewerServiceKey.project_id,
 
   //
   // List out the service keys for the services your app is using
   // -----------------------------------------------------------------------------
-
+  storage: {
+    gcpStorageAdminServiceKeyPath:
+      './gcp/config/serviceKeys/gcp-storage-admin-service-key.json',
+  },
   datastore: {
     // Owner key is for when you are seeding to the database
     // and need to create new Entities (models) inside the database

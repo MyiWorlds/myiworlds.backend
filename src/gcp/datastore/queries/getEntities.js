@@ -1,4 +1,4 @@
-import datastoreClient from '../dbconnection';
+import datastoreClient from '../datastoreConnection';
 
 /* Caution: Be careful when passing a Cloud Datastore cursor
 to a client, such as in a web form. Although the client cannot

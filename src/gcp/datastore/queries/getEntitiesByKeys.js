@@ -1,4 +1,4 @@
-import datastoreClient from '../dbconnection';
+import datastoreClient from '../datastoreConnection';
 
 /* eslint-disable camelcase */
 export default async function getEntitiesByKeys(kind, _ids, viewerId) {
