@@ -23,6 +23,7 @@ import {
   globalIdField,
 } from 'graphql-relay';
 import GraphQLJSON from 'graphql-type-json';
+import GraphQLBigInt from 'graphql-bigint';
 import { nodeInterface } from '../../Node';
 import UserType from '../User/UserType';
 
@@ -39,7 +40,8 @@ const CircleType = new GraphQLObjectType({
       type: GraphQLID,
     },
     ui: {
-      description: 'If a user interface is not set',
+      description:
+        'If a user interface is not set, the user will take the default styles of the page',
       type: CircleType,
       resolve: async (circle, args, { circleByKey }) => {
         if (circle.rating) {
@@ -71,8 +73,13 @@ const CircleType = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLString),
     },
     settings: {
-      description: 'The settings of this circle.  Will be used as an object.',
-      type: GraphQLJSON,
+      type: CircleType,
+      resolve: async (circle, args, { circleByKey }) => {
+        if (circle.settings) {
+          return circleByKey.load(circle.settings);
+        }
+        return null;
+      },
     },
     rating: {
       type: CircleType,
@@ -84,10 +91,10 @@ const CircleType = new GraphQLObjectType({
       },
     },
     styles: {
-      type: new GraphQLList(CircleType),
-      resolve: (circle, args, { circleByKey }) => {
-        if (circle.styles && circle.styles.length > 0) {
-          return circleByKey.loadMany(circle.styles);
+      type: CircleType,
+      resolve: async (circle, args, { circleByKey }) => {
+        if (circle.styles) {
+          return circleByKey.load(circle.styles);
         }
         return null;
       },
@@ -120,10 +127,10 @@ const CircleType = new GraphQLObjectType({
     },
     viewers: {
       description: 'Who is allowed to see this node?',
-      type: new GraphQLList(UserType),
-      resolve: async (circle, args, { userByKey }) => {
-        if (circle.viewers && circle.viewers.length > 0) {
-          return userByKey.loadMany(circle.viewers);
+      type: CircleType,
+      resolve: async (circle, args, { circleByKey }) => {
+        if (circle.viewers) {
+          return circleByKey.load(circle.viewers);
         }
         return null;
       },
@@ -140,21 +147,22 @@ const CircleType = new GraphQLObjectType({
     },
     editors: {
       description: 'Users that can edit this circle',
-      type: new GraphQLList(UserType),
-      resolve: async (circle, args, { userByKey }) => {
+      type: CircleType,
+      resolve: async (circle, args, { circleByKey }) => {
         if (circle.editors) {
-          return userByKey.loadMany(circle.editors);
+          return circleByKey.load(circle.editors);
         }
         return null;
       },
     },
-    dateCreated: { type: GraphQLInt },
-    dateUpdated: { type: GraphQLInt },
+    dateCreated: { type: GraphQLBigInt },
+    dateUpdated: { type: GraphQLBigInt },
 
     // Circle content types below
     string: { type: GraphQLString },
     blob: { type: GraphQLJSON },
     number: { type: GraphQLInt },
+    bigNumber: { type: GraphQLBigInt },
     boolean: { type: GraphQLBoolean },
     date: { type: GraphQLString },
     geoPoint: { type: GraphQLString },

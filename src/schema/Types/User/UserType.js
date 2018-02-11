@@ -118,5 +118,27 @@ export default new GraphQLObjectType({
         return null;
       },
     },
+    search: {
+      description:
+        'The Users search history. Will be used by their personal AI to help them in the best way possible.  Saves the last node they viewed',
+      type: CircleType,
+      resolve: (user, args, { circleByKey }) => {
+        if (user.search) {
+          return circleByKey.load(user.search);
+        }
+        return null;
+      },
+    },
+    history: {
+      description:
+        'The Users history of what they view. Will be used by their personal AI to help them in the best way possible.  Saves the last node they viewed',
+      type: CircleType,
+      resolve: (user, args, { circleByKey }) => {
+        if (user.history) {
+          return circleByKey.load(user.history);
+        }
+        return null;
+      },
+    },
   }),
 });
