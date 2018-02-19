@@ -27,7 +27,7 @@ import createUser from './schema/Types/User/Mutations/functions/createUser';
 
 passport.serializeUser((user, done) => {
   done(null, {
-    id: user._id,
+    _id: user._id,
     // Might need to add a boolean for if the account was just created
   });
 });
@@ -200,7 +200,7 @@ async function login(req, provider, profile, tokens) {
   }
 
   return {
-    id: user._id,
+    _id: user._id,
   };
 }
 

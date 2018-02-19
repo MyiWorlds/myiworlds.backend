@@ -6,7 +6,7 @@ import {
 } from '../../../../../gcp/datastore/queries';
 import buildCircle from '../../../Circle/Mutations/functions/buildCircle';
 
-export default async function createUser(inputFields, passedInUser_id) {
+export default async function createUser(inputFields, contextUserId) {
   // Add username check to graphql addUsername function
   // Make sure username is lowercase
   // inputFields.username = inputFields.username.toLowerCase();
@@ -51,8 +51,8 @@ export default async function createUser(inputFields, passedInUser_id) {
   // For testing userId is set, this should be generated
   // const userId = 'davey';
   let userId;
-  if (passedInUser_id) {
-    userId = passedInUser_id;
+  if (contextUserId) {
+    userId = contextUserId;
   } else {
     userId = await uuid();
   }
@@ -290,5 +290,5 @@ export default async function createUser(inputFields, passedInUser_id) {
     },
   ];
 
-  return createEntity(userToCreate);
+  return createEntity(userToCreate, contextUserId);
 }

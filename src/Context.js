@@ -20,7 +20,7 @@ import { getEntitiesByKeys } from './gcp/datastore/queries';
 import { UnauthorizedError } from './errors';
 
 // Get from context
-const userId = 'davey';
+// const userId = 'davey';
 
 class Context {
   request: Request;
@@ -29,10 +29,13 @@ class Context {
 
   constructor(request: Request) {
     this.request = request;
-    this.user = request.user;
     this.t = request.t;
+
   }
 
+  get user(): any {
+    return this.request.user
+  }
   /*
    * Data loaders to be used with GraphQL resolve() functions. For example:
    *
@@ -44,13 +47,13 @@ class Context {
    */
 
   userByKey = new DataLoader(keys =>
-    getEntitiesByKeys('Users', keys, userId).then(
+    getEntitiesByKeys('Users', keys).then(
       response => response.entities,
     ),
   );
 
   circleByKey = new DataLoader(keys =>
-    getEntitiesByKeys('Circles', keys, userId).then(
+    getEntitiesByKeys('Circles', keys).then(
       response => response.entities,
     ),
   );

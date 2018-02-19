@@ -1,6 +1,6 @@
 import datastoreClient from '../datastoreConnection';
 
-export default async function getEntityByKey(kind, _id, userId) {
+export default async function getEntityByKey(kind, _id, contextUserId) {
   console.time('getEntityByKey time to complete: ');
 
   let response = {
@@ -14,12 +14,12 @@ export default async function getEntityByKey(kind, _id, userId) {
       (result &&
         // For getting circles
         (result[0].public ||
-          userId === result[0].creator ||
-          (result[0].viewers && result[0].viewers.includes(userId)) ||
-          _id === userId ||
-          (result[0].kind === 'Users' && userId === 'new-user'))) ||
+          contextUserId === result[0].creator ||
+          (result[0].viewers && result[0].viewers.includes(contextUserId)) ||
+          _id === contextUserId ||
+          (result[0].kind === 'Users' && contextUserId === 'new-user'))) ||
       // For getting users
-      result[0].Users_id === userId
+      result[0].Users_id === contextUserId
     ) {
       response = {
         message: 'SUCCESS: getEntityByKey. Got it! Heres the entity',

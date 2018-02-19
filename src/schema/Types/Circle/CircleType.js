@@ -24,7 +24,10 @@ import {
 } from 'graphql-relay';
 import GraphQLJSON from 'graphql-type-json';
 import GraphQLBigInt from 'graphql-bigint';
+import { getEntityByKey } from '../../../gcp/datastore/queries';
+
 import { nodeInterface } from '../../Node';
+
 import UserType from '../User/UserType';
 
 const CircleType = new GraphQLObjectType({
@@ -135,15 +138,23 @@ const CircleType = new GraphQLObjectType({
         return null;
       },
     },
+    // creator: {
+    //   description: 'The User who created this piece of content',
+    //   type: UserType,
+    //   resolve: (circle, args, { userByKey }) => {
+    //     if (circle.creator) {
+    //       return userByKey.load(circle.creator);
+    //     }
+    //     return null;
+    //   },
+    // },
     creator: {
       description: 'The User who created this piece of content',
       type: UserType,
-      resolve: (circle, args, { userByKey }) => {
-        if (circle.creator) {
-          return userByKey.load(circle.creator);
-        }
-        return null;
-      },
+      resolve: async (circle, args, context ) => {
+        return await getEntityByKey('Users', circle.creator, context.user._id)
+        .then(response => response.entity)
+    },
     },
     editors: {
       description: 'Users that can edit this circle',

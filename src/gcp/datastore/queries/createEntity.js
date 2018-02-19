@@ -1,6 +1,6 @@
 import datastoreClient from '../datastoreConnection';
 
-export default async function createEntity(entity) {
+export default async function createEntity(entity, contextUserId) {
   console.time('Time to createEntity');
   let response = {
     message: null,
@@ -64,6 +64,7 @@ export default async function createEntity(entity) {
     response = {
       message: 'SUCCESS: createEntity',
       createdEntityId: dsKeyId,
+      contextUserId: contextUserId,
     };
   } catch (error) {
     throw error;

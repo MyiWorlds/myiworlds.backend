@@ -11,9 +11,6 @@ import { getEntityByKey } from '../../../../gcp/datastore/queries';
 import CircleType from '../CircleType';
 import updateCircle from './functions/updateCircle';
 
-// Pull from context
-const userId = 'davey';
-
 const UpdateCircleMutation = mutationWithClientMutationId({
   name: 'updateCircle',
   inputFields: {
@@ -56,7 +53,7 @@ const UpdateCircleMutation = mutationWithClientMutationId({
           return getEntityByKey(
             'Circles',
             payload.updatedEntityId,
-            userId,
+            payload.contextUserId,
           ).then(response => response.entity);
         }
         return null;
@@ -69,7 +66,7 @@ const UpdateCircleMutation = mutationWithClientMutationId({
           return getEntityByKey(
             payload.latestVersionOfEntity.newKind,
             payload.latestVersionOfEntity.new_id,
-            userId,
+            payload.contextUserId,
           ).then(response => response.entity);
         }
         return null;
@@ -77,6 +74,6 @@ const UpdateCircleMutation = mutationWithClientMutationId({
     },
   },
 
-  mutateAndGetPayload: async inputFields => updateCircle(inputFields, userId),
+  mutateAndGetPayload: async (inputFields, context) => updateCircle(inputFields, context.user._id),
 });
 export default UpdateCircleMutation;

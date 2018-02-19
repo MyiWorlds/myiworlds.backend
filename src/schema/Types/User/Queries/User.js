@@ -17,9 +17,13 @@ import { getEntityByKey } from '../../../../gcp/datastore/queries';
 export const user = {
   name: 'User',
   type: UserType,
-  args: {
-    _id: { type: GraphQLString },
-  },
-  resolve: async (query, { _id }) =>
-    getEntityByKey('Users', _id, 'davey').then(response => response.entity),
+  // resolve: async (query, { _id }) =>
+  //   getEntityByKey('Users', _id, 'davey').then(response => response.entity),
+
+  // args: {
+  //   _id: { type: GraphQLString },
+  // },
+  resolve: async (query, args, context) => {
+    return await getEntityByKey('Users', context.user._id, context.user._id).then(response => response.entity)
+  }
 };

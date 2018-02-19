@@ -1,7 +1,7 @@
 import datastoreClient from '../datastoreConnection';
 import cloneToNewEntity from './cloneToNewEntity';
 
-export default async function updateEntity(entityToUpdate, userId) {
+export default async function updateEntity(entityToUpdate, contextUserId) {
   console.time('updateEntity time to complete');
   let response = {
     message: '',
@@ -40,9 +40,9 @@ export default async function updateEntity(entityToUpdate, userId) {
   try {
     await datastoreClient.get(key).then(async entity => {
       if (
-        (entity[0].creator && userId === entity[0].creator) ||
-        (entity[0].editors && entity[0].editors.includes(userId)) ||
-        userId === entity[0]._id
+        (entity[0].creator && contextUserId === entity[0].creator) ||
+        (entity[0].editors && entity[0].editors.includes(contextUserId)) ||
+        contextUserId === entity[0]._id
       ) {
         const createdCloneEntity = await cloneToNewEntity(entity[0]);
         await datastoreClient.update(newEntity);
@@ -51,6 +51,7 @@ export default async function updateEntity(entityToUpdate, userId) {
           message: 'SUCCESS: updateEntity updated that for you',
           latestVersionOfEntity: createdCloneEntity,
           updatedEntityId: dsKey,
+          contextUserId: contextUserId,
         };
       } else {
         response = {

@@ -5,16 +5,13 @@ import { GraphQLString } from 'graphql';
 import CircleType from '../CircleType';
 import { getEntities } from '../../../../gcp/datastore/queries';
 
-// Pull from context
-const userId = 'davey';
-
 export const getCircleBySlug = {
   name: 'GetCircleBySlug',
   type: CircleType,
   args: {
     slug: { type: GraphQLString },
   },
-  resolve: async (query, { slug }) => {
+  resolve: async (query, { slug }, context) => {
     let searchSlug = slug;
 
     if (searchSlug === undefined || searchSlug === '' || searchSlug === null) {
@@ -32,7 +29,7 @@ export const getCircleBySlug = {
       ],
       1,
       null,
-      userId,
+      context.user._id,
     ).then(response => response.entities[0]);
   },
 };

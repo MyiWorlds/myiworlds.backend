@@ -4,9 +4,6 @@ import { getEntityByKey } from '../../../../gcp/datastore/queries';
 import UserType from '../UserType';
 import updateUser from './functions/updateUser';
 
-// Get from context
-const userId = 'davey';
-
 // This mutation will most likely only be called after visiting a page from email
 const UpdateEmailConfirmedMutation = mutationWithClientMutationId({
   name: 'updateEmailConfirmed',
@@ -23,7 +20,7 @@ const UpdateEmailConfirmedMutation = mutationWithClientMutationId({
     updatedUser: {
       type: UserType,
       resolve: async payload =>
-        getEntityByKey('Users', payload.updatedEntityId, userId).then(
+        getEntityByKey('Users', payload.updatedEntityId, payload.contextUserId).then(
           response => response.entity,
         ),
     },
@@ -33,16 +30,16 @@ const UpdateEmailConfirmedMutation = mutationWithClientMutationId({
         getEntityByKey(
           payload.latestVersionOfEntity.newKind,
           payload.latestVersionOfEntity.new_id,
-          userId,
+          payload.contextUserId,
         ).then(response => response.entity),
     },
   },
 
-  mutateAndGetPayload: async inputFields => {
+  mutateAndGetPayload: async (inputFields, context) => {
     const updatedInputFields = Object.assign(inputFields, {
       emailConfirmed: true,
     });
-    return updateUser(updatedInputFields, userId);
+    return updateUser(updatedInputFields, context.user._id);
   },
 });
 export default UpdateEmailConfirmedMutation;

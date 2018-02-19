@@ -4,9 +4,6 @@ import { getEntityByKey } from '../../../../gcp/datastore/queries';
 import UserType from '../UserType';
 import updateUser from './functions/updateUser';
 
-// Get from context
-const userId = 'davey';
-
 // This mutation will most likely only be called after visiting a page from email
 const UpdateUiEnabledMutation = mutationWithClientMutationId({
   name: 'updateUiEnabled',
@@ -23,23 +20,23 @@ const UpdateUiEnabledMutation = mutationWithClientMutationId({
     },
     updatedUser: {
       type: UserType,
-      resolve: async payload =>
-        getEntityByKey('Users', payload.updatedEntityId, userId).then(
+      resolve: async (payload, context) =>
+        getEntityByKey('Users', payload.updatedEntityId, context.user._id).then(
           response => response.entity,
         ),
     },
     latestVersionOfUser: {
       type: UserType,
-      resolve: async payload =>
+      resolve: async (payload, context) =>
         getEntityByKey(
           payload.latestVersionOfEntity.newKind,
           payload.latestVersionOfEntity.new_id,
-          userId,
+          context.user._id,
         ).then(response => response.entity),
     },
   },
 
-  mutateAndGetPayload: async inputFields => updateUser(inputFields, userId),
+  mutateAndGetPayload: async (inputFields, context) => updateUser(inputFields, context.user._id),
 });
 
 export default UpdateUiEnabledMutation;

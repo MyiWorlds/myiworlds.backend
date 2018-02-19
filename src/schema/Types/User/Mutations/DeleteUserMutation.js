@@ -7,8 +7,6 @@ import {
 } from 'graphql';
 import { deleteEntity } from '../../../../gcp/datastore/queries';
 
-const userId = 'davey';
-
 const DeleteUserMutation = mutationWithClientMutationId({
   name: 'deleteUser',
 
@@ -41,7 +39,7 @@ const DeleteUserMutation = mutationWithClientMutationId({
     },
   },
 
-  mutateAndGetPayload: async ({ _id }) => deleteEntity('Users', _id, userId),
+  mutateAndGetPayload: async ({ _id }, context) => deleteEntity('Users', _id, context.user._id),
 });
 
 export default DeleteUserMutation;

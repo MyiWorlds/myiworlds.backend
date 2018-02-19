@@ -3,9 +3,9 @@ import {
   getEntityByKey,
 } from '../../../../../gcp/datastore/queries';
 
-export default async function updateUser(inputFields, userId) {
+export default async function updateUser(inputFields, contextUserId) {
   const entityToUpdate = [];
-  const getUser = await getEntityByKey('Users', inputFields._id, userId).then(
+  const getUser = await getEntityByKey('Users', inputFields._id, contextUserId).then(
     response => response.entity,
   );
 
@@ -69,5 +69,5 @@ export default async function updateUser(inputFields, userId) {
     entityToUpdate.push(object);
   });
 
-  return updateEntity(entityToUpdate, userId);
+  return updateEntity(entityToUpdate, contextUserId);
 }

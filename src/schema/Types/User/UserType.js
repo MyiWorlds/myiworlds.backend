@@ -17,8 +17,10 @@ import {
   GraphQLString,
   GraphQLNonNull,
   GraphQLID,
-  GraphQLInt,
+
 } from 'graphql';
+import GraphQLBigInt from 'graphql-bigint';
+
 import { globalIdField } from 'graphql-relay';
 
 import CircleType from '../Circle/CircleType';
@@ -35,8 +37,8 @@ export default new GraphQLObjectType({
     username: { type: GraphQLString },
     email: { type: new GraphQLNonNull(GraphQLString) },
     emailConfirmed: { type: GraphQLBoolean },
-    dateCreated: { type: GraphQLInt },
-    dateUpdated: { type: GraphQLInt },
+    dateCreated: { type: GraphQLBigInt },
+    dateUpdated: { type: GraphQLBigInt },
     level: {
       type: CircleType,
       resolve: (user, args, { circleByKey }) => {

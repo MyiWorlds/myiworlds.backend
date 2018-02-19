@@ -2,7 +2,7 @@ import datastoreClient from '../datastoreConnection';
 import getEntities from './getEntities';
 
 // Used for right after creation, until maybe after a few hours then it goes to create only.
-export default async function deleteEntity(kind, _id, userId) {
+export default async function deleteEntity(kind, _id, contextUserId) {
   console.time('deleteEntity time to complete');
   const response = {
     message: '',
@@ -18,8 +18,8 @@ export default async function deleteEntity(kind, _id, userId) {
   try {
     if (checkIfExists[0] !== undefined) {
       if (
-        userId === checkIfExists[0].creator ||
-        userId === checkIfExists[0]._id
+        contextUserId === checkIfExists[0].creator ||
+        contextUserId === checkIfExists[0]._id
       ) {
         const clones = await getEntities(
           `${kind}-clones`,
@@ -33,7 +33,7 @@ export default async function deleteEntity(kind, _id, userId) {
           // Might have to make if there is more after 999999 send another query/delete request
           999999,
           null,
-          userId,
+          contextUserId,
         );
 
         if (clones.entities && clones.entities.length > 0) {

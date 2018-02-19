@@ -11,8 +11,6 @@ import { getEntityByKey } from '../../../../gcp/datastore/queries';
 import CircleType from '../CircleType';
 import createCircle from './functions/createCircle';
 
-const userId = 'davey';
-
 const CreateCircleMutation = mutationWithClientMutationId({
   name: 'createCircle',
   inputFields: {
@@ -51,14 +49,14 @@ const CreateCircleMutation = mutationWithClientMutationId({
     },
     createdCircle: {
       type: CircleType,
-      resolve: async payload =>
-        await getEntityByKey('Circles', payload.createdEntityId, userId).then(
+      resolve: async (payload) =>
+        await getEntityByKey('Circles', payload.createdEntityId, payload.contextUserId).then(
           response => response.entity,
         ),
     },
   },
 
-  mutateAndGetPayload: async inputFields => createCircle(inputFields, userId),
+  mutateAndGetPayload: async (inputFields, context) => await createCircle(inputFields, context.user._id),
 });
 
 export default CreateCircleMutation;

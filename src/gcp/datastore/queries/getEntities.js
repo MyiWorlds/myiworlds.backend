@@ -15,7 +15,7 @@ export default async function getEntities(
   filters,
   numberOfResults,
   pageCursor,
-  viewerId,
+  contextUserId,
 ) {
   console.time('getEntities time to complete');
   let response = {
@@ -43,9 +43,9 @@ export default async function getEntities(
             entity[0] !== [] ||
             (entity[0].public && entity[0].public === true) ||
             entity[0].public === undefined ||
-            viewerId === entity[0].creator ||
-            (entity[0].viewers && entity[0].viewers.includes(viewerId)) ||
-            viewerId === 'SERVER'
+            contextUserId === entity[0].creator ||
+            (entity[0].viewers && entity[0].viewers.includes(contextUserId)) ||
+            contextUserId === 'SERVER'
           ) {
             response.entities.push(entity);
           }

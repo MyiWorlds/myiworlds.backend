@@ -5,18 +5,15 @@ import { GraphQLString, GraphQLList } from 'graphql';
 import CircleType from '../CircleType';
 import { getEntities } from '../../../../gcp/datastore/queries';
 
-// Pull from context
-const userId = 'davey';
-
 export const getCirclesByUserKey = {
   name: 'GetCirclesByUserKey',
   type: new GraphQLList(CircleType),
   args: {
     creator: { type: GraphQLString },
   },
-  resolve: async (query, { creator }) => {
+  resolve: async (query, { creator }, context) => {
     if (creator === undefined || creator === '' || creator === null) {
-      creator = creator || userId;
+      creator = creator || context.user._id;
     }
 
     return getEntities(
@@ -35,7 +32,7 @@ export const getCirclesByUserKey = {
       ],
       15,
       null,
-      userId,
+      context.user._id,
     ).then(response => response.entities);
   },
 };

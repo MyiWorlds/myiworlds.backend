@@ -1,7 +1,7 @@
 import datastoreClient from '../datastoreConnection';
 
 /* eslint-disable camelcase */
-export default async function getEntitiesByKeys(kind, _ids, viewerId) {
+export default async function getEntitiesByKeys(kind, _ids, contextUserId) {
   console.time('getEntitiesByKeys TTC: ');
   let response = {
     message: '',
@@ -42,9 +42,9 @@ export default async function getEntitiesByKeys(kind, _ids, viewerId) {
           });
         } else if (
           entity.public === true ||
-          viewerId === entity.creator ||
-          (entity.viewers && entity.viewers.includes(viewerId)) ||
-          entity._id === viewerId
+          contextUserId === entity.creator ||
+          (entity.viewers && entity.viewers.includes(contextUserId)) ||
+          entity._id === contextUserId
         ) {
           response.entities.push(entity);
         } else {
