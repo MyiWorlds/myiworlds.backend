@@ -66,6 +66,8 @@ export default async function buildCircle(inputFields) {
       public: indexedField,
       tags: indexedField,
       order: indexedField,
+      line: indexedField,
+      lines: indexedField,
 
       default: notIndexedField,
     };

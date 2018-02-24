@@ -34,6 +34,12 @@ class Context {
   }
 
   get user(): any {
+    if (!this.request.user) {
+      const guest = {
+        _id: 'GUEST'
+      }
+      return guest;
+    }
     return this.request.user
   }
   /*

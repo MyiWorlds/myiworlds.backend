@@ -8,21 +8,14 @@ import { getEntities } from '../../../../gcp/datastore/queries';
 export const getCirclesByUserKey = {
   name: 'GetCirclesByUserKey',
   type: new GraphQLList(CircleType),
-  args: {
-    creator: { type: GraphQLString },
-  },
-  resolve: async (query, { creator }, context) => {
-    if (creator === undefined || creator === '' || creator === null) {
-      creator = creator || context.user._id;
-    }
-
+  resolve: async (query, args, context) => {
     return getEntities(
       'Circles',
       [
         {
           property: 'creator',
           condition: '=',
-          value: creator.toLowerCase(),
+          value: context.user._id,
         },
         {
           property: 'dateUpdated',
