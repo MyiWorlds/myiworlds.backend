@@ -53,13 +53,13 @@ class Context {
    */
 
   userByKey = new DataLoader(keys =>
-    getEntitiesByKeys('Users', keys).then(
+    getEntitiesByKeys('Users', keys, this.user._id).then(
       response => response.entities,
     ),
   );
 
   circleByKey = new DataLoader(keys =>
-    getEntitiesByKeys('Circles', keys).then(
+    getEntitiesByKeys('Circles', keys, this.user._id).then(
       response => response.entities,
     ),
   );

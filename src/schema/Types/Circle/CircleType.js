@@ -76,10 +76,21 @@ const CircleType = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLString),
     },
     settings: {
-      type: CircleType,
-      resolve: async (circle, args, { circleByKey }) => {
-        if (circle.settings) {
-          return circleByKey.load(circle.settings);
+      description: 'This circle type will iteslf be a circle.lines, it will contain links to all the circles that build this circle settings',
+      type: new GraphQLList(CircleType),
+      resolve: (circle, args, { circleByKey }) => {
+        if (circle.settings && circle.settings.length > 0) {
+          return circleByKey.loadMany(circle.settings);
+        }
+        return null;
+      },
+    },
+    styles: {
+      description: 'This circle type will iteslf be a circle.lines, it will contain links to all the circles that build this circle styles',
+      type: new GraphQLList(CircleType),
+      resolve: (circle, args, { circleByKey }) => {
+        if (circle.styles && circle.styles.length > 0) {
+          return circleByKey.loadMany(circle.styles);
         }
         return null;
       },
@@ -89,15 +100,6 @@ const CircleType = new GraphQLObjectType({
       resolve: async (circle, args, { circleByKey }) => {
         if (circle.rating) {
           return circleByKey.load(circle.rating);
-        }
-        return null;
-      },
-    },
-    styles: {
-      type: CircleType,
-      resolve: async (circle, args, { circleByKey }) => {
-        if (circle.styles) {
-          return circleByKey.load(circle.styles);
         }
         return null;
       },
@@ -171,7 +173,7 @@ const CircleType = new GraphQLObjectType({
 
     // Circle content types below
     string: { type: GraphQLString },
-    blob: { type: GraphQLJSON },
+    object: { type: GraphQLJSON },
     number: { type: GraphQLInt },
     bigNumber: { type: GraphQLBigInt },
     boolean: { type: GraphQLBoolean },
