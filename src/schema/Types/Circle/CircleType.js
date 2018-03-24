@@ -26,7 +26,7 @@ import GraphQLJSON from 'graphql-type-json';
 import GraphQLBigInt from 'graphql-bigint';
 import { getEntityByKey } from '../../../gcp/datastore/queries';
 
-import { nodeInterface } from '../../Node';
+import { nodeInterface } from '../../node';
 
 import UserType from '../User/UserType';
 
