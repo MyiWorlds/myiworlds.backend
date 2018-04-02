@@ -10,6 +10,11 @@ import {
 import buildCircle from '../../../Circle/Mutations/functions/buildCircle';
 
 export default async function createUsername(inputFields, contextUserId) {
+  if (inputFields.username) {
+    return {
+      message: 'You already have username, you cannot create another',
+    };
+  }
   const entityToUpdate = [];
   const userId = contextUserId;
   // Make sure username is lowercase
@@ -37,7 +42,7 @@ export default async function createUsername(inputFields, contextUserId) {
 
   const getUser = await getEntityByKey(
     'Users',
-    inputFields._id,
+    contextUserId,
     contextUserId,
   ).then(response => response.entity);
 
@@ -138,7 +143,7 @@ export default async function createUsername(inputFields, contextUserId) {
       excludeFromIndexes: true,
     },
   ];
-  const newEntity = Object.assign(entityToUpdate, mergeCreated);
+  const newEntity = entityToUpdate.concat(mergeCreated);
 
   return updateEntity(newEntity, contextUserId);
 }

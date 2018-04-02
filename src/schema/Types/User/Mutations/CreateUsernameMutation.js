@@ -9,7 +9,6 @@ import createUsername from './functions/createUsername';
 const CreateUsernameMutation = mutationWithClientMutationId({
   name: 'createUsername',
   inputFields: {
-    _id: { type: new GraphQLNonNull(GraphQLString) },
     username: { type: new GraphQLNonNull(GraphQLString) },
     dateUpdated: { type: new GraphQLNonNull(GraphQLString) },
   },
