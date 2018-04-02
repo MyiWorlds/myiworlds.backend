@@ -19,7 +19,11 @@ export default async function getEntityByKey(kind, _id, contextUserId) {
           _id === contextUserId ||
           (result[0].kind === 'Users' && contextUserId === 'new-user'))) ||
       // For getting users
-      result[0].Users_id === contextUserId
+      result[0].Users_id === contextUserId ||
+      // Keep an eye out for this as it may be a security hole to see user data
+      // Main purpose is so you can view creators
+      // The only time a User is queries is by root (yourself) or from circle (CreatorType)
+      kind === 'Users'
     ) {
       response = {
         message: 'SUCCESS: getEntityByKey. Got it! Heres the entity',

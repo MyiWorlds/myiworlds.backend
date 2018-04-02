@@ -1,15 +1,15 @@
 /* @flow */
 /* eslint-disable import/prefer-default-export */
 
-import { GraphQLString, GraphQLList } from 'graphql';
+import { GraphQLList } from 'graphql';
 import CircleType from '../CircleType';
 import { getEntities } from '../../../../gcp/datastore/queries';
 
 export const getCirclesByUserKey = {
   name: 'GetCirclesByUserKey',
   type: new GraphQLList(CircleType),
-  resolve: async (query, args, context) => {
-    return getEntities(
+  resolve: async (query, args, context) =>
+    getEntities(
       'Circles',
       [
         {
@@ -26,6 +26,5 @@ export const getCirclesByUserKey = {
       15,
       null,
       context.user._id,
-    ).then(response => response.entities);
-  },
+    ).then(response => response.entities),
 };

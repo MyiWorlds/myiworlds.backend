@@ -21,6 +21,7 @@ export default async function getEntities(
   let response = {
     message: '',
     entities: [],
+    cursor: null,
   };
 
   try {
@@ -38,13 +39,13 @@ export default async function getEntities(
 
     await datastoreClient.runQuery(query).then(queryResults => {
       if (queryResults[0]) {
-        queryResults.forEach(entity => {
+        queryResults[0].forEach(entity => {
           if (
-            entity[0] !== [] ||
-            (entity[0].public && entity[0].public === true) ||
-            entity[0].public === undefined ||
-            contextUserId === entity[0].creator ||
-            (entity[0].viewers && entity[0].viewers.includes(contextUserId)) ||
+            entity !== [] ||
+            (entity.public && entity.public === true) ||
+            entity.public === undefined ||
+            contextUserId === entity.creator ||
+            (entity.viewers && entity.viewers.includes(contextUserId)) ||
             contextUserId === 'SERVER'
           ) {
             response.entities.push(entity);
@@ -53,8 +54,8 @@ export default async function getEntities(
       }
       response = {
         messsage: 'SUCCESS: getEntities got everything it could',
-        entities: response.entities[0],
-        cursor: response.entities[1],
+        entities: response.entities,
+        cursor: queryResults[1],
       };
     });
   } catch (error) {

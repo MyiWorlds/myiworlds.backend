@@ -28,7 +28,7 @@ import { getEntityByKey } from '../../../gcp/datastore/queries';
 
 import { nodeInterface } from '../../node';
 
-import UserType from '../User/UserType';
+import CreatorType from '../User/CreatorType';
 
 const CircleType = new GraphQLObjectType({
   name: 'Circle',
@@ -76,7 +76,8 @@ const CircleType = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLString),
     },
     settings: {
-      description: 'This circle type will iteslf be a circle.lines, it will contain links to all the circles that build this circle settings',
+      description:
+        'This circle type will iteslf be a circle.lines, it will contain links to all the circles that build this circle settings',
       type: new GraphQLList(CircleType),
       resolve: (circle, args, { circleByKey }) => {
         if (circle.settings && circle.settings.length > 0) {
@@ -86,7 +87,8 @@ const CircleType = new GraphQLObjectType({
       },
     },
     styles: {
-      description: 'This circle type will iteslf be a circle.lines, it will contain links to all the circles that build this circle styles',
+      description:
+        'This circle type will iteslf be a circle.lines, it will contain links to all the circles that build this circle styles',
       type: new GraphQLList(CircleType),
       resolve: (circle, args, { circleByKey }) => {
         if (circle.styles && circle.styles.length > 0) {
@@ -140,9 +142,10 @@ const CircleType = new GraphQLObjectType({
         return null;
       },
     },
+    // Throws error for containing unique named types
     // creator: {
     //   description: 'The User who created this piece of content',
-    //   type: UserType,
+    //   type: CreatorType,
     //   resolve: (circle, args, { userByKey }) => {
     //     if (circle.creator) {
     //       return userByKey.load(circle.creator);
@@ -151,13 +154,23 @@ const CircleType = new GraphQLObjectType({
     //   },
     // },
     creator: {
-      description: 'The User who created this piece of content',
-      type: UserType,
-      resolve: async (circle, args, context ) => {
-        return await getEntityByKey('Users', circle.creator, context.user._id)
-        .then(response => response.entity)
+      description:
+        'A publicly viewable profile of the User who created this piece of content',
+      type: CreatorType,
+      resolve: async (circle, args, context) =>
+        await getEntityByKey('Users', circle.creator, context.user._id).then(
+          response => response.entity,
+        ),
     },
-    },
+    // creator: {
+    //   description: 'The User who created this piece of content',
+    //   type: UserType,
+    //   resolve: async (circle, args, context) => await getEntityByKey(
+    //       'Users',
+    //       circle.creator,
+    //       context.user._id,
+    //     ).then(response => response.entity),
+    // },
     editors: {
       description: 'Users that can edit this circle',
       type: CircleType,

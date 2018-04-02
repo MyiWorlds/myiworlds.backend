@@ -13,7 +13,9 @@ import { nodeField, nodesField } from './node';
 import { getCircleBySlug } from './Types/Circle/Queries/GetCircleBySlug';
 import { getCirclesByUserKey } from './Types/Circle/Queries/GetCirclesByUserKey';
 import { getCircleByKey } from './Types/Circle/Queries/GetCircleByKey';
-import { user } from './Types/User/Queries/User';
+import { getCirclesByTags } from './Types/Circle/Queries/GetCirclesByTags';
+
+import { getUser } from './Types/User/Queries/GetUser';
 
 import createCircle from './Types/Circle/Mutations/CreateCircleMutation';
 import updateCircle from './Types/Circle/Mutations/UpdateCircleMutation';
@@ -23,7 +25,7 @@ import deleteCircle from './Types/Circle/Mutations/DeleteCircleMutation';
 import createUser from './Types/User/Mutations/CreateUserMutation';
 import updateUserPassword from './Types/User/Mutations/UpdateUserPasswordMutation';
 import updateEmailConfirmed from './Types/User/Mutations/UpdateEmailConfirmedMutation';
-import updateUsername from './Types/User/Mutations/UpdateUsernameMutation';
+import createUsername from './Types/User/Mutations/CreateUsernameMutation';
 import updateEmail from './Types/User/Mutations/UpdateEmailMutation';
 import updateUiEnabled from './Types/User/Mutations/UpdateUiEnabledMutation';
 import deleteUser from './Types/User/Mutations/DeleteUserMutation';
@@ -34,10 +36,13 @@ export default new GraphQLSchema({
     fields: {
       node: nodeField,
       nodes: nodesField,
-      user,
+
+      getUser,
+
       getCirclesByUserKey,
       getCircleBySlug,
       getCircleByKey,
+      getCirclesByTags,
     },
   }),
   mutation: new GraphQLObjectType({
@@ -51,7 +56,7 @@ export default new GraphQLSchema({
       createUser,
       updateUserPassword,
       updateEmailConfirmed,
-      updateUsername,
+      createUsername,
       updateEmail,
       deleteUser,
       updateUiEnabled,

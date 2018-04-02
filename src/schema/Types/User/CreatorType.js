@@ -11,30 +11,32 @@
 
 /* eslint-disable no-underscore-dangle */
 
-import {
-  GraphQLObjectType,
-  GraphQLBoolean,
-  GraphQLString,
-  GraphQLNonNull,
-  GraphQLID,
-
-} from 'graphql';
+import { GraphQLObjectType, GraphQLString } from 'graphql';
 import GraphQLBigInt from 'graphql-bigint';
 
 import { globalIdField } from 'graphql-relay';
 
 import CircleType from '../Circle/CircleType';
-import { nodeInterface } from '../../Node';
+import { nodeInterface } from '../../node';
 
 export default new GraphQLObjectType({
-  name: 'User',
-  description: 'user who can create and interact with circles.',
+  name: 'Creator',
+  description: 'The only part of a User that the public can all access.',
   interfaces: [nodeInterface],
 
   fields: () => ({
-    id: globalIdField('User', user => user._id),
+    id: globalIdField('Creator', user => user._id),
     username: { type: GraphQLString },
-    email: { type: new GraphQLNonNull(GraphQLString) },
+    profileMedia: {
+      description: 'The Users profile display pic',
+      type: CircleType,
+      resolve: (user, args, { circleByKey }) => {
+        if (user.profileMedia) {
+          return circleByKey.load(user.profileMedia);
+        }
+        return null;
+      },
+    },
     dateCreated: { type: GraphQLBigInt },
     dateUpdated: { type: GraphQLBigInt },
     level: {

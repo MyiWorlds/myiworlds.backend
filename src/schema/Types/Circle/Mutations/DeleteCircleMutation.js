@@ -41,7 +41,8 @@ const DeleteCircleMutation = mutationWithClientMutationId({
     },
   },
 
-  mutateAndGetPayload: async ({ _id }, context) => deleteEntity('Circles', _id, context.user._id),
+  mutateAndGetPayload: async ({ _id }, context) =>
+    deleteEntity('Circles', _id, context.user._id),
 });
 
 export default DeleteCircleMutation;

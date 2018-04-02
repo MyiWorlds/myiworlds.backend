@@ -12,11 +12,9 @@ import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { Strategy as FacebookStrategy } from 'passport-facebook';
 import { Strategy as TwitterStrategy } from 'passport-twitter';
 import uuid from 'uuid/v1';
-import db from './db';
 import datastoreClient from './gcp/datastore/datastoreConnection';
 
 import {
-  getEntityByKey,
   getEntities,
   createEntity,
   updateEntity,
@@ -26,7 +24,7 @@ import createUser from './schema/Types/User/Mutations/functions/createUser';
 passport.serializeUser((user, done) => {
   done(null, {
     _id: user._id,
-    // Might need to add a boolean for if the account was just created
+    profileMedia: user.profileMedia,
   });
 });
 
@@ -45,7 +43,7 @@ async function login(req, provider, profile, tokens) {
   }
 
   if (!user) {
-    const login = await getEntities(
+    const loginUser = await getEntities(
       'Logins',
       [
         {
@@ -64,10 +62,10 @@ async function login(req, provider, profile, tokens) {
       'SERVER',
     );
 
-    if (login && login.entities && login.entities.length > 0) {
+    if (loginUser && loginUser.entities && loginUser.entities.length > 0) {
       const key = await datastoreClient.key([
         'Users',
-        login.entities[0].creator,
+        loginUser.entities[0].creator,
       ]);
       [user] = await datastoreClient.get(key);
     }
@@ -82,6 +80,7 @@ async function login(req, provider, profile, tokens) {
     [user] = await createUser(
       {
         email: profile.emails[0].value,
+        profileMedia: profile.photos[0].value,
         dateCreated: Date.now(),
         dateUpdated: Date.now(),
       },
@@ -109,7 +108,7 @@ async function login(req, provider, profile, tokens) {
   );
 
   if (!logins.entities.length) {
-    const createLogin = await createEntity([
+    await createEntity([
       {
         name: '_id',
         value: `${provider}:${profile.id}`,
@@ -199,6 +198,7 @@ async function login(req, provider, profile, tokens) {
 
   return {
     _id: user._id,
+    profileMedia: user.profileMedia,
   };
 }
 

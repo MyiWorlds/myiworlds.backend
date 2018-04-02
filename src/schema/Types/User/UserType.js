@@ -17,7 +17,6 @@ import {
   GraphQLString,
   GraphQLNonNull,
   GraphQLID,
-
 } from 'graphql';
 import GraphQLBigInt from 'graphql-bigint';
 
@@ -35,6 +34,16 @@ export default new GraphQLObjectType({
     id: globalIdField('User', user => user._id),
     _id: { type: new GraphQLNonNull(GraphQLID) },
     username: { type: GraphQLString },
+    profileMedia: {
+      description: 'The Users profile display pic',
+      type: CircleType,
+      resolve: (user, args, { circleByKey }) => {
+        if (user.profileMedia) {
+          return circleByKey.load(user.profileMedia);
+        }
+        return null;
+      },
+    },
     email: { type: new GraphQLNonNull(GraphQLString) },
     emailConfirmed: { type: GraphQLBoolean },
     dateCreated: { type: GraphQLBigInt },

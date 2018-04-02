@@ -2,11 +2,12 @@ import { mutationWithClientMutationId } from 'graphql-relay';
 import { GraphQLString, GraphQLNonNull } from 'graphql';
 import { getEntityByKey } from '../../../../gcp/datastore/queries';
 import UserType from '../UserType';
-import updateUser from './functions/updateUser';
+import createUsername from './functions/createUsername';
 
-// This mutation will most likely only be called after visiting a page from email
-const UpdateUsernameMutation = mutationWithClientMutationId({
-  name: 'updateUsername',
+// This mutation will most likely only be called after visiting a page after account created
+// or if they try to create content and do not have it set
+const CreateUsernameMutation = mutationWithClientMutationId({
+  name: 'createUsername',
   inputFields: {
     _id: { type: new GraphQLNonNull(GraphQLString) },
     username: { type: new GraphQLNonNull(GraphQLString) },
@@ -21,9 +22,11 @@ const UpdateUsernameMutation = mutationWithClientMutationId({
     updatedUser: {
       type: UserType,
       resolve: async payload =>
-        getEntityByKey('Users', payload.updatedEntityId, payload.contextUserId).then(
-          response => response.entity,
-        ),
+        getEntityByKey(
+          'Users',
+          payload.updatedEntityId,
+          payload.contextUserId,
+        ).then(response => response.entity),
     },
     latestVersionOfUser: {
       type: UserType,
@@ -36,7 +39,8 @@ const UpdateUsernameMutation = mutationWithClientMutationId({
     },
   },
 
-  mutateAndGetPayload: async (inputFields, context) => updateUser(inputFields, context.user._id),
+  mutateAndGetPayload: async (inputFields, context) =>
+    createUsername(inputFields, context.user._id),
 });
 
-export default UpdateUsernameMutation;
+export default CreateUsernameMutation;

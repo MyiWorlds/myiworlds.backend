@@ -28,17 +28,16 @@ class Context {
   constructor(request: Request) {
     this.request = request;
     this.t = request.t;
-
   }
 
   get user(): any {
     if (!this.request.user) {
       const guest = {
-        _id: 'GUEST'
-      }
+        _id: 'GUEST',
+      };
       return guest;
     }
-    return this.request.user
+    return this.request.user;
   }
   /*
    * Data loaders to be used with GraphQL resolve() functions. For example:
