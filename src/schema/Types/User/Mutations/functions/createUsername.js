@@ -6,19 +6,15 @@ import {
   createEntities,
   getEntities,
 } from '../../../../../gcp/datastore/queries';
+import datastoreClient from '../../../../../gcp/datastore/datastoreConnection';
 
 import buildCircle from '../../../Circle/Mutations/functions/buildCircle';
 
 export default async function createUsername(inputFields, contextUserId) {
-  if (inputFields.username) {
-    return {
-      message: 'You already have username, you cannot create another',
-    };
-  }
+  inputFields.username = inputFields.username.toLowerCase();
   const entityToUpdate = [];
   const userId = contextUserId;
   // Make sure username is lowercase
-  inputFields.username = inputFields.username.toLowerCase();
 
   const checkUsernameDoesNotExist = await getEntities(
     'Users',
@@ -45,6 +41,12 @@ export default async function createUsername(inputFields, contextUserId) {
     contextUserId,
     contextUserId,
   ).then(response => response.entity);
+
+  if (getUser.username) {
+    return {
+      message: 'You already have username, you cannot create another',
+    };
+  }
 
   const homePublicId = await uuid();
   const homePrivateId = await uuid();

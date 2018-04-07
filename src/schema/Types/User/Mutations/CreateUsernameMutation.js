@@ -1,5 +1,6 @@
 import { mutationWithClientMutationId } from 'graphql-relay';
 import { GraphQLString, GraphQLNonNull } from 'graphql';
+import GraphQLBigInt from 'graphql-bigint';
 import { getEntityByKey } from '../../../../gcp/datastore/queries';
 import UserType from '../UserType';
 import createUsername from './functions/createUsername';
@@ -10,7 +11,7 @@ const CreateUsernameMutation = mutationWithClientMutationId({
   name: 'createUsername',
   inputFields: {
     username: { type: new GraphQLNonNull(GraphQLString) },
-    dateUpdated: { type: new GraphQLNonNull(GraphQLString) },
+    dateUpdated: { type: new GraphQLNonNull(GraphQLBigInt) },
   },
 
   outputFields: {
