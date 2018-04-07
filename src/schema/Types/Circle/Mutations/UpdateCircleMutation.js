@@ -43,6 +43,10 @@ const UpdateCircleMutation = mutationWithClientMutationId({
   },
 
   outputFields: {
+    status: {
+      type: GraphQLString,
+      resolve: payload => payload.status,
+    },
     message: {
       type: GraphQLString,
       resolve: payload => payload.message,
@@ -75,6 +79,7 @@ const UpdateCircleMutation = mutationWithClientMutationId({
     },
   },
 
-  mutateAndGetPayload: async (inputFields, context) => updateCircle(inputFields, context.user._id),
+  mutateAndGetPayload: async (inputFields, context) =>
+    updateCircle(inputFields, context.user._id),
 });
 export default UpdateCircleMutation;

@@ -44,20 +44,27 @@ const CreateCircleMutation = mutationWithClientMutationId({
   },
 
   outputFields: {
+    status: {
+      type: GraphQLString,
+      resolve: response => response.status,
+    },
     message: {
       type: GraphQLString,
       resolve: response => response.message,
     },
     createdCircle: {
       type: CircleType,
-      resolve: async (payload) =>
-        await getEntityByKey('Circles', payload.createdEntityId, payload.contextUserId).then(
-          response => response.entity,
-        ),
+      resolve: async payload =>
+        await getEntityByKey(
+          'Circles',
+          payload.createdEntityId,
+          payload.contextUserId,
+        ).then(response => response.entity),
     },
   },
 
-  mutateAndGetPayload: async (inputFields, context) => await createCircle(inputFields, context.user._id),
+  mutateAndGetPayload: async (inputFields, context) =>
+    await createCircle(inputFields, context.user._id),
 });
 
 export default CreateCircleMutation;

@@ -4,6 +4,7 @@ import { getEntityByKey } from '../../../../gcp/datastore/queries';
 import UserType from '../UserType';
 import updateUser from './functions/updateUser';
 
+// Currently passwords have been removed from users as only Google login allowed
 // This mutation will most likely only be called after visiting a page from email
 const UpdateUserPasswordMutation = mutationWithClientMutationId({
   name: 'updateUserPassword',
@@ -14,6 +15,10 @@ const UpdateUserPasswordMutation = mutationWithClientMutationId({
   },
 
   outputFields: {
+    status: {
+      type: GraphQLString,
+      resolve: payload => payload.status,
+    },
     message: {
       type: GraphQLString,
       resolve: payload => payload.message,
@@ -21,9 +26,11 @@ const UpdateUserPasswordMutation = mutationWithClientMutationId({
     updatedUser: {
       type: UserType,
       resolve: async payload =>
-        getEntityByKey('Users', payload.updatedEntityId, payload.contextUserId).then(
-          response => response.entity,
-        ),
+        getEntityByKey(
+          'Users',
+          payload.updatedEntityId,
+          payload.contextUserId,
+        ).then(response => response.entity),
     },
     latestVersionOfUser: {
       type: UserType,
@@ -36,7 +43,8 @@ const UpdateUserPasswordMutation = mutationWithClientMutationId({
     },
   },
 
-  mutateAndGetPayload: async (inputFields, context) => updateUser(inputFields, context.user._id),
+  mutateAndGetPayload: async (inputFields, context) =>
+    updateUser(inputFields, context.user._id),
 });
 
 export default UpdateUserPasswordMutation;

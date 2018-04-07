@@ -13,6 +13,10 @@ const UpdateEmailConfirmedMutation = mutationWithClientMutationId({
   },
 
   outputFields: {
+    status: {
+      type: GraphQLString,
+      resolve: payload => payload.status,
+    },
     message: {
       type: GraphQLString,
       resolve: payload => payload.message,
@@ -20,9 +24,11 @@ const UpdateEmailConfirmedMutation = mutationWithClientMutationId({
     updatedUser: {
       type: UserType,
       resolve: async payload =>
-        getEntityByKey('Users', payload.updatedEntityId, payload.contextUserId).then(
-          response => response.entity,
-        ),
+        getEntityByKey(
+          'Users',
+          payload.updatedEntityId,
+          payload.contextUserId,
+        ).then(response => response.entity),
     },
     latestVersionOfUser: {
       type: UserType,

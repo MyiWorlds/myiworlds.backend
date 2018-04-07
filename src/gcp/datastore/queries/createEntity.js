@@ -3,14 +3,13 @@ import datastoreClient from '../datastoreConnection';
 export default async function createEntity(entity, contextUserId) {
   console.time('Time to createEntity');
   let response = {
+    status: '',
     message: null,
     createdEntityId: null,
   };
-  let data = entity;
+  const data = entity;
   let kind = null;
   let dsKeyId = null;
-  let isDateCreated = false;
-  let isDateUpdated = false;
 
   try {
     entity.map(entityFeilds => {
@@ -24,34 +23,8 @@ export default async function createEntity(entity, contextUserId) {
         return kind;
       }
 
-      // if (
-      //   (entityFeilds.name === 'dateCreated' && entityFeilds.value === '') ||
-      //   entityFeilds.value === null ||
-      //   entityFeilds.value === undefined
-      // ) {
-      //   return (isDateCreated = true), (entityFeilds.value = Date.now());
-      // }
-
-      // if (
-      //   entityField.name === 'dateUpdated' &&
-      //   (entityField.value === '' || entityField.value === null || undefined)
-      // ) {
-      //   return (isDateUpdated = true), (entityFeilds.value = Date.now());
-      // }
-
       return null;
     });
-
-    // if (isDateCreated === false) {
-    //   entity
-    //     .find(entityFields.name === 'dateCreated')
-    //     .then(field => (field.value = Date.now()));
-    // }
-    // if (isDateUpdated === false) {
-    //   entity
-    //     .find(entityFields.name === 'dateUpdated')
-    //     .then(field => (field.value = Date.now()));
-    // }
 
     const key = datastoreClient.key([kind, dsKeyId]);
     const newEntity = {
@@ -62,12 +35,19 @@ export default async function createEntity(entity, contextUserId) {
     await datastoreClient.insert(newEntity);
 
     response = {
-      message: 'SUCCESS: createEntity',
+      status: 'SUCCESS',
+      message: 'Entity was created',
       createdEntityId: dsKeyId,
-      contextUserId: contextUserId,
+      contextUserId,
     };
   } catch (error) {
-    throw error;
+    console.log(error);
+    response = {
+      status: 'ERROR',
+      message: 'There was an error creating the Entity',
+      createdEntityId: dsKeyId,
+      contextUserId,
+    };
   }
   console.timeEnd('Time to createEntity');
   return response;

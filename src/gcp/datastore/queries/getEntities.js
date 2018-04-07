@@ -19,6 +19,7 @@ export default async function getEntities(
 ) {
   console.time('getEntities time to complete');
   let response = {
+    status: '',
     message: '',
     entities: [],
     cursor: null,
@@ -53,13 +54,21 @@ export default async function getEntities(
         });
       }
       response = {
-        messsage: 'SUCCESS: getEntities got everything it could',
+        status: 'SUCCESS',
+        messsage: 'Here is all the Entities I can provide you.',
         entities: response.entities,
         cursor: queryResults[1],
       };
     });
   } catch (error) {
-    throw error;
+    console.log(error);
+    response = {
+      status: 'ERROR',
+      messsage:
+        'Sorry, I had an error getting the Entities.  Please refresh and try again.',
+      entities: null,
+      cursor: null,
+    };
   }
   console.time('getEntities time to complete');
   return response;

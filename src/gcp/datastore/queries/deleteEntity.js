@@ -4,7 +4,8 @@ import getEntities from './getEntities';
 // Used for right after creation, until maybe after a few hours then it goes to create only.
 export default async function deleteEntity(kind, _id, contextUserId) {
   console.time('deleteEntity time to complete');
-  const response = {
+  let response = {
+    status: '',
     message: '',
     idToDelete: _id,
     numberOfClones: 0,
@@ -54,22 +55,37 @@ export default async function deleteEntity(kind, _id, contextUserId) {
         );
 
         if (delEntity[0].mutationResults) {
-          response.message =
-            'SUCCESS: deleteEntity worked.  I successfully deleted that and its clones for you';
-          response.wasDeleted = true;
+          response = {
+            status: 'SUCCESS',
+            message: 'I successfully deleted that and its clones for you',
+            wasDeleted: true,
+          };
         } else {
-          response.message =
-            'ERROR: deleteEntity failed. I had an error deleting that';
+          response = {
+            status: 'ERROR',
+            message:
+              'I had an error deleting that.  My function deleteEntity failed.',
+          };
         }
       } else {
-        response.message =
-          'PERMISSIONS_ERROR: deleteEntity Sorry, you must be the creator to delete this';
+        response = {
+          status: 'ERROR',
+          message:
+            'Sorry, I could not delete that. You must be the creator to delete this.',
+        };
       }
     } else {
-      response.message = 'ERROR: deleteEntity That no longer exists';
+      response = {
+        status: 'ERROR',
+        message: 'I could not delete that, it no longer exists.',
+      };
     }
   } catch (error) {
-    throw error;
+    console.log(error);
+    response = {
+      status: 'ERROR',
+      message: 'I had an error, please refresh and try again try again.',
+    };
   }
   console.timeEnd('deleteEntity time to complete');
   return response;

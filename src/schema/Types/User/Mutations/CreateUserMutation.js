@@ -15,6 +15,10 @@ const CreateUserMutation = mutationWithClientMutationId({
   },
 
   outputFields: {
+    status: {
+      type: GraphQLString,
+      resolve: response => response.status,
+    },
     message: {
       type: GraphQLString,
       resolve: response => response.message,

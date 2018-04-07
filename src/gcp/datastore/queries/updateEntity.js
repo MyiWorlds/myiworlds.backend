@@ -4,6 +4,7 @@ import cloneToNewEntity from './cloneToNewEntity';
 export default async function updateEntity(entityToUpdate, contextUserId) {
   console.time('updateEntity time to complete');
   let response = {
+    status: '',
     message: '',
     updatedEntityId: null,
     latestVersionOfEntity: null,
@@ -15,6 +16,7 @@ export default async function updateEntity(entityToUpdate, contextUserId) {
     if (entityFeilds.name === '_id') {
       if (!entityFeilds.value) {
         response = {
+          status: 'ERROR',
           message:
             'There should have been an auto generated ID given to me, there was nothing.  Something has gone wrong',
         };
@@ -48,20 +50,25 @@ export default async function updateEntity(entityToUpdate, contextUserId) {
         await datastoreClient.update(newEntity);
 
         response = {
-          message: 'SUCCESS: updateEntity updated that for you',
+          status: 'SUCCESS',
+          message: 'I successfully updated that for you',
           latestVersionOfEntity: createdCloneEntity,
           updatedEntityId: dsKey,
-          contextUserId: contextUserId,
+          contextUserId,
         };
       } else {
         response = {
-          message:
-            'PERMISSIONS: updateEntity Sorry, you must be the creator or an editor to update this',
+          status: 'ERROR',
+          message: 'Sorry, you must be the creator or an editor to update this',
         };
       }
     });
   } catch (error) {
-    throw error;
+    console.log(error);
+    response = {
+      status: 'ERROR',
+      message: 'Sorry, I had an error updating that.',
+    };
   }
 
   console.timeEnd('updateEntity time to complete');

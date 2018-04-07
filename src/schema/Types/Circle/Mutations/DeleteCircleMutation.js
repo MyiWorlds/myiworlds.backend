@@ -7,8 +7,6 @@ import {
 } from 'graphql';
 import { deleteEntity } from '../../../../gcp/datastore/queries';
 
-const userId = 'davey';
-
 const DeleteCircleMutation = mutationWithClientMutationId({
   name: 'deleteCircle',
 
@@ -19,6 +17,10 @@ const DeleteCircleMutation = mutationWithClientMutationId({
   },
 
   outputFields: {
+    status: {
+      type: GraphQLString,
+      resolve: response => response.status,
+    },
     message: {
       type: GraphQLString,
       resolve: response => response.message,

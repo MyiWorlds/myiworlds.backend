@@ -14,6 +14,10 @@ const UpdateUiEnabledMutation = mutationWithClientMutationId({
   },
 
   outputFields: {
+    status: {
+      type: GraphQLString,
+      resolve: payload => payload.status,
+    },
     message: {
       type: GraphQLString,
       resolve: payload => payload.message,
@@ -36,7 +40,8 @@ const UpdateUiEnabledMutation = mutationWithClientMutationId({
     },
   },
 
-  mutateAndGetPayload: async (inputFields, context) => updateUser(inputFields, context.user._id),
+  mutateAndGetPayload: async (inputFields, context) =>
+    updateUser(inputFields, context.user._id),
 });
 
 export default UpdateUiEnabledMutation;

@@ -4,6 +4,7 @@ import datastoreClient from '../datastoreConnection';
 export default async function getEntitiesByKeys(kind, _ids, contextUserId) {
   console.time('getEntitiesByKeys TTC: ');
   let response = {
+    status: '',
     message: '',
     _ids: [],
     entities: [],
@@ -50,16 +51,24 @@ export default async function getEntitiesByKeys(kind, _ids, contextUserId) {
         } else {
           response.entities.push({
             _id: entity._id,
-            type: 'PERMISSION_ERROR',
-            title: 'Not enough permissions',
+            type: 'PERMISSION_DENIED',
+            title:
+              'Sorry, you do not have the required permissions to see this.',
           });
         }
       });
-
-      response.message = 'SUCCESS: getEntities returned everything it had';
+      response = {
+        status: 'SUCCESS',
+        message: 'Here is all the Entities I can provide you.',
+      };
     }
   } catch (error) {
-    throw error;
+    console.log(error);
+    response = {
+      status: 'ERROR',
+      message:
+        'Sorry, I had an error getting the Entities.  Please refresh and try again.',
+    };
   }
   console.timeEnd('getEntitiesByKeys TTC: ');
   return response;

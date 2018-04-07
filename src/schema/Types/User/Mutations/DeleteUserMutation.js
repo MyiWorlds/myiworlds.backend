@@ -17,6 +17,10 @@ const DeleteUserMutation = mutationWithClientMutationId({
   },
 
   outputFields: {
+    status: {
+      type: GraphQLString,
+      resolve: response => response.status,
+    },
     message: {
       type: GraphQLString,
       resolve: response => response.message,
@@ -39,7 +43,8 @@ const DeleteUserMutation = mutationWithClientMutationId({
     },
   },
 
-  mutateAndGetPayload: async ({ _id }, context) => deleteEntity('Users', _id, context.user._id),
+  mutateAndGetPayload: async ({ _id }, context) =>
+    deleteEntity('Users', _id, context.user._id),
 });
 
 export default DeleteUserMutation;

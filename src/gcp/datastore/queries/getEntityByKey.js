@@ -4,6 +4,7 @@ export default async function getEntityByKey(kind, _id, contextUserId) {
   console.time('getEntityByKey time to complete: ');
 
   let response = {
+    status: '',
     message: '',
     entity: null,
   };
@@ -26,17 +27,27 @@ export default async function getEntityByKey(kind, _id, contextUserId) {
       kind === 'Users'
     ) {
       response = {
-        message: 'SUCCESS: getEntityByKey. Got it! Heres the entity',
+        status: 'SUCCESS',
+        message: 'Here is the Entity you requested.',
         entity: result[0],
       };
     } else {
       response = {
-        message:
-          'PERMISSIONS_ERROR: getEntityByKey was not able to return anything.  The creator has not allowed you to see this',
+        status: 'SUCCESS',
+        message: 'The creator has not allowed you to see this.',
+        entity: {
+          _id,
+          type: 'PERMISSION_DENIED',
+          title: 'Sorry, you do not have the required permissions to see this.',
+        },
       };
     }
   } catch (error) {
-    throw error;
+    console.log(error);
+    response = {
+      status: 'ERROR',
+      message: 'I had an error trying to get that Entity.',
+    };
   }
   console.timeEnd('getEntityByKey time to complete: ');
   return response;

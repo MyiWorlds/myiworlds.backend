@@ -14,6 +14,10 @@ const UpdateEmailMutation = mutationWithClientMutationId({
   },
 
   outputFields: {
+    status: {
+      type: GraphQLString,
+      resolve: payload => payload.status,
+    },
     message: {
       type: GraphQLString,
       resolve: payload => payload.message,
@@ -21,9 +25,11 @@ const UpdateEmailMutation = mutationWithClientMutationId({
     updatedUser: {
       type: UserType,
       resolve: async payload =>
-        getEntityByKey('Users', payload.updatedEntityId, payload.contextUserId).then(
-          response => response.entity,
-        ),
+        getEntityByKey(
+          'Users',
+          payload.updatedEntityId,
+          payload.contextUserId,
+        ).then(response => response.entity),
     },
     latestVersionOfUser: {
       type: UserType,
@@ -36,7 +42,8 @@ const UpdateEmailMutation = mutationWithClientMutationId({
     },
   },
 
-  mutateAndGetPayload: async (inputFields, context) => updateUser(inputFields, context.user._id),
+  mutateAndGetPayload: async (inputFields, context) =>
+    updateUser(inputFields, context.user._id),
 });
 
 export default UpdateEmailMutation;
