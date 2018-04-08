@@ -25,14 +25,14 @@ export default new GraphQLObjectType({
   interfaces: [nodeInterface],
 
   fields: () => ({
-    id: globalIdField('Creator', user => user._id),
+    id: globalIdField('Creator', creator => creator._id),
     username: { type: GraphQLString },
     profileMedia: {
       description: 'The Users profile display pic',
       type: CircleType,
-      resolve: (user, args, { circleByKey }) => {
-        if (user.profileMedia) {
-          return circleByKey.load(user.profileMedia);
+      resolve: (creator, args, { circleByKey }) => {
+        if (creator.profileMedia) {
+          return circleByKey.load(creator.profileMedia);
         }
         return null;
       },
@@ -41,9 +41,9 @@ export default new GraphQLObjectType({
     dateUpdated: { type: GraphQLBigInt },
     level: {
       type: CircleType,
-      resolve: (user, args, { circleByKey }) => {
-        if (user.level) {
-          return circleByKey.load(user.level);
+      resolve: (creator, args, { circleByKey }) => {
+        if (creator.level) {
+          return circleByKey.load(creator.level);
         }
         return null;
       },
@@ -51,40 +51,40 @@ export default new GraphQLObjectType({
     rating: {
       description: 'The Users rating',
       type: CircleType,
-      resolve: (user, args, { circleByKey }) => {
-        if (user.rating) {
-          return circleByKey.load(user.rating);
+      resolve: (creator, args, { circleByKey }) => {
+        if (creator.rating) {
+          return circleByKey.load(creator.rating);
         }
         return null;
       },
     },
     ui: {
-      description: 'How the user wants to view the system.',
+      description: 'How the creator wants to view the system.',
       type: CircleType,
-      resolve: (user, args, { circleByKey }) => {
-        if (user.ui) {
-          return circleByKey.load(user.ui);
+      resolve: (creator, args, { circleByKey }) => {
+        if (creator.ui) {
+          return circleByKey.load(creator.ui);
         }
         return null;
       },
     },
     homePublic: {
-      description: 'The home circle of myiworlds.com/user/userName.',
+      description: 'The home circle of myiworlds.com/creator/userName.',
       type: CircleType,
-      resolve: (user, args, { circleByKey }) => {
-        if (user.homePublic) {
-          return circleByKey.load(user.homePublic);
+      resolve: (creator, args, { circleByKey }) => {
+        if (creator.homePublic) {
+          return circleByKey.load(creator.homePublic);
         }
         return null;
       },
     },
     following: {
       description:
-        'All circles created by this user, they are not stored on the user object but its own node in the graph to prevent overloading this.  No concepts of friends, just things you follow, it could be a friends page though.',
+        'All circles created by this creator, they are not stored on the creator object but its own node in the graph to prevent overloading this.  No concepts of friends, just things you follow, it could be a friends page though.',
       type: CircleType,
-      resolve: (user, args, { circleByKey }) => {
-        if (user.following) {
-          return circleByKey.load(user.following);
+      resolve: (creator, args, { circleByKey }) => {
+        if (creator.following) {
+          return circleByKey.load(creator.following);
         }
         return null;
       },

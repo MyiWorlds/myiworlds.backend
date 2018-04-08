@@ -142,35 +142,17 @@ const CircleType = new GraphQLObjectType({
         return null;
       },
     },
-    // Throws error for containing unique named types
-    // creator: {
-    //   description: 'The User who created this piece of content',
-    //   type: CreatorType,
-    //   resolve: (circle, args, { userByKey }) => {
-    //     if (circle.creator) {
-    //       return userByKey.load(circle.creator);
-    //     }
-    //     return null;
-    //   },
-    // },
     creator: {
       description:
         'A publicly viewable profile of the User who created this piece of content',
       type: CreatorType,
-      resolve: async (circle, args, context) =>
-        await getEntityByKey('Users', circle.creator, context.user._id).then(
-          response => response.entity,
-        ),
+      resolve: async (circle, args, { circleByKey }) => {
+        if (circle.creator) {
+          return circleByKey.load(circle.creator);
+        }
+        return null;
+      },
     },
-    // creator: {
-    //   description: 'The User who created this piece of content',
-    //   type: UserType,
-    //   resolve: async (circle, args, context) => await getEntityByKey(
-    //       'Users',
-    //       circle.creator,
-    //       context.user._id,
-    //     ).then(response => response.entity),
-    // },
     editors: {
       description: 'Users that can edit this circle',
       type: CircleType,

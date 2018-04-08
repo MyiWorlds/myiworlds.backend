@@ -60,6 +60,7 @@ export default async function getEntitiesByKeys(kind, _ids, contextUserId) {
       response = {
         status: 'SUCCESS',
         message: 'Here is all the Entities I can provide you.',
+        entities: response.entities,
       };
     }
   } catch (error) {
@@ -68,6 +69,7 @@ export default async function getEntitiesByKeys(kind, _ids, contextUserId) {
       status: 'ERROR',
       message:
         'Sorry, I had an error getting the Entities.  Please refresh and try again.',
+      entities: [],
     };
   }
   console.timeEnd('getEntitiesByKeys TTC: ');
