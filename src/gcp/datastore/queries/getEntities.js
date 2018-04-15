@@ -41,15 +41,28 @@ export default async function getEntities(
     await datastoreClient.runQuery(query).then(queryResults => {
       if (queryResults[0]) {
         queryResults[0].forEach(entity => {
-          if (
-            entity !== [] ||
-            (entity.public && entity.public === true) ||
-            entity.public === undefined ||
-            contextUserId === entity.creator ||
-            (entity.viewers && entity.viewers.includes(contextUserId)) ||
-            contextUserId === 'SERVER'
-          ) {
-            response.entities.push(entity);
+          if (entity) {
+            const circleIsPublic = entity.public && entity.public === true;
+            const userIsCreator = contextUserId === entity.creator;
+            const userCanView =
+              entity.viewers && entity.viewers.includes(contextUserId);
+            const userIsServer = contextUserId === 'SERVER';
+
+            if (
+              circleIsPublic ||
+              userIsCreator ||
+              userCanView ||
+              userIsServer
+            ) {
+              response.entities.push(entity);
+            } else {
+              response.entities.push({
+                _id: entity._id,
+                type: 'PERMISSION_DENIED',
+                title:
+                  'Sorry, you do not have the required permissions to see this.',
+              });
+            }
           }
         });
       }
