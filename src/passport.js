@@ -86,6 +86,8 @@ async function login(req, provider, profile, tokens) {
       },
       generatedUserId,
     ).then(() => datastoreClient.get(userKey));
+  } else {
+    generatedUserId = user._id;
   }
 
   const logins = await getEntities(
