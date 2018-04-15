@@ -24,7 +24,6 @@ import {
 } from 'graphql-relay';
 import GraphQLJSON from 'graphql-type-json';
 import GraphQLBigInt from 'graphql-bigint';
-import { getEntityByKey } from '../../../gcp/datastore/queries';
 
 import { nodeInterface } from '../../node';
 
@@ -41,6 +40,16 @@ const CircleType = new GraphQLObjectType({
       description:
         'A unique id used to instantly locate this inside the database',
       type: GraphQLID,
+    },
+    parent: {
+      description: 'The circle this was originally cloned from',
+      type: CircleType,
+      resolve: async (circle, args, { circleByKey }) => {
+        if (circle.parent) {
+          return circleByKey.load(circle.parent);
+        }
+        return null;
+      },
     },
     ui: {
       description:
@@ -134,10 +143,10 @@ const CircleType = new GraphQLObjectType({
     },
     viewers: {
       description: 'Who is allowed to see this node?',
-      type: CircleType,
-      resolve: async (circle, args, { circleByKey }) => {
-        if (circle.viewers) {
-          return circleByKey.load(circle.viewers);
+      type: new GraphQLList(CircleType),
+      resolve: (circle, args, { circleByKey }) => {
+        if (circle.viewers && circle.viewers.length > 0) {
+          return circleByKey.loadMany(circle.viewers);
         }
         return null;
       },
@@ -155,10 +164,10 @@ const CircleType = new GraphQLObjectType({
     },
     editors: {
       description: 'Users that can edit this circle',
-      type: CircleType,
-      resolve: async (circle, args, { circleByKey }) => {
-        if (circle.editors) {
-          return circleByKey.load(circle.editors);
+      type: new GraphQLList(CircleType),
+      resolve: (circle, args, { circleByKey }) => {
+        if (circle.editors && circle.editors.length > 0) {
+          return circleByKey.loadMany(circle.editors);
         }
         return null;
       },

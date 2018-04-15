@@ -15,6 +15,7 @@ const CreateCircleMutation = mutationWithClientMutationId({
   name: 'createCircle',
   inputFields: {
     _id: { type: GraphQLString },
+    parent: { type: GraphQLString },
     slug: { type: GraphQLString },
     slugName: { type: GraphQLString },
     public: { type: GraphQLBoolean },
@@ -25,6 +26,7 @@ const CreateCircleMutation = mutationWithClientMutationId({
     settings: { type: new GraphQLList(GraphQLString) },
     styles: { type: new GraphQLList(GraphQLString) },
     tags: { type: new GraphQLList(GraphQLString) },
+    rating: { type: GraphQLString },
     title: { type: GraphQLString },
     subtitle: { type: GraphQLString },
     description: { type: GraphQLString },

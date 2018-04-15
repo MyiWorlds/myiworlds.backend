@@ -11,7 +11,7 @@
 
 /* eslint-disable no-underscore-dangle */
 
-import { GraphQLObjectType, GraphQLString } from 'graphql';
+import { GraphQLObjectType, GraphQLString, GraphQLID } from 'graphql';
 import GraphQLBigInt from 'graphql-bigint';
 
 import { globalIdField } from 'graphql-relay';
@@ -26,6 +26,11 @@ export default new GraphQLObjectType({
 
   fields: () => ({
     id: globalIdField('Creator', creator => creator._id),
+    _id: {
+      description:
+        'A unique id used to instantly locate this inside the database',
+      type: GraphQLID,
+    },
     username: { type: GraphQLString },
     profileMedia: {
       description: 'The Users profile display pic',
