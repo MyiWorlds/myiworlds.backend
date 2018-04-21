@@ -37,13 +37,14 @@ export default async function createUser(inputFields, contextUserId) {
   } else {
     userId = await uuid();
   }
+
   const profileMediaId = await uuid();
   const levelId = await uuid();
   const balanceId = await uuid();
   const ratingId = await uuid();
   const uiId = await uuid();
   const followingId = await uuid();
-  const notificationsId = await uuid();
+  const inboxId = await uuid();
 
   // Note no longer using Passwords for accounts. Purley social based
   // hashedPassword was removed from this project, need to find a way to do this now
@@ -138,13 +139,13 @@ export default async function createUser(inputFields, contextUserId) {
     userId,
   );
 
-  const notifications = await buildCircle(
+  const inbox = await buildCircle(
     {
-      _id: notificationsId,
+      _id: inboxId,
       kind: 'Circles',
       public: true,
       type: 'LINESMANY',
-      title: 'Notifications',
+      title: 'Inbox',
       creator: 'myiworlds',
       dateCreated: Date.now(),
       dateUpdated: Date.now(),
@@ -162,7 +163,7 @@ export default async function createUser(inputFields, contextUserId) {
     rating,
     ui,
     following,
-    notifications,
+    inbox,
   ]);
 
   const userToCreate = [
@@ -228,8 +229,8 @@ export default async function createUser(inputFields, contextUserId) {
       excludeFromIndexes: true,
     },
     {
-      name: 'notifications',
-      value: notificationsId,
+      name: 'inbox',
+      value: inboxId,
       excludeFromIndexes: true,
     },
   ];

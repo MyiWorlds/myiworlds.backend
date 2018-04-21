@@ -14,13 +14,13 @@ import { assignType, getType } from '../utils';
 
 export const { nodeInterface, nodeField, nodesField } = nodeDefinitions(
   (globalId, context) => {
-    const { type, _id } = fromGlobalId(globalId);
+    const { type, id } = fromGlobalId(globalId);
 
     switch (type) {
       case 'User':
-        return context.userByKey.load(_id).then(assignType('User'));
+        return context.userByKey.load(id).then(assignType('User'));
       case 'Circle':
-        return context.circleByKey.load(_id).then(assignType('Circle'));
+        return context.circleByKey.load(id).then(assignType('Circle'));
       default:
         return null;
     }

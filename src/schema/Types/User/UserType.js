@@ -119,12 +119,12 @@ export default new GraphQLObjectType({
         return null;
       },
     },
-    notifications: {
-      description: 'Contains a list of notifications.',
+    inbox: {
+      description: 'Your personal inbox.',
       type: CircleType,
       resolve: (user, args, { circleByKey }) => {
-        if (user.notifications) {
-          return circleByKey.load(user.notifications);
+        if (user.inbox) {
+          return circleByKey.load(user.inbox);
         }
         return null;
       },
