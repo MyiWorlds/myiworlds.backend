@@ -1,27 +1,27 @@
 indexes:
 
-- kind: Circles-clones
+- kind: circles-clones
   ancestor: no
   properties:
-  - name: Circle_id
+  - name: circleUid
   - name: dateUpdated
     direction: desc
 
-- kind: Circles
+- kind: circles
   ancestor: no
   properties:
-  - name: _id
+  - name: uid
   - name: dateUpdated
     direction: desc
 
-- kind: Circles
+- kind: circles
   ancestor: no
   properties:
-  - name: _id
+  - name: uid
   - name: dateUpdated
     direction: asc
 
-- kind: Circles
+- kind: circles
   ancestor: no
   properties:
   - name: creator

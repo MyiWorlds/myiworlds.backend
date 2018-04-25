@@ -11,7 +11,7 @@ const DeleteUserMutation = mutationWithClientMutationId({
   name: 'deleteUser',
 
   inputFields: {
-    _id: {
+    uid: {
       type: new GraphQLNonNull(GraphQLString),
     },
   },
@@ -25,9 +25,9 @@ const DeleteUserMutation = mutationWithClientMutationId({
       type: GraphQLString,
       resolve: response => response.message,
     },
-    idToDelete: {
+    uidToDelete: {
       type: GraphQLString,
-      resolve: response => response.idToDelete,
+      resolve: response => response.uidToDelete,
     },
     wasDeleted: {
       type: GraphQLBoolean,
@@ -43,8 +43,8 @@ const DeleteUserMutation = mutationWithClientMutationId({
     },
   },
 
-  mutateAndGetPayload: async ({ _id }, context) =>
-    deleteEntity('Users', _id, context.user._id),
+  mutateAndGetPayload: async ({ uid }, context) =>
+    deleteEntity('users', uid, context.user.uid),
 });
 
 export default DeleteUserMutation;

@@ -17,9 +17,10 @@ export const getCircleBySlug = {
     if (searchSlug === undefined || searchSlug === '' || searchSlug === null) {
       searchSlug = '/';
     }
+    const userUid = context.user && context.user.uid ? context.user.uid : null;
 
     return getEntities(
-      'Circles',
+      'circles',
       [
         {
           property: 'slug',
@@ -29,7 +30,7 @@ export const getCircleBySlug = {
       ],
       1,
       null,
-      context.user._id,
+      userUid,
     ).then(response => response.entities[0]);
   },
 };

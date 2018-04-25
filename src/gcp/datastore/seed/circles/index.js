@@ -1,19 +1,29 @@
 const circles = [
   {
-    _id: '',
+    uid: '',
+    slug: '/',
+    creator: 'myiworlds',
+    type: 'STRING',
+    string: 'Home page',
+  },
+  {
+    uid: '',
     slug: 'privacy-policy',
+    creator: 'myiworlds',
     type: 'STRING',
     string: 'Some privacy policy text',
   },
   {
-    _id: '',
+    uid: '',
     slug: 'terms-of-service',
+    creator: 'myiworlds',
     type: 'STRING',
     string: 'Some Terms of Service text',
   },
   {
-    _id: '',
+    uid: '',
     slug: '/',
+    creator: 'myiworlds',
     type: 'STRING',
     string: 'Some privacy policy text',
   },

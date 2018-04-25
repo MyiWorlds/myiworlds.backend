@@ -3,11 +3,13 @@ import {
   getEntityByKey,
 } from '../../../../../gcp/datastore/queries';
 
-export default async function updateUser(inputFields, contextUserId) {
+export default async function updateUser(inputFields, contextUserUid) {
   const entityToUpdate = [];
-  const getUser = await getEntityByKey('Users', inputFields._id, contextUserId).then(
-    response => response.entity,
-  );
+  const getUser = await getEntityByKey(
+    'users',
+    inputFields.uid,
+    contextUserUid,
+  ).then(response => response.entity);
 
   let hash;
   // hashedPassword was removed from this project, need to find a way to do this now
@@ -50,7 +52,7 @@ export default async function updateUser(inputFields, contextUserId) {
     }
 
     const entityData = {
-      _id: indexedField,
+      uid: indexedField,
       username: indexedField,
       email: indexedField,
       password: inputFields.password ? encryptPassword : notIndexedField,
@@ -69,5 +71,5 @@ export default async function updateUser(inputFields, contextUserId) {
     entityToUpdate.push(object);
   });
 
-  return updateEntity(entityToUpdate, contextUserId);
+  return updateEntity(entityToUpdate, contextUserUid);
 }

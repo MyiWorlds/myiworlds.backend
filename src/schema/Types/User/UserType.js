@@ -31,8 +31,8 @@ export default new GraphQLObjectType({
   interfaces: [nodeInterface],
 
   fields: () => ({
-    id: globalIdField('User', user => user._id),
-    _id: { type: new GraphQLNonNull(GraphQLID) },
+    id: globalIdField('User', user => user.uid),
+    uid: { type: new GraphQLNonNull(GraphQLID) },
     username: { type: GraphQLString },
     profileMedia: {
       description: 'The Users profile display pic',

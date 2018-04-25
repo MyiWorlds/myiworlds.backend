@@ -15,7 +15,7 @@ export default async function getEntities(
   filters,
   numberOfResults,
   pageCursor,
-  contextUserId,
+  contextUserUid,
 ) {
   console.time('getEntities time to complete');
   let response = {
@@ -43,10 +43,10 @@ export default async function getEntities(
         queryResults[0].forEach(entity => {
           if (entity) {
             const circleIsPublic = entity.public && entity.public === true;
-            const userIsCreator = contextUserId === entity.creator;
+            const userIsCreator = contextUserUid === entity.creator;
             const userCanView =
-              entity.viewers && entity.viewers.includes(contextUserId);
-            const userIsServer = contextUserId === 'SERVER';
+              entity.viewers && entity.viewers.includes(contextUserUid);
+            const userIsServer = contextUserUid === 'SERVER';
 
             if (
               circleIsPublic ||
@@ -57,7 +57,7 @@ export default async function getEntities(
               response.entities.push(entity);
             } else {
               response.entities.push({
-                _id: entity._id,
+                uid: entity.uid,
                 type: 'PERMISSION_DENIED',
                 title:
                   'Sorry, you do not have the required permissions to see this.',

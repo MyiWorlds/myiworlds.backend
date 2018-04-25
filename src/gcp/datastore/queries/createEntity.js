@@ -1,22 +1,22 @@
 import datastoreClient from '../datastoreConnection';
 
-export default async function createEntity(entity, contextUserId) {
+export default async function createEntity(entity, contextUserUid) {
   console.time('Time to createEntity');
   let response = {
     status: '',
     message: null,
-    createdEntityId: null,
+    createdEntityUid: null,
   };
   const data = entity;
   let kind = null;
-  let dsKeyId = null;
+  let uid = null;
 
   try {
     entity.map(entityFeilds => {
-      if (entityFeilds.name === '_id') {
-        dsKeyId = entityFeilds.value;
+      if (entityFeilds.name === 'uid') {
+        uid = entityFeilds.value;
 
-        return dsKeyId;
+        return uid;
       }
       if (entityFeilds.name === 'kind') {
         kind = entityFeilds.value;
@@ -26,7 +26,8 @@ export default async function createEntity(entity, contextUserId) {
       return null;
     });
 
-    const key = datastoreClient.key([kind, dsKeyId]);
+    // You must pass key in to create an entity
+    const key = datastoreClient.key([kind, uid]);
     const newEntity = {
       key,
       data,
@@ -37,16 +38,16 @@ export default async function createEntity(entity, contextUserId) {
     response = {
       status: 'SUCCESS',
       message: 'Entity was created',
-      createdEntityId: dsKeyId,
-      contextUserId,
+      createdEntityUid: uid,
+      contextUserUid,
     };
   } catch (error) {
     console.log(error);
     response = {
       status: 'ERROR',
       message: 'There was an error creating the Entity',
-      createdEntityId: dsKeyId,
-      contextUserId,
+      createdEntityUid: uid,
+      contextUserUid,
     };
   }
   console.timeEnd('Time to createEntity');

@@ -8,7 +8,7 @@ import updateUser from './functions/updateUser';
 const UpdateEmailMutation = mutationWithClientMutationId({
   name: 'updateEmail',
   inputFields: {
-    _id: { type: new GraphQLNonNull(GraphQLString) },
+    uid: { type: new GraphQLNonNull(GraphQLString) },
     email: { type: new GraphQLNonNull(GraphQLString) },
     dateUpdated: { type: new GraphQLNonNull(GraphQLString) },
   },
@@ -26,9 +26,9 @@ const UpdateEmailMutation = mutationWithClientMutationId({
       type: UserType,
       resolve: async payload =>
         getEntityByKey(
-          'Users',
-          payload.updatedEntityId,
-          payload.contextUserId,
+          'users',
+          payload.updatedEntityUid,
+          payload.contextUserUid,
         ).then(response => response.entity),
     },
     latestVersionOfUser: {
@@ -36,14 +36,14 @@ const UpdateEmailMutation = mutationWithClientMutationId({
       resolve: async payload =>
         getEntityByKey(
           payload.latestVersionOfEntity.newKind,
-          payload.latestVersionOfEntity.new_id,
-          payload.contextUserId,
+          payload.latestVersionOfEntity.newUid,
+          payload.contextUserUid,
         ).then(response => response.entity),
     },
   },
 
   mutateAndGetPayload: async (inputFields, context) =>
-    updateUser(inputFields, context.user._id),
+    updateUser(inputFields, context.user.uid),
 });
 
 export default UpdateEmailMutation;

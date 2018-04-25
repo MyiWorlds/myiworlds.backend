@@ -9,8 +9,12 @@ export const getCircleByKey = {
   name: 'GetCircleByKey',
   type: CircleType,
   args: {
-    _id: { type: GraphQLString },
+    uid: { type: GraphQLString },
   },
-  resolve: async (query, { _id }, context) =>
-    getEntityByKey('Circles', _id, context.user._id).then(response => response.entity),
+  resolve: async (query, { uid }, context) => {
+    const userUid = context.user && context.user.uid ? context.user.uid : null;
+    return getEntityByKey('circles', uid, userUid).then(
+      response => response.entity,
+    );
+  },
 };

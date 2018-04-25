@@ -9,7 +9,7 @@ import updateUser from './functions/updateUser';
 const UpdateUserPasswordMutation = mutationWithClientMutationId({
   name: 'updateUserPassword',
   inputFields: {
-    _id: { type: new GraphQLNonNull(GraphQLString) },
+    uid: { type: new GraphQLNonNull(GraphQLString) },
     password: { type: new GraphQLNonNull(GraphQLString) },
     dateUpdated: { type: new GraphQLNonNull(GraphQLString) },
   },
@@ -27,9 +27,9 @@ const UpdateUserPasswordMutation = mutationWithClientMutationId({
       type: UserType,
       resolve: async payload =>
         getEntityByKey(
-          'Users',
-          payload.updatedEntityId,
-          payload.contextUserId,
+          'users',
+          payload.updatedEntityUid,
+          payload.contextUserUid,
         ).then(response => response.entity),
     },
     latestVersionOfUser: {
@@ -37,14 +37,14 @@ const UpdateUserPasswordMutation = mutationWithClientMutationId({
       resolve: async payload =>
         getEntityByKey(
           payload.latestVersionOfEntity.newKind,
-          payload.latestVersionOfEntity.new_id,
-          payload.contextUserId,
+          payload.latestVersionOfEntity.newUid,
+          payload.contextUserUid,
         ).then(response => response.entity),
     },
   },
 
   mutateAndGetPayload: async (inputFields, context) =>
-    updateUser(inputFields, context.user._id),
+    updateUser(inputFields, context.user.uid),
 });
 
 export default UpdateUserPasswordMutation;

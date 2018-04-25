@@ -8,13 +8,13 @@ export default async function cloneToNewEntity(entityObject) {
   let response = null;
   const entity = [];
   const nameValues = Object.entries(entityObject);
-  const new_id = uuid();
-  const moveOld_id = {
-    name: `${entityObject.kind}_id`,
-    value: entityObject._id,
+  const newUid = uuid();
+  const moveOldUid = {
+    name: `${entityObject.kind}Uid`,
+    value: entityObject.uid,
   };
 
-  entity.push(moveOld_id);
+  entity.push(moveOldUid);
 
   function buildEntityWithNewIndexes() {
     nameValues.forEach(nameValueArray => {
@@ -24,12 +24,12 @@ export default async function cloneToNewEntity(entityObject) {
 
       builtEntityPropertyObject.name = name;
 
-      if (nameValueArray[0] !== '_id' && nameValueArray[0] !== 'dateUpdated') {
+      if (nameValueArray[0] !== 'uid' && nameValueArray[0] !== 'dateUpdated') {
         builtEntityPropertyObject.excludeFromIndexes = true;
       }
 
-      if (nameValueArray[0] === '_id') {
-        builtEntityPropertyObject.value = new_id;
+      if (nameValueArray[0] === 'uid') {
+        builtEntityPropertyObject.value = newUid;
       } else {
         builtEntityPropertyObject.value = value;
       }
@@ -38,7 +38,7 @@ export default async function cloneToNewEntity(entityObject) {
     });
   }
   try {
-    const key = datastoreClient.key([newKind, new_id]);
+    const key = datastoreClient.key([newKind, newUid]);
     const data = entity;
     const newEntity = {
       key,
@@ -50,7 +50,7 @@ export default async function cloneToNewEntity(entityObject) {
     await datastoreClient.save(newEntity);
 
     response = {
-      new_id,
+      newUid,
       newKind,
     };
   } catch (error) {

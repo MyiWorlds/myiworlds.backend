@@ -23,7 +23,7 @@ import createUser from './schema/Types/User/Mutations/functions/createUser';
 
 passport.serializeUser((user, done) => {
   done(null, {
-    _id: user._id,
+    uid: user.uid,
     profileMedia: user.profileMedia,
   });
 });
@@ -37,14 +37,14 @@ passport.deserializeUser((user, done) => {
 async function login(req, provider, profile, tokens) {
   let user;
 
-  if (req.user && req.user._id) {
-    const key = await datastoreClient.key(['Users', req.user._id]);
-    [user] = await datastoreClient.get(key);
+  if (req.user && req.user.uid) {
+    const entityKey = await datastoreClient.key(['users', req.user.uid]);
+    [user] = await datastoreClient.get(entityKey);
   }
 
   if (!user) {
     const loginUser = await getEntities(
-      'Logins',
+      'logins',
       [
         {
           property: 'provider',
@@ -63,20 +63,20 @@ async function login(req, provider, profile, tokens) {
     );
 
     if (loginUser && loginUser.entities && loginUser.entities.length > 0) {
-      const key = await datastoreClient.key([
-        'Users',
+      const entityKey = await datastoreClient.key([
+        'users',
         loginUser.entities[0].creator,
       ]);
-      [user] = await datastoreClient.get(key);
+      [user] = await datastoreClient.get(entityKey);
     }
   }
 
-  let generatedUserId;
+  let generatedUserUid;
 
   if (!user) {
-    generatedUserId = uuid();
+    generatedUserUid = uuid();
 
-    const userKey = await datastoreClient.key(['Users', generatedUserId]);
+    const entityKey = await datastoreClient.key(['users', generatedUserUid]);
     [user] = await createUser(
       {
         email: profile.emails[0].value,
@@ -84,45 +84,45 @@ async function login(req, provider, profile, tokens) {
         dateCreated: Date.now(),
         dateUpdated: Date.now(),
       },
-      generatedUserId,
-    ).then(() => datastoreClient.get(userKey));
+      generatedUserUid,
+    ).then(() => datastoreClient.get(entityKey));
   } else {
-    generatedUserId = user._id;
+    generatedUserUid = user.uid;
   }
 
   const logins = await getEntities(
-    'Logins',
+    'logins',
     [
       {
-        property: '_id',
+        property: 'uid',
         condition: '=',
         value: `${provider}:${profile.id}`,
       },
       {
         property: 'creator',
         condition: '=',
-        value: user._id,
+        value: user.uid,
       },
     ],
     1,
     null,
-    generatedUserId,
+    generatedUserUid,
   );
 
   if (!logins.entities.length) {
     await createEntity([
       {
-        name: '_id',
+        name: 'uid',
         value: `${provider}:${profile.id}`,
       },
       {
         name: 'kind',
-        value: 'Logins',
+        value: 'logins',
         excludeFromIndexes: true,
       },
       {
         name: 'creator',
-        value: generatedUserId,
+        value: generatedUserUid,
       },
       {
         name: 'provider',
@@ -155,17 +155,17 @@ async function login(req, provider, profile, tokens) {
     await updateEntity(
       [
         {
-          name: '_id',
+          name: 'uid',
           value: `${provider}:${profile.id}`,
         },
         {
           name: 'kind',
-          value: 'Logins',
+          value: 'logins',
           excludeFromIndexes: true,
         },
         {
           name: 'creator',
-          value: user._id,
+          value: user.uid,
         },
         {
           name: 'profile',
@@ -194,12 +194,12 @@ async function login(req, provider, profile, tokens) {
           value: Date.now(),
         },
       ],
-      user._id,
+      user.uid,
     );
   }
 
   return {
-    _id: user._id,
+    uid: user.uid,
     profileMedia: user.profileMedia,
   };
 }

@@ -6,7 +6,9 @@ import {
   GraphQLInt,
   GraphQLList,
 } from 'graphql';
+import GraphQLBigInt from 'graphql-bigint';
 import GraphQLJSON from 'graphql-type-json';
+
 import { getEntityByKey } from '../../../../gcp/datastore/queries';
 import CircleType from '../CircleType';
 import createCircle from './functions/createCircle';
@@ -14,7 +16,7 @@ import createCircle from './functions/createCircle';
 const CreateCircleMutation = mutationWithClientMutationId({
   name: 'createCircle',
   inputFields: {
-    _id: { type: GraphQLString },
+    uid: { type: GraphQLString },
     parent: { type: GraphQLString },
     slug: { type: GraphQLString },
     slugName: { type: GraphQLString },
@@ -34,8 +36,8 @@ const CreateCircleMutation = mutationWithClientMutationId({
     icon: { type: GraphQLString },
     creator: { type: new GraphQLNonNull(GraphQLString) },
     editors: { type: new GraphQLList(GraphQLString) },
-    dateCreated: { type: GraphQLString },
-    dateUpdated: { type: GraphQLString },
+    dateCreated: { type: GraphQLBigInt },
+    dateUpdated: { type: GraphQLBigInt },
     string: { type: GraphQLString },
     object: { type: GraphQLJSON },
     number: { type: GraphQLInt },
@@ -58,15 +60,15 @@ const CreateCircleMutation = mutationWithClientMutationId({
       type: CircleType,
       resolve: async payload =>
         await getEntityByKey(
-          'Circles',
-          payload.createdEntityId,
-          payload.contextUserId,
+          'circles',
+          payload.createdEntityUid,
+          payload.contextUserUid,
         ).then(response => response.entity),
     },
   },
 
   mutateAndGetPayload: async (inputFields, context) =>
-    await createCircle(inputFields, context.user._id),
+    await createCircle(inputFields, context.user.uid),
 });
 
 export default CreateCircleMutation;

@@ -7,7 +7,7 @@ import updateCircle from './functions/updateCircle';
 const UpdateCirclePasswordMutation = mutationWithClientMutationId({
   name: 'updateCirclePassword',
   inputFields: {
-    _id: { type: new GraphQLNonNull(GraphQLString) },
+    uid: { type: new GraphQLNonNull(GraphQLString) },
     password: { type: GraphQLString },
     dateUpdated: { type: new GraphQLNonNull(GraphQLString) },
   },
@@ -24,11 +24,11 @@ const UpdateCirclePasswordMutation = mutationWithClientMutationId({
     updatedCircle: {
       type: CircleType,
       resolve: async payload => {
-        if (payload.updatedEntityId) {
+        if (payload.updatedEntityUid) {
           return getEntityByKey(
-            'Circles',
-            payload.updatedEntityId,
-            payload.contextUserId,
+            'circles',
+            payload.updatedEntityUid,
+            payload.contextUserUid,
           ).then(response => response.entity);
         }
         return null;
@@ -40,8 +40,8 @@ const UpdateCirclePasswordMutation = mutationWithClientMutationId({
         if (payload.latestVersionOfEntity) {
           return getEntityByKey(
             payload.latestVersionOfEntity.newKind,
-            payload.latestVersionOfEntity.new_id,
-            payload.contextUserId,
+            payload.latestVersionOfEntity.newUid,
+            payload.contextUserUid,
           ).then(response => response.entity);
         }
         return null;
@@ -50,7 +50,7 @@ const UpdateCirclePasswordMutation = mutationWithClientMutationId({
   },
 
   mutateAndGetPayload: async (inputFields, context) =>
-    updateCircle(inputFields, context.user._id),
+    updateCircle(inputFields, context.user.uid),
 });
 
 export default UpdateCirclePasswordMutation;

@@ -27,9 +27,9 @@ const CreateUsernameMutation = mutationWithClientMutationId({
       type: UserType,
       resolve: async payload =>
         getEntityByKey(
-          'Users',
-          payload.updatedEntityId,
-          payload.contextUserId,
+          'users',
+          payload.updatedEntityUid,
+          payload.contextUserUid,
         ).then(response => response.entity),
     },
     latestVersionOfUser: {
@@ -37,14 +37,14 @@ const CreateUsernameMutation = mutationWithClientMutationId({
       resolve: async payload =>
         getEntityByKey(
           payload.latestVersionOfEntity.newKind,
-          payload.latestVersionOfEntity.new_id,
-          payload.contextUserId,
+          payload.latestVersionOfEntity.newUid,
+          payload.contextUserUid,
         ).then(response => response.entity),
     },
   },
 
   mutateAndGetPayload: async (inputFields, context) =>
-    createUsername(inputFields, context.user._id),
+    createUsername(inputFields, context.user.uid),
 });
 
 export default CreateUsernameMutation;

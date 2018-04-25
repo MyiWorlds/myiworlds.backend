@@ -3,11 +3,11 @@ import {
   getEntityByKey,
 } from '../../../../../gcp/datastore/queries';
 
-export default async function updateCircle(inputFields, userId) {
+export default async function updateCircle(inputFields, userUid) {
   // Have a feeling this should be a || instead of &&
   if (
-    userId !== inputFields.creator &&
-    (inputFields.editors && inputFields.editors.includes(userId) === false)
+    userUid !== inputFields.creator &&
+    (inputFields.editors && inputFields.editors.includes(userUid) === false)
   ) {
     return {
       message: 'Sorry, you must be the creator.',
@@ -16,27 +16,25 @@ export default async function updateCircle(inputFields, userId) {
 
   const entityToUpdate = [];
 
-  const getCircle = await getEntityByKey(
-    'Circles',
-    inputFields._id,
-    userId,
-  ).then(response => response.entity);
+  const circle = await getEntityByKey('circles', inputFields.uid, userUid).then(
+    response => response.entity,
+  );
 
-  if (getCircle === undefined) {
+  if (circle === undefined) {
     const response = {
-      message: 'The id you gave me no longer exists',
+      message: 'The uid you gave me no longer exists',
     };
     return response;
   }
 
   // hashedPassword was removed from this project, need to find a way to do this now
   let hash;
-  if (inputFields.password && getCircle.creator === userId) {
+  if (inputFields.password && circle.creator === userUid) {
     hash = inputFields.password;
     // hash = await passwordHash(inputFields.password);
     // hash = Buffer.from(hash).toString('base64');
   }
-  if (inputFields.password && getCircle.creator !== userId) {
+  if (inputFields.password && circle.creator !== userUid) {
     const response = {
       message: 'You must be the creator to edit the password',
     };
@@ -60,7 +58,7 @@ export default async function updateCircle(inputFields, userId) {
         value:
           inputFields[name] !== undefined || null
             ? inputFields[name]
-            : getCircle[name],
+            : circle[name],
       };
     }
 
@@ -70,13 +68,13 @@ export default async function updateCircle(inputFields, userId) {
         value:
           inputFields[name] !== undefined || null
             ? inputFields[name]
-            : getCircle[name],
+            : circle[name],
         excludeFromIndexes: true,
       };
     }
 
     const entityData = {
-      _id: indexedField,
+      uid: indexedField,
       type: indexedField,
       creator: indexedField,
       password: inputFields.password ? encryptPassword : notIndexedField,
@@ -95,12 +93,12 @@ export default async function updateCircle(inputFields, userId) {
     return field;
   }
 
-  const entityToBuild = Object.assign({}, getCircle, inputFields);
+  const entityToBuild = Object.assign({}, circle, inputFields);
 
   Object.keys(entityToBuild).forEach(prop => {
     const object = buildField(prop);
     entityToUpdate.push(object);
   });
 
-  return updateEntity(entityToUpdate, userId);
+  return updateEntity(entityToUpdate, userUid);
 }

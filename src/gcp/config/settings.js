@@ -16,7 +16,7 @@ if (process.env.BROWSER) {
 }
 
 export default {
-  // Havn't found a need to keey project_id seperate as
+  // Havn't found a need to key project_id seperate as
   // just using keyFilename is main usecase
   // project_id: projectViewerServiceKey.project_id,
 

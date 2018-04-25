@@ -22,10 +22,10 @@ export default async function buildCircle(inputFields) {
       };
     }
 
-    function customIdLogic() {
+    function customUidLogic() {
       if (
-        !inputFields._id ||
-        (inputFields._id === '' || inputFields._id === null)
+        !inputFields.uid ||
+        (inputFields.uid === '' || inputFields.uid === null)
       ) {
         field = {
           name,
@@ -55,7 +55,7 @@ export default async function buildCircle(inputFields) {
     }
 
     const entityData = {
-      _id: customIdLogic,
+      uid: customUidLogic,
       type: indexedField,
       creator: indexedField,
       editors: indexedField,
@@ -79,7 +79,7 @@ export default async function buildCircle(inputFields) {
   const requiredFields = [
     {
       name: 'kind',
-      value: 'Circles',
+      value: 'circles',
       excludeFromIndexes: true,
     },
   ];

@@ -13,12 +13,7 @@ import type { request as Request } from 'express';
 import type { t as Translator } from 'i18next';
 import { getEntitiesByKeys } from './gcp/datastore/queries';
 
-// import db from './db';
-// import { mapTo, mapToMany, mapToValues } from './utils';
 import { UnauthorizedError } from './errors';
-
-// Get from context
-// const userId = 'davey';
 
 class Context {
   request: Request;
@@ -32,33 +27,29 @@ class Context {
 
   get user(): any {
     if (!this.request.user) {
-      const guest = {
-        _id: 'GUEST',
-      };
-      return guest;
+      return null;
     }
     return this.request.user;
   }
   /*
-   * Data loaders to be used with GraphQL resolve() functions. For example:
-   *
-   *   resolve(post: any, args: any, { userById }: Context) {
-   *     return userById.load(post.author_id);
-   *   }
-   *
+   * Data loaders to be used with GraphQL resolve() functions.
    * For more information visit https://github.com/facebook/dataloader
    */
 
   userByKey = new DataLoader(keys =>
-    getEntitiesByKeys('Users', keys, this.user._id).then(
-      response => response.entities,
-    ),
+    getEntitiesByKeys(
+      'users',
+      keys,
+      this.user && this.user.uid ? this.user.uid : null,
+    ).then(response => response.entities),
   );
 
   circleByKey = new DataLoader(keys =>
-    getEntitiesByKeys('Circles', keys, this.user._id).then(
-      response => response.entities,
-    ),
+    getEntitiesByKeys(
+      'circles',
+      keys,
+      this.user && this.user.uid ? this.user.uid : null,
+    ).then(response => response.entities),
   );
 
   /*

@@ -6,10 +6,9 @@ import {
 } from '../../../../../gcp/datastore/queries';
 import buildCircle from '../../../Circle/Mutations/functions/buildCircle';
 
-export default async function createUser(inputFields, contextUserId) {
-  // Going to be moving it to its own Kind
+export default async function createUser(inputFields, contextUserUid) {
   const checkEmailDoesNotExist = await getEntities(
-    'Users',
+    'users',
     [
       {
         property: 'email',
@@ -29,22 +28,20 @@ export default async function createUser(inputFields, contextUserId) {
   }
 
   // Generate IDs for the entities we are going to create
-  // For testing userId is set, this should be generated
-  // const userId = 'davey';
-  let userId;
-  if (contextUserId) {
-    userId = contextUserId;
+  let userUid;
+  if (contextUserUid) {
+    userUid = contextUserUid;
   } else {
-    userId = await uuid();
+    userUid = await uuid();
   }
 
-  const profileMediaId = await uuid();
-  const levelId = await uuid();
-  const balanceId = await uuid();
-  const ratingId = await uuid();
-  const uiId = await uuid();
-  const followingId = await uuid();
-  const inboxId = await uuid();
+  const profileMediaUid = await uuid();
+  const levelUid = await uuid();
+  const balanceuid = await uuid();
+  const ratingUid = await uuid();
+  const uiUid = await uuid();
+  const followingUid = await uuid();
+  const inboxUid = await uuid();
 
   // Note no longer using Passwords for accounts. Purley social based
   // hashedPassword was removed from this project, need to find a way to do this now
@@ -53,21 +50,19 @@ export default async function createUser(inputFields, contextUserId) {
   // hashedPassword = Buffer.from(hashedPassword).toString('base64');
 
   const profileMedia = await buildCircle({
-    _id: profileMediaId,
-    kind: 'Circles',
+    uid: profileMediaUid,
     public: true,
     type: 'IMAGE',
     title: 'My Profile Media',
     creator: 'myiworlds',
-    editors: [userId],
+    editors: [userUid],
     dateCreated: Date.now(),
     dateUpdated: Date.now(),
     string: inputFields.profileMedia,
   });
 
   const level = await buildCircle({
-    _id: levelId,
-    kind: 'Circles',
+    uid: levelUid,
     public: true,
     type: 'NUMBER_LINESMANY',
     title: 'Account level',
@@ -77,83 +72,63 @@ export default async function createUser(inputFields, contextUserId) {
     number: 0,
   });
 
-  const balance = await buildCircle(
-    {
-      _id: balanceId,
-      kind: 'Circles',
-      public: false,
-      type: 'NUMBER_LINESMANY',
-      title: 'Account Balance',
-      creator: 'myiworlds',
-      dateCreated: Date.now(),
-      dateUpdated: Date.now(),
-      viewers: [userId],
-    },
-    userId,
-  );
+  const balance = await buildCircle({
+    uid: balanceuid,
+    public: false,
+    type: 'NUMBER_LINESMANY',
+    title: 'Account Balance',
+    creator: 'myiworlds',
+    dateCreated: Date.now(),
+    dateUpdated: Date.now(),
+    viewers: [userUid],
+  });
 
-  const rating = await buildCircle(
-    {
-      _id: ratingId,
-      kind: 'Circles',
-      public: true,
-      type: 'NUMBER_LINESMANY',
-      title: 'Rating',
-      creator: 'myiworlds',
-      dateCreated: Date.now(),
-      dateUpdated: Date.now(),
-      number: 0,
-    },
-    userId,
-  );
+  const rating = await buildCircle({
+    uid: ratingUid,
+    public: true,
+    type: 'NUMBER_LINESMANY',
+    title: 'Rating',
+    creator: 'myiworlds',
+    dateCreated: Date.now(),
+    dateUpdated: Date.now(),
+    number: 0,
+  });
 
-  const ui = await buildCircle(
-    {
-      _id: uiId,
-      kind: 'Circles',
-      public: true,
-      type: 'LINES',
-      title: 'User Interface',
-      creator: 'myiworlds',
-      dateCreated: Date.now(),
-      dateUpdated: Date.now(),
-      viewers: [userId],
-      editors: [userId],
-    },
-    userId,
-  );
+  const ui = await buildCircle({
+    uid: uiUid,
+    public: true,
+    type: 'LINES',
+    title: 'User Interface',
+    creator: 'myiworlds',
+    dateCreated: Date.now(),
+    dateUpdated: Date.now(),
+    viewers: [userUid],
+    editors: [userUid],
+  });
 
-  const following = await buildCircle(
-    {
-      _id: followingId,
-      kind: 'Circles',
-      public: true,
-      type: 'LINESMANY',
-      title: 'Following',
-      creator: 'myiworlds',
-      dateCreated: Date.now(),
-      dateUpdated: Date.now(),
-      viewers: [userId],
-      editors: [userId],
-    },
-    userId,
-  );
+  const following = await buildCircle({
+    uid: followingUid,
+    public: true,
+    type: 'LINESMANY',
+    title: 'Following',
+    creator: 'myiworlds',
+    dateCreated: Date.now(),
+    dateUpdated: Date.now(),
+    viewers: [userUid],
+    editors: [userUid],
+  });
 
-  const inbox = await buildCircle(
-    {
-      _id: inboxId,
-      kind: 'Circles',
-      public: true,
-      type: 'LINESMANY',
-      title: 'Inbox',
-      creator: 'myiworlds',
-      dateCreated: Date.now(),
-      dateUpdated: Date.now(),
-      viewers: [userId],
-      editors: [userId],
-    },
-    userId,
-  );
+  const inbox = await buildCircle({
+    uid: inboxUid,
+    public: true,
+    type: 'LINESMANY',
+    title: 'Inbox',
+    creator: 'myiworlds',
+    dateCreated: Date.now(),
+    dateUpdated: Date.now(),
+    viewers: [userUid],
+    editors: [userUid],
+  });
 
   // Create the default fields each user requires
   await createEntities([
@@ -168,17 +143,17 @@ export default async function createUser(inputFields, contextUserId) {
 
   const userToCreate = [
     {
-      name: '_id',
-      value: userId,
+      name: 'uid',
+      value: userUid,
     },
     {
       name: 'kind',
-      value: 'Users',
+      value: 'users',
       excludeFromIndexes: true,
     },
     {
       name: 'profileMedia',
-      value: profileMediaId,
+      value: profileMediaUid,
       excludeFromIndexes: true,
     },
     {
@@ -200,17 +175,17 @@ export default async function createUser(inputFields, contextUserId) {
     },
     {
       name: 'level',
-      value: levelId,
+      value: levelUid,
       excludeFromIndexes: true,
     },
     {
       name: 'balance',
-      value: balanceId,
+      value: balanceuid,
       excludeFromIndexes: true,
     },
     {
       name: 'rating',
-      value: ratingId,
+      value: ratingUid,
       excludeFromIndexes: true,
     },
     {
@@ -220,20 +195,20 @@ export default async function createUser(inputFields, contextUserId) {
     },
     {
       name: 'ui',
-      value: uiId,
+      value: uiUid,
       excludeFromIndexes: true,
     },
     {
       name: 'following',
-      value: followingId,
+      value: followingUid,
       excludeFromIndexes: true,
     },
     {
       name: 'inbox',
-      value: inboxId,
+      value: inboxUid,
       excludeFromIndexes: true,
     },
   ];
 
-  return createEntity(userToCreate, contextUserId);
+  return createEntity(userToCreate, userUid);
 }

@@ -35,8 +35,8 @@ const CircleType = new GraphQLObjectType({
   interfaces: [nodeInterface],
 
   fields: () => ({
-    id: globalIdField('Circle', circle => circle._id),
-    _id: {
+    id: globalIdField('Circle', circle => circle.uid),
+    uid: {
       description:
         'A unique id used to instantly locate this inside the database',
       type: GraphQLID,

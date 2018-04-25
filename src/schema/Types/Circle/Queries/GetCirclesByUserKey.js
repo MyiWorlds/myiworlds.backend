@@ -8,14 +8,20 @@ import { getEntities } from '../../../../gcp/datastore/queries';
 export const getCirclesByUserKey = {
   name: 'GetCirclesByUserKey',
   type: new GraphQLList(CircleType),
-  resolve: async (query, args, context) =>
-    getEntities(
-      'Circles',
+  resolve: async (query, args, context) => {
+    const userUid = context.user && context.user.uid ? context.user.uid : null;
+
+    if (!userUid) {
+      return null;
+    }
+
+    return getEntities(
+      'circles',
       [
         {
           property: 'creator',
           condition: '=',
-          value: context.user._id,
+          value: userUid,
         },
         {
           property: 'dateUpdated',
@@ -25,6 +31,7 @@ export const getCirclesByUserKey = {
       ],
       15,
       null,
-      context.user._id,
-    ).then(response => response.entities),
+      userUid,
+    ).then(response => response.entities);
+  },
 };

@@ -24,12 +24,14 @@ export const getCirclesByTags = {
       value: tag,
     }));
 
+    const userUid = context.user && context.user.uid ? context.user.uid : null;
+
     return getEntities(
-      'Circles',
+      'circles',
       tagSearch,
       numberOfResults,
       null,
-      context.user._id,
+      userUid,
     ).then(response => response.entities);
   },
 };

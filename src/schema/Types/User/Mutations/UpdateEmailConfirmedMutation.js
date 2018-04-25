@@ -8,7 +8,7 @@ import updateUser from './functions/updateUser';
 const UpdateEmailConfirmedMutation = mutationWithClientMutationId({
   name: 'updateEmailConfirmed',
   inputFields: {
-    _id: { type: new GraphQLNonNull(GraphQLString) },
+    uid: { type: new GraphQLNonNull(GraphQLString) },
     dateUpdated: { type: new GraphQLNonNull(GraphQLString) },
   },
 
@@ -25,9 +25,9 @@ const UpdateEmailConfirmedMutation = mutationWithClientMutationId({
       type: UserType,
       resolve: async payload =>
         getEntityByKey(
-          'Users',
-          payload.updatedEntityId,
-          payload.contextUserId,
+          'users',
+          payload.updatedEntityUid,
+          payload.contextUserUid,
         ).then(response => response.entity),
     },
     latestVersionOfUser: {
@@ -35,8 +35,8 @@ const UpdateEmailConfirmedMutation = mutationWithClientMutationId({
       resolve: async payload =>
         getEntityByKey(
           payload.latestVersionOfEntity.newKind,
-          payload.latestVersionOfEntity.new_id,
-          payload.contextUserId,
+          payload.latestVersionOfEntity.newUid,
+          payload.contextUserUid,
         ).then(response => response.entity),
     },
   },
@@ -45,7 +45,7 @@ const UpdateEmailConfirmedMutation = mutationWithClientMutationId({
     const updatedInputFields = Object.assign(inputFields, {
       emailConfirmed: true,
     });
-    return updateUser(updatedInputFields, context.user._id);
+    return updateUser(updatedInputFields, context.user.uid);
   },
 });
 export default UpdateEmailConfirmedMutation;

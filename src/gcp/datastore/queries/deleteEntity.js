@@ -2,39 +2,39 @@ import datastoreClient from '../datastoreConnection';
 import getEntities from './getEntities';
 
 // Used for right after creation, until maybe after a few hours then it goes to create only.
-export default async function deleteEntity(kind, _id, contextUserId) {
+export default async function deleteEntity(kind, uid, contextUserUid) {
   console.time('deleteEntity time to complete');
   let response = {
     status: '',
     message: '',
-    idToDelete: _id,
+    uidToDelete: uid,
     numberOfClones: 0,
     clonesDeleted: false,
     wasDeleted: false,
   };
   const checkIfExists = await datastoreClient.get(
-    datastoreClient.key([kind, _id]),
+    datastoreClient.key([kind, uid]),
   );
 
   try {
     if (checkIfExists[0] !== undefined) {
       if (
-        contextUserId === checkIfExists[0].creator ||
-        contextUserId === checkIfExists[0]._id
+        contextUserUid === checkIfExists[0].creator ||
+        contextUserUid === checkIfExists[0].uid
       ) {
         const clones = await getEntities(
           `${kind}-clones`,
           [
             {
-              property: `${kind}_id`,
+              property: `${kind}uid`,
               condition: '=',
-              value: _id,
+              value: uid,
             },
           ],
           // Might have to make if there is more after 999999 send another query/delete request
           999999,
           null,
-          contextUserId,
+          contextUserUid,
         );
 
         if (clones.entities && clones.entities.length > 0) {
@@ -51,7 +51,7 @@ export default async function deleteEntity(kind, _id, contextUserId) {
         }
 
         const delEntity = await datastoreClient.delete(
-          datastoreClient.key([kind, _id]),
+          datastoreClient.key([kind, uid]),
         );
 
         if (delEntity[0].mutationResults) {

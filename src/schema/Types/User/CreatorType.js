@@ -25,8 +25,8 @@ export default new GraphQLObjectType({
   interfaces: [nodeInterface],
 
   fields: () => ({
-    id: globalIdField('Creator', creator => creator._id),
-    _id: {
+    id: globalIdField('Creator', creator => creator.uid),
+    uid: {
       description:
         'A unique id used to instantly locate this inside the database',
       type: GraphQLID,

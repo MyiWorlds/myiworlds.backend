@@ -29,7 +29,7 @@
       "type": "chrome",
       "request": "launch",
       "url": "http://localhost:3000",
-      "webRoot": "C:\\Projects\\myiworlds\\myiworlds.frontend\\src"
+      "webRoot": "C:\\Projects\\myiworlds\\apollo-staring\\src"
     }
   ],
   "compounds": [

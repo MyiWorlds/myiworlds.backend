@@ -11,7 +11,7 @@ const DeleteCircleMutation = mutationWithClientMutationId({
   name: 'deleteCircle',
 
   inputFields: {
-    _id: {
+    uid: {
       type: new GraphQLNonNull(GraphQLString),
     },
   },
@@ -25,9 +25,9 @@ const DeleteCircleMutation = mutationWithClientMutationId({
       type: GraphQLString,
       resolve: response => response.message,
     },
-    idToDelete: {
+    uidToDelete: {
       type: GraphQLString,
-      resolve: response => response.idToDelete,
+      resolve: response => response.uidToDelete,
     },
     wasDeleted: {
       type: GraphQLBoolean,
@@ -43,8 +43,8 @@ const DeleteCircleMutation = mutationWithClientMutationId({
     },
   },
 
-  mutateAndGetPayload: async ({ _id }, context) =>
-    deleteEntity('Circles', _id, context.user._id),
+  mutateAndGetPayload: async ({ uid }, context) =>
+    deleteEntity('circles', uid, context.user.uid),
 });
 
 export default DeleteCircleMutation;

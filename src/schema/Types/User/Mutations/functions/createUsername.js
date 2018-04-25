@@ -6,18 +6,17 @@ import {
   createEntities,
   getEntities,
 } from '../../../../../gcp/datastore/queries';
-import datastoreClient from '../../../../../gcp/datastore/datastoreConnection';
 
 import buildCircle from '../../../Circle/Mutations/functions/buildCircle';
 
-export default async function createUsername(inputFields, contextUserId) {
+export default async function createUsername(inputFields, contextUserUid) {
   inputFields.username = inputFields.username.toLowerCase();
   const entityToUpdate = [];
-  const userId = contextUserId;
+  const userUid = contextUserUid;
   // Make sure username is lowercase
 
   const checkUsernameDoesNotExist = await getEntities(
-    'Users',
+    'users',
     [
       {
         property: 'username',
@@ -37,9 +36,9 @@ export default async function createUsername(inputFields, contextUserId) {
   }
 
   const getUser = await getEntityByKey(
-    'Users',
-    contextUserId,
-    contextUserId,
+    'users',
+    contextUserUid,
+    contextUserUid,
   ).then(response => response.entity);
 
   if (getUser.username) {
@@ -48,13 +47,12 @@ export default async function createUsername(inputFields, contextUserId) {
     };
   }
 
-  const homePublicId = await uuid();
-  const homePrivateId = await uuid();
+  const homePublicUid = await uuid();
+  const homePrivateUid = await uuid();
 
   const homePublic = await buildCircle(
     {
-      _id: homePublicId,
-      kind: 'Circles',
+      uid: homePublicUid,
       public: true,
       type: 'LINESMANY',
       title: `${inputFields.username}'s Home`,
@@ -62,16 +60,15 @@ export default async function createUsername(inputFields, contextUserId) {
       creator: 'myiworlds',
       dateCreated: Date.now(),
       dateUpdated: Date.now(),
-      viewers: [userId],
-      editors: [userId],
+      viewers: [userUid],
+      editors: [userUid],
     },
-    userId,
+    userUid,
   );
 
   const homePrivate = await buildCircle(
     {
-      _id: homePrivateId,
-      kind: 'Circles',
+      uid: homePrivateUid,
       public: false,
       type: 'LINESMANY',
       title: `${inputFields.username}'s Private Home`,
@@ -79,10 +76,10 @@ export default async function createUsername(inputFields, contextUserId) {
       creator: 'myiworlds',
       dateCreated: Date.now(),
       dateUpdated: Date.now(),
-      viewers: [userId],
-      editors: [userId],
+      viewers: [userUid],
+      editors: [userUid],
     },
-    userId,
+    userUid,
   );
 
   await createEntities([homePublic, homePrivate]);
@@ -112,7 +109,7 @@ export default async function createUsername(inputFields, contextUserId) {
     }
 
     const entityData = {
-      _id: indexedField,
+      uid: indexedField,
       email: indexedField,
       dateCreated: indexedField,
       dateUpdated: indexedField,
@@ -136,16 +133,16 @@ export default async function createUsername(inputFields, contextUserId) {
     },
     {
       name: 'homePublic',
-      value: homePublicId,
+      value: homePublicUid,
       excludeFromIndexes: true,
     },
     {
       name: 'homePrivate',
-      value: homePrivateId,
+      value: homePrivateUid,
       excludeFromIndexes: true,
     },
   ];
   const newEntity = entityToUpdate.concat(mergeCreated);
 
-  return updateEntity(newEntity, contextUserId);
+  return updateEntity(newEntity, contextUserUid);
 }

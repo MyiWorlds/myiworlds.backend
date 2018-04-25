@@ -1,6 +1,6 @@
 import datastoreClient from '../datastoreConnection';
 
-export default async function getEntityByKey(kind, _id, contextUserId) {
+export default async function getEntityByKey(kind, uid, contextUserUid) {
   console.time('getEntityByKey time to complete: ');
 
   let response = {
@@ -9,22 +9,22 @@ export default async function getEntityByKey(kind, _id, contextUserId) {
     entity: null,
   };
   try {
-    const key = await datastoreClient.key([kind, _id]);
-    const result = await datastoreClient.get(key);
+    const entityKey = await datastoreClient.key([kind, uid]);
+    const result = await datastoreClient.get(entityKey);
     if (
       (result &&
         // For getting circles
         (result[0].public ||
-          contextUserId === result[0].creator ||
-          (result[0].viewers && result[0].viewers.includes(contextUserId)) ||
-          _id === contextUserId ||
-          (result[0].kind === 'Users' && contextUserId === 'new-user'))) ||
-      // For getting users
-      result[0].Users_id === contextUserId ||
+          contextUserUid === result[0].creator ||
+          (result[0].viewers && result[0].viewers.includes(contextUserUid)) ||
+          uid === contextUserUid ||
+          (result[0].kind === 'users' && contextUserUid === 'new-user'))) ||
+      // For getting users.  MIGHT BE OLD AND NOT USED
+      result[0].userUid === contextUserUid ||
       // Keep an eye out for this as it may be a security hole to see user data
       // Main purpose is so you can view creators
-      // The only time a User is queries is by root (yourself) or from circle (CreatorType)
-      kind === 'Users'
+      // The only time a User is queried is by root (yourself) or from circle (CreatorType)
+      kind === 'users'
     ) {
       response = {
         status: 'SUCCESS',
@@ -36,7 +36,7 @@ export default async function getEntityByKey(kind, _id, contextUserId) {
         status: 'SUCCESS',
         message: 'The creator has not allowed you to see this.',
         entity: {
-          _id,
+          uid,
           type: 'PERMISSION_DENIED',
           title: 'Sorry, you do not have the required permissions to see this.',
         },

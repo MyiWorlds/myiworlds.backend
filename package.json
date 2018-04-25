@@ -95,6 +95,7 @@
     "db-rollback": "node tools/db.js rollback",
     "db-migration": "node tools/db.js migration",
     "db-seed": "node tools/db.js seed",
+    "datastore-seed": "babel-node src/gcp/datastore/seed/index.js",
     "docker": "docker-compose run --rm api yarn",
     "docker-install": "docker-compose run --rm --no-deps api yarn install",
     "docker-upgrade": "docker-compose run --rm --no-deps api yarn upgrade",

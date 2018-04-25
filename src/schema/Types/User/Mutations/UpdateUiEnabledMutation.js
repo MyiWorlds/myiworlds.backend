@@ -8,7 +8,7 @@ import updateUser from './functions/updateUser';
 const UpdateUiEnabledMutation = mutationWithClientMutationId({
   name: 'updateUiEnabled',
   inputFields: {
-    _id: { type: new GraphQLNonNull(GraphQLString) },
+    uid: { type: new GraphQLNonNull(GraphQLString) },
     dateUpdated: { type: new GraphQLNonNull(GraphQLString) },
     uiEnabled: { type: new GraphQLNonNull(GraphQLBoolean) },
   },
@@ -25,23 +25,25 @@ const UpdateUiEnabledMutation = mutationWithClientMutationId({
     updatedUser: {
       type: UserType,
       resolve: async (payload, context) =>
-        getEntityByKey('Users', payload.updatedEntityId, context.user._id).then(
-          response => response.entity,
-        ),
+        getEntityByKey(
+          'users',
+          payload.updatedEntityUid,
+          context.user.uid,
+        ).then(response => response.entity),
     },
     latestVersionOfUser: {
       type: UserType,
       resolve: async (payload, context) =>
         getEntityByKey(
           payload.latestVersionOfEntity.newKind,
-          payload.latestVersionOfEntity.new_id,
-          context.user._id,
+          payload.latestVersionOfEntity.newUid,
+          context.user.uid,
         ).then(response => response.entity),
     },
   },
 
   mutateAndGetPayload: async (inputFields, context) =>
-    updateUser(inputFields, context.user._id),
+    updateUser(inputFields, context.user.uid),
 });
 
 export default UpdateUiEnabledMutation;

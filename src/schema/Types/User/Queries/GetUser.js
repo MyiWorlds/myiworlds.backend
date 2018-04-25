@@ -16,11 +16,14 @@ import { getEntityByKey } from '../../../../gcp/datastore/queries';
 export const getUser = {
   name: 'User',
   type: UserType,
-  // resolve: async (query, { _id }) =>
-  //   getEntityByKey('Users', _id, 'davey').then(response => response.entity),
+  resolve: (query, args, context) => {
+    const userUid = context.user && context.user.uid ? context.user.uid : null;
 
-  resolve: async (query, args, context) =>
-    await getEntityByKey('Users', context.user._id, context.user._id).then(
-      response => response.entity,
-    ),
+    if (userUid) {
+      return getEntityByKey('users', userUid, userUid).then(
+        response => response.entity,
+      );
+    }
+    return null;
+  },
 };
