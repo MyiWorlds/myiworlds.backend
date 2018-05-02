@@ -6,13 +6,13 @@ const seed = async () => {
   await Promise.all(
     createUser(
       {
-        uid: 'myiworlds',
-        // username: 'myiworlds',
+        uid: 'APP',
+        // username: 'APP',
         email: 'myiworlds@myiworlds.com',
         dateCreated: Date.now(),
         dateUpdated: Date.now(),
       },
-      'myiworlds',
+      'APP',
     ),
   );
 };

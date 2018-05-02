@@ -5,7 +5,7 @@ import {
   GraphQLBoolean,
   GraphQLInt,
 } from 'graphql';
-import { deleteEntity } from '../../../../gcp/datastore/queries';
+import deleteUser from './functions/deleteUser';
 
 const DeleteUserMutation = mutationWithClientMutationId({
   name: 'deleteUser',
@@ -41,10 +41,13 @@ const DeleteUserMutation = mutationWithClientMutationId({
       type: GraphQLBoolean,
       resolve: response => response.clonesDeleted,
     },
+    profileMediaDeleted: {
+      type: GraphQLBoolean,
+      resolve: response => response.profileMediaDeleted,
+    },
   },
 
-  mutateAndGetPayload: async ({ uid }, context) =>
-    deleteEntity('users', uid, context.user.uid),
+  mutateAndGetPayload: ({ uid }, context) => deleteUser(uid, context.user.uid),
 });
 
 export default DeleteUserMutation;

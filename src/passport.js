@@ -59,7 +59,7 @@ async function login(req, provider, profile, tokens) {
       ],
       999,
       null,
-      'SERVER',
+      'APP',
     );
 
     if (loginUser && loginUser.entities && loginUser.entities.length > 0) {

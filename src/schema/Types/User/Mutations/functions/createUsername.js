@@ -26,7 +26,7 @@ export default async function createUsername(inputFields, contextUserUid) {
     ],
     1,
     null,
-    'SERVER',
+    'APP',
   );
 
   if (checkUsernameDoesNotExist.entities[0]) {
@@ -56,8 +56,7 @@ export default async function createUsername(inputFields, contextUserUid) {
       public: true,
       type: 'LINESMANY',
       title: `${inputFields.username}'s Home`,
-      slug: `${inputFields.username}`,
-      creator: 'myiworlds',
+      creator: 'APP',
       dateCreated: Date.now(),
       dateUpdated: Date.now(),
       viewers: [userUid],
@@ -72,8 +71,8 @@ export default async function createUsername(inputFields, contextUserUid) {
       public: false,
       type: 'LINESMANY',
       title: `${inputFields.username}'s Private Home`,
-      slug: `private/${inputFields.username}`,
-      creator: 'myiworlds',
+      slug: `private`,
+      creator: 'APP',
       dateCreated: Date.now(),
       dateUpdated: Date.now(),
       viewers: [userUid],

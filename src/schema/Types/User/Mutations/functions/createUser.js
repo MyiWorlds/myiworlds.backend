@@ -51,10 +51,11 @@ export default async function createUser(inputFields, contextUserUid) {
 
   const profileMedia = await buildCircle({
     uid: profileMediaUid,
+    pii: true,
     public: true,
     type: 'IMAGE',
     title: 'My Profile Media',
-    creator: 'myiworlds',
+    creator: 'APP',
     editors: [userUid],
     dateCreated: Date.now(),
     dateUpdated: Date.now(),
@@ -63,10 +64,11 @@ export default async function createUser(inputFields, contextUserUid) {
 
   const level = await buildCircle({
     uid: levelUid,
+    pii: true,
     public: true,
     type: 'NUMBER_LINESMANY',
     title: 'Account level',
-    creator: 'myiworlds',
+    creator: 'APP',
     dateCreated: Date.now(),
     dateUpdated: Date.now(),
     number: 0,
@@ -74,10 +76,11 @@ export default async function createUser(inputFields, contextUserUid) {
 
   const balance = await buildCircle({
     uid: balanceuid,
+    pii: true,
     public: false,
     type: 'NUMBER_LINESMANY',
     title: 'Account Balance',
-    creator: 'myiworlds',
+    creator: 'APP',
     dateCreated: Date.now(),
     dateUpdated: Date.now(),
     viewers: [userUid],
@@ -85,10 +88,11 @@ export default async function createUser(inputFields, contextUserUid) {
 
   const rating = await buildCircle({
     uid: ratingUid,
+    pii: true,
     public: true,
     type: 'NUMBER_LINESMANY',
     title: 'Rating',
-    creator: 'myiworlds',
+    creator: 'APP',
     dateCreated: Date.now(),
     dateUpdated: Date.now(),
     number: 0,
@@ -96,10 +100,11 @@ export default async function createUser(inputFields, contextUserUid) {
 
   const ui = await buildCircle({
     uid: uiUid,
+    pii: false,
     public: true,
     type: 'LINES',
     title: 'User Interface',
-    creator: 'myiworlds',
+    creator: 'APP',
     dateCreated: Date.now(),
     dateUpdated: Date.now(),
     viewers: [userUid],
@@ -108,10 +113,11 @@ export default async function createUser(inputFields, contextUserUid) {
 
   const following = await buildCircle({
     uid: followingUid,
+    pii: false,
     public: true,
     type: 'LINESMANY',
     title: 'Following',
-    creator: 'myiworlds',
+    creator: 'APP',
     dateCreated: Date.now(),
     dateUpdated: Date.now(),
     viewers: [userUid],
@@ -120,10 +126,11 @@ export default async function createUser(inputFields, contextUserUid) {
 
   const inbox = await buildCircle({
     uid: inboxUid,
+    pii: true,
     public: true,
     type: 'LINESMANY',
     title: 'Inbox',
-    creator: 'myiworlds',
+    creator: 'APP',
     dateCreated: Date.now(),
     dateUpdated: Date.now(),
     viewers: [userUid],

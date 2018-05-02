@@ -17,10 +17,11 @@ const CreateCircleMutation = mutationWithClientMutationId({
   name: 'createCircle',
   inputFields: {
     uid: { type: GraphQLString },
+    pii: { type: new GraphQLNonNull(GraphQLBoolean) },
     parent: { type: GraphQLString },
     slug: { type: GraphQLString },
     slugName: { type: GraphQLString },
-    public: { type: GraphQLBoolean },
+    public: { type: new GraphQLNonNull(GraphQLBoolean) },
     passwordRequired: { type: GraphQLBoolean },
     password: { type: GraphQLString },
     viewers: { type: new GraphQLList(GraphQLString) },

@@ -56,6 +56,7 @@ export default async function buildCircle(inputFields) {
 
     const entityData = {
       uid: customUidLogic,
+      pii: indexedField,
       type: indexedField,
       creator: indexedField,
       editors: indexedField,

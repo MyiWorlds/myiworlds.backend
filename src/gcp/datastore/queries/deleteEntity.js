@@ -26,7 +26,7 @@ export default async function deleteEntity(kind, uid, contextUserUid) {
           `${kind}-clones`,
           [
             {
-              property: `${kind}uid`,
+              property: `${kind}Uid`,
               condition: '=',
               value: uid,
             },

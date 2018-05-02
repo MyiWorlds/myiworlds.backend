@@ -42,18 +42,14 @@ export default async function getEntities(
       if (queryResults[0]) {
         queryResults[0].forEach(entity => {
           if (entity) {
-            const circleIsPublic = entity.public && entity.public === true;
-            const userIsCreator = contextUserUid === entity.creator;
-            const userCanView =
+            const isPublic = entity.public && entity.public === true;
+            const isCreator = contextUserUid === entity.creator;
+            const isViewer =
               entity.viewers && entity.viewers.includes(contextUserUid);
-            const userIsServer = contextUserUid === 'SERVER';
+            const isServer = contextUserUid === 'APP';
+            const isUserClone = contextUserUid === entity[`${entity.kind}Uid`];
 
-            if (
-              circleIsPublic ||
-              userIsCreator ||
-              userCanView ||
-              userIsServer
-            ) {
+            if (isPublic || isCreator || isViewer || isServer || isUserClone) {
               response.entities.push(entity);
             } else {
               response.entities.push({

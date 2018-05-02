@@ -11,16 +11,25 @@ export default async function getEntityByKey(kind, uid, contextUserUid) {
   try {
     const entityKey = await datastoreClient.key([kind, uid]);
     const result = await datastoreClient.get(entityKey);
+
+    const isPublic = result[0].public;
+    const isCreator = contextUserUid === result[0].creator;
+    const isViewer =
+      result[0].viewers && result[0].viewers.includes(contextUserUid);
+    const isUser = uid === contextUserUid;
+    const isUserClone = result[0].userUid === contextUserUid;
+    const isNewlyCreatedUser =
+      result[0].kind === 'users' && contextUserUid === 'new-user';
+
     if (
       (result &&
-        // For getting circles
-        (result[0].public ||
-          contextUserUid === result[0].creator ||
-          (result[0].viewers && result[0].viewers.includes(contextUserUid)) ||
-          uid === contextUserUid ||
-          (result[0].kind === 'users' && contextUserUid === 'new-user'))) ||
-      // For getting users.  MIGHT BE OLD AND NOT USED
-      result[0].userUid === contextUserUid ||
+        result[0] &&
+        (isPublic ||
+          isCreator ||
+          isViewer ||
+          isUser ||
+          isNewlyCreatedUser ||
+          isUserClone)) ||
       // Keep an eye out for this as it may be a security hole to see user data
       // Main purpose is so you can view creators
       // The only time a User is queried is by root (yourself) or from circle (CreatorType)

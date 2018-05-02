@@ -27,7 +27,7 @@ export default async function createEntities(items) {
         return null;
       });
 
-      // This must be called
+      // This must be called key
       const key = datastoreClient.key([kind, uid]);
       const data = entity;
 

@@ -41,6 +41,11 @@ const CircleType = new GraphQLObjectType({
         'A unique id used to instantly locate this inside the database',
       type: GraphQLID,
     },
+    pii: {
+      description:
+        'Does this piece of content have Personally identifiable information? If so it will be deleted when your account is deleted',
+      type: GraphQLBoolean,
+    },
     parent: {
       description: 'The circle this was originally cloned from',
       type: CircleType,
@@ -64,11 +69,6 @@ const CircleType = new GraphQLObjectType({
     },
     slug: {
       description: 'The full slug (after domain name) to this piece of content',
-      type: GraphQLString,
-    },
-    slugName: {
-      description:
-        'The name of this slug without creators name before it. This allows shared Users to edit the title, but not the root path.  This is stored incase the creators name changes',
       type: GraphQLString,
     },
     public: {

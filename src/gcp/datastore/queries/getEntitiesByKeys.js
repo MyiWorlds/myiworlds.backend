@@ -36,17 +36,18 @@ export default async function getEntitiesByKeys(kind, uids, contextUserUid) {
       }, []);
 
       sortedEntities.forEach(entity => {
+        const isUser = entity.uid === contextUserUid;
+        const isPublic = entity.public === true;
+        const isCreator = contextUserUid === entity.creator;
+        const isViewer =
+          entity.viewers && entity.viewers.includes(contextUserUid);
+
         if (entity.type === 'DOES_NOT_EXIST') {
           response.entities.push({
             uid: entity.uid,
             type: entity.type,
           });
-        } else if (
-          entity.public === true ||
-          contextUserUid === entity.creator ||
-          (entity.viewers && entity.viewers.includes(contextUserUid)) ||
-          entity.uid === contextUserUid
-        ) {
+        } else if (isUser || isPublic || isCreator || isViewer) {
           response.entities.push(entity);
         } else {
           response.entities.push({
