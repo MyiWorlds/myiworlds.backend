@@ -15,10 +15,10 @@ import CircleType from '../CircleType';
 
 export const getCirclesByFilters = {
   name: 'GetCirclesByFilters',
-  type: CircleType,
+  type: new GraphQLList(CircleType),
   args: {
     kind: { type: new GraphQLNonNull(GraphQLString) },
-    filters: { type: new GraphQLList(GraphQLJSON) },
+    filters: { type: new GraphQLNonNull(GraphQLJSON) },
     requestedNumberOfResults: { type: GraphQLInt },
   },
   resolve: async (
@@ -31,7 +31,7 @@ export const getCirclesByFilters = {
         ? 15
         : requestedNumberOfResults;
 
-    const filtersToSearch = filters.map(filter => ({
+    const filtersToSearch = filters.list.map(filter => ({
       property: filter.property,
       condition: filter.condition,
       value: filter.value,
