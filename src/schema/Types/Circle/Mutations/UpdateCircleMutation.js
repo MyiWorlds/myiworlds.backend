@@ -18,7 +18,6 @@ const UpdateCircleMutation = mutationWithClientMutationId({
     pii: { type: new GraphQLNonNull(GraphQLBoolean) },
     parent: { type: GraphQLString },
     slug: { type: GraphQLString },
-    slugName: { type: GraphQLString },
     public: { type: new GraphQLNonNull(GraphQLBoolean) },
     passwordRequired: { type: GraphQLBoolean },
     viewers: { type: new GraphQLList(GraphQLString) },
