@@ -31,8 +31,8 @@ export default async function deleteEntity(kind, uid, contextUserUid) {
               value: uid,
             },
           ],
-          // Might have to make if there is more after 999999 send another query/delete request
-          999999,
+          // Might have to make if there is more after 999 send another query/delete request
+          999,
           null,
           contextUserUid,
         );

@@ -12,12 +12,25 @@ export default async function getEntityByKey(kind, uid, contextUserUid) {
     const entityKey = await datastoreClient.key([kind, uid]);
     const result = await datastoreClient.get(entityKey);
 
-    const isPublic = result[0].public;
-    const isCreator = contextUserUid === result[0].creator;
-    const isViewer =
-      result[0].viewers && result[0].viewers.includes(contextUserUid);
+    let isPublic = false;
+    let isCreator = false;
+    let isViewer = false;
+    let isUserClone = false;
+
+    const isCircle = result[0].kind === 'circles';
+
+    if (result[0] && isCircle) {
+      isPublic = result[0].public;
+      isCreator = contextUserUid === result[0].creator;
+      isViewer =
+        result[0].viewers && result[0].viewers.includes(contextUserUid);
+    }
+
+    if (result[0] && result[0].kind === 'users-clones') {
+      isUserClone = result[0].userUid === contextUserUid;
+    }
+
     const isUser = uid === contextUserUid;
-    const isUserClone = result[0].userUid === contextUserUid;
     const isNewlyCreatedUser =
       result[0].kind === 'users' && contextUserUid === 'new-user';
 

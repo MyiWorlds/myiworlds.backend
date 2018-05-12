@@ -106,7 +106,9 @@ export default async function deleteUser(uid, contextUserUid) {
     }
 
     // Delete Users Profile Media (created by system)
-    const user = await getEntityByKey('users', uid, contextUserUid);
+    const user = await getEntityByKey('users', uid, contextUserUid).then(
+      res => res.entity,
+    );
 
     if (user.profileMedia) {
       await deleteEntity('users', user.profileMedia, 'APP');
