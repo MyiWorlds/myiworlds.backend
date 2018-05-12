@@ -34,7 +34,17 @@ export default async function getEntityByKey(kind, uid, contextUserUid) {
     const isNewlyCreatedUser =
       result[0].kind === 'users' && contextUserUid === 'new-user';
 
-    if (
+    if (result && result[0] === undefined) {
+      response = {
+        status: 'SUCCESS',
+        message: 'That no longer exists.',
+        entity: {
+          uid,
+          type: 'NOT_FOUND',
+          title: 'Sorry, that entity no longer exists.',
+        },
+      };
+    } else if (
       (result &&
         result[0] &&
         (isPublic ||
