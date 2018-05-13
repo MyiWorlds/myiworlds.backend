@@ -28,8 +28,18 @@ export const getCircleByUsername = {
       'APP',
     ).then(response => response.entities[0]);
 
-    const getCircle = await getEntityByKey('circles', user.homePublic, userUid);
-
-    return getCircle.entity;
+    if (user && user.homePublic) {
+      const getCircle = await getEntityByKey(
+        'circles',
+        user.homePublic,
+        userUid,
+      );
+      return getCircle.entity;
+    }
+    return {
+      type: 'DOES_NOT_EXIST',
+      title: 'Does not exist',
+      homePublic: null,
+    };
   },
 };
