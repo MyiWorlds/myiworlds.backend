@@ -24,17 +24,19 @@ export default {
   // List out the service keys for the services your app is using
   // -----------------------------------------------------------------------------
   storage: {
-    gcpStorageAdminServiceKeyPath:
+    adminServiceKeyPath:
       './gcp/config/serviceKeys/gcp-storage-admin-service-key.json',
   },
   datastore: {
     // Owner key is for when you are seeding to the database
     // and need to create new Entities (models) inside the database
     // NOTE: You do not want this kind of permission in your production app
-    gcpDatastoreOwnerServiceKeyPath:
+    ownerServiceKeySeedPath:
+      './src/gcp/config/serviceKeys/gcp-datastore-owner-service-key.json',
+    ownerServiceKeyPath:
       './gcp/config/serviceKeys/gcp-datastore-owner-service-key.json',
     // User key is for when you only need to read/write to the existing Entities (models)
-    gcpDatastoreUserServiceKeyPath:
+    userServiceKeyPath:
       './gcp/config/serviceKeys/gcp-datastore-user-service-key.json',
   },
 };
