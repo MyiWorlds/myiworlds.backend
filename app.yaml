@@ -1,0 +1,14 @@
+env_variables:
+  CI: $CI
+  CORS_ORIGIN: 'http://localhost:3000,http://localhost:3001'
+  DATABASE_URL: 'postgres://postgres@db:5432/dev'
+  DATABASE_DEBUG: false
+  REDIS_URL: 'redis://redis:6379/0'
+  SESSION_SECRET: 'complex12314string123and123numbers12312'
+  GOOGLE_ID: 'get-from-google-auth-for-login'
+  GOOGLE_SECRET: 'get-from-google-auth-for-login'
+  # Replcae the below line with your service key.  You must put all on one line, remove spaces after commas and put quotes around the line 
+  GCP_DATASTORE_OWNER: '{"type":"service_account","project_id":"myapp-12312","private_key_id":"a52341a0fb0d7bbffa23a7233a3a10f4cb47e3acda","private_key":"-----BEGIN PRIVATE KEY-----\n----a-realy-long-key-they-give-you---==\n-----END PRIVATE KEY-----\n","client_email":"email-combined-with-app-id.iam.gserviceaccount.com","client_id":"1512341234124178861106","auth_uri":"https://accounts.google.com/o/oauth2/auth","token_uri":"https://accounts.google.com/o/oauth2/token","auth_provider_x509_cert_url":"https://www.googleapis.com/oauth2/v1/certs","client_x509_cert_url":"https://www.googleapis.com/robot/v1/metadata/x509/service-owner%40facebookbutbetter-166512721.iam.gserviceaccount.com"}'
+
+runtime: custom
+env: flex
