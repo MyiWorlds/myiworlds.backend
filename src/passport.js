@@ -9,8 +9,6 @@
 /* eslint-disable no-param-reassign, no-underscore-dangle, max-len */
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
-import { Strategy as FacebookStrategy } from 'passport-facebook';
-import { Strategy as TwitterStrategy } from 'passport-twitter';
 import uuid from 'uuid/v1';
 import datastoreClient from './gcp/datastore/datastoreConnection';
 
@@ -218,76 +216,6 @@ passport.use(
         const user = await login(req, 'google', profile, {
           accessToken,
           refreshToken,
-        });
-        done(null, user);
-      } catch (err) {
-        done(err);
-      }
-    },
-  ),
-);
-
-// https://github.com/jaredhanson/passport-facebook
-// https://developers.facebook.com/docs/facebook-login/permissions/
-passport.use(
-  new FacebookStrategy(
-    {
-      clientID: process.env.FACEBOOK_ID,
-      clientSecret: process.env.FACEBOOK_SECRET,
-      profileFields: [
-        'id',
-        'cover',
-        'name',
-        'age_range',
-        'link',
-        'gender',
-        'locale',
-        'picture',
-        'timezone',
-        'updated_time',
-        'verified',
-        'email',
-      ],
-      callbackURL: '/login/facebook/return',
-      passReqToCallback: true,
-    },
-    async (req, accessToken, refreshToken, profile, done) => {
-      try {
-        if (profile.emails.length)
-          profile.emails[0].verified = !!profile._json.verified;
-        profile.displayName =
-          profile.displayName ||
-          `${profile.name.givenName} ${profile.name.familyName}`;
-        const user = await login(req, 'facebook', profile, {
-          accessToken,
-          refreshToken,
-        });
-        done(null, user);
-      } catch (err) {
-        done(err);
-      }
-    },
-  ),
-);
-
-// https://github.com/jaredhanson/passport-twitter
-passport.use(
-  new TwitterStrategy(
-    {
-      consumerKey: process.env.TWITTER_KEY,
-      consumerSecret: process.env.TWITTER_SECRET,
-      callbackURL: '/login/twitter/return',
-      includeEmail: true,
-      includeStatus: false,
-      passReqToCallback: true,
-    },
-    async (req, token, tokenSecret, profile, done) => {
-      try {
-        if (profile.emails && profile.emails.length)
-          profile.emails[0].verified = true;
-        const user = await login(req, 'twitter', profile, {
-          token,
-          tokenSecret,
         });
         done(null, user);
       } catch (err) {

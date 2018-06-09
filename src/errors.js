@@ -7,11 +7,11 @@
 
 /* @flow */
 
+import { ErrorReporting } from '@google-cloud/error-reporting';
 import type { ValidationErrorEntry } from './types';
 import credentials from './gcp/config/serviceKeys/erros-writer-credentials.json';
-import ErrorReporting from '@google-cloud/error-reporting';
 
-const stackdriverErrorReporting = ErrorReporting({
+const stackdriverErrorReporting = new ErrorReporting({
   projectId: credentials.project_id,
   credentials,
   ignoreEnvironmentCheck: true,
