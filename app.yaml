@@ -1,3 +1,5 @@
+# You need to also keep all your environment variables in here as docker 
+# does not share them when you push to Google Cloud Platform App Engine
 env_variables:
   CI: $CI
   CORS_ORIGIN: 'http://localhost:3000,http://localhost:3001'
