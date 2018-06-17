@@ -1,10 +1,15 @@
-import GCPConfig from '../config/settings';
+// import GCPConfig from '../config/settings';
+
+const credentials = process.env.GCP_CLOUD_STORAGE_ADMIN
+  ? JSON.parse(process.env.GCP_CLOUD_STORAGE_ADMIN)
+  : {};
 
 // Instantiates a client. If you don't specify credentials when constructing
 // the client, the client library will look for credentials in the
 // environment.
 const storage = require('@google-cloud/storage')({
-  keyFilename: GCPConfig.storage.adminServiceKeyPath,
+  credentials,
+  // keyFilename: GCPConfig.storage.adminServiceKeyPath,
 });
 
 // Makes an authenticated API request.

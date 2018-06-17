@@ -13,6 +13,8 @@ import db from './db';
 import redis from './redis';
 import errors from './errors';
 
+require('@google-cloud/debug-agent').start();
+
 const port = process.env.PORT || 8080;
 const host = process.env.HOSTNAME || '0.0.0.0';
 
