@@ -41,12 +41,6 @@ export default async function createUsername(inputFields, contextUserUid) {
     contextUserUid,
   ).then(response => response.entity);
 
-  if (getUser.username) {
-    return {
-      message: 'You already have username, you cannot create another',
-    };
-  }
-
   const homePublicUid = await uuid();
   const homePrivateUid = await uuid();
 
