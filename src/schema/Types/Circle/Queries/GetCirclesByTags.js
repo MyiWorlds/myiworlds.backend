@@ -6,7 +6,8 @@ import CircleType from '../CircleType';
 import { getEntities } from '../../../../gcp/datastore/queries';
 
 export const getCirclesByTags = {
-  name: 'GetCircleBySlug',
+  name: 'GetCirclesByTags',
+  description: 'Searches Circles that match all of the tags passed',
   type: new GraphQLList(CircleType),
   args: {
     tags: { type: new GraphQLList(GraphQLString) },

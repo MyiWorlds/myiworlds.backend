@@ -13,8 +13,8 @@ import { getEntities } from '../../../../gcp/datastore/queries';
 
 import CircleType from '../CircleType';
 
-export const getCirclesByFilters = {
-  name: 'GetCirclesByFilters',
+export const getAnythingByFilters = {
+  name: 'GetAnythingByFilters',
   type: new GraphQLList(CircleType),
   args: {
     kind: { type: new GraphQLNonNull(GraphQLString) },
@@ -26,12 +26,19 @@ export const getCirclesByFilters = {
     { kind, filters, requestedNumberOfResults },
     context,
   ) => {
+    if (!filters.searchConditions) {
+      return;
+    }
     const numberOfResults =
-      requestedNumberOfResults > 15 || !requestedNumberOfResults
-        ? 15
+      requestedNumberOfResults > 100 || !requestedNumberOfResults
+        ? 100
         : requestedNumberOfResults;
 
-    const filtersToSearch = filters.list.map(filter => ({
+    if (filters.searchConditions.length > 20) {
+      filters.searchConditions.length = 20
+    }
+
+    const filtersToSearch = filters.searchConditions.map(filter => ({
       property: filter.property,
       condition: filter.condition,
       value: filter.value,
