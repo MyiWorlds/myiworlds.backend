@@ -27,3 +27,11 @@ indexes:
   - name: creator
   - name: dateUpdated
     direction: desc
+
+- kind: circles
+  ancestor: no
+  properties:
+  - name: tags
+  - name: creator
+  - name: dateUpdated
+    direction: desc

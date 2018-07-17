@@ -27,7 +27,10 @@ class Context {
 
   get user(): any {
     if (!this.request.user) {
-      return null;
+      const noUser = {
+        uid: null
+      }
+      return noUser;
     }
     return this.request.user;
   }

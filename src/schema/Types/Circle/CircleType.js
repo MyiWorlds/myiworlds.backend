@@ -89,10 +89,10 @@ const CircleType = new GraphQLObjectType({
         'This circle type will iteslf be a circle.lines, it will contain links to all the circles that build this circle settings',
       type: new GraphQLList(CircleType),
       resolve: (circle, args, { circleByKey }) => {
-        if (circle.settings && circle.settings.length > 0) {
+        if (circle.settings && circle.settings.length) {
           return circleByKey.loadMany(circle.settings);
         }
-        return null;
+        return [];
       },
     },
     styles: {
@@ -100,10 +100,10 @@ const CircleType = new GraphQLObjectType({
         'This circle type will iteslf be a circle.lines, it will contain links to all the circles that build this circle styles',
       type: new GraphQLList(CircleType),
       resolve: (circle, args, { circleByKey }) => {
-        if (circle.styles && circle.styles.length > 0) {
+        if (circle.styles && circle.styles.length) {
           return circleByKey.loadMany(circle.styles);
         }
-        return null;
+        return [];
       },
     },
     rating: {
@@ -131,24 +131,17 @@ const CircleType = new GraphQLObjectType({
       },
     },
     icon: {
-      description:
-        'A piece of icon (font icon/image/gif/video) that helps identify this piece of content.  Defaults to creators display pic',
-      type: CircleType,
-      resolve: async (circle, args, { circleByKey }) => {
-        if (circle.icon) {
-          return circleByKey.load(circle.icon);
-        }
-        return null;
-      },
+      description: 'A Material UI Icon (Uses the font icons)',
+      type: GraphQLString,
     },
     viewers: {
       description: 'Who is allowed to see this node?',
       type: new GraphQLList(CircleType),
       resolve: (circle, args, { circleByKey }) => {
-        if (circle.viewers && circle.viewers.length > 0) {
+        if (circle.viewers && circle.viewers.length) {
           return circleByKey.loadMany(circle.viewers);
         }
-        return null;
+        return [];
       },
     },
     creator: {
@@ -166,10 +159,10 @@ const CircleType = new GraphQLObjectType({
       description: 'Users that can edit this circle',
       type: new GraphQLList(CircleType),
       resolve: (circle, args, { circleByKey }) => {
-        if (circle.editors && circle.editors.length > 0) {
+        if (circle.editors && circle.editors.length) {
           return circleByKey.loadMany(circle.editors);
         }
-        return null;
+        return [];
       },
     },
     dateCreated: { type: GraphQLBigInt },
@@ -199,10 +192,14 @@ const CircleType = new GraphQLObjectType({
         "When you want to connect lots of Circles, but don't need pagination (used for TONS of results) ",
       type: new GraphQLList(CircleType),
       resolve: (circle, args, { circleByKey }) => {
-        if (circle.lines && circle.lines.length > 0) {
-          return circleByKey.loadMany(circle.lines);
+        if (circle.lines && circle.lines.length) {
+          if (typeof circle.lines[0] === 'string') {
+            return circleByKey.loadMany(circle.lines);
+          } else {
+            return circle.lines;
+          }
         }
-        return null;
+        return [];
       },
     },
     linesMany: {
@@ -211,12 +208,12 @@ const CircleType = new GraphQLObjectType({
       type: require('./CircleConnection').default, // eslint-disable-line global-require
       args: connectionArgs,
       resolve: async (circle, { ...args }, { circleByKey }) => {
-        if (circle.linesMany && circle.linesMany.length > 0) {
+        if (circle.linesMany && circle.linesMany.length) {
           const linesMany = await circleByKey.loadMany(circle.linesMany);
           const connection = connectionFromArray(linesMany, args);
           return connection;
         }
-        return null;
+        return [];
       },
     },
   }),

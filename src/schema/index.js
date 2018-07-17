@@ -12,7 +12,8 @@ import { GraphQLSchema, GraphQLObjectType } from 'graphql';
 import { nodeField, nodesField } from './node';
 import { getCircleBySlug } from './Types/Circle/Queries/GetCircleBySlug';
 import { getCirclesByUserKey } from './Types/Circle/Queries/GetCirclesByUserKey';
-import { getAnythingByFilters } from './Types/Circle/Queries/GetAnythingByFilters';
+import { getAnythingByFilters } from './Types/Search/getAnythingByFilters';
+import { globalSearch } from './Types/Search/GlobalSearchType';
 import { getCircleByUsername } from './Types/Circle/Queries/GetCircleByUsername';
 import { getCircleByKey } from './Types/Circle/Queries/GetCircleByKey';
 import { getCirclesByTags } from './Types/Circle/Queries/GetCirclesByTags';
@@ -38,6 +39,8 @@ export default new GraphQLSchema({
     fields: {
       node: nodeField,
       nodes: nodesField,
+
+      globalSearch,
 
       getUser,
 

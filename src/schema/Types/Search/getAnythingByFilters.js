@@ -9,9 +9,9 @@ import {
 } from 'graphql';
 import GraphQLJSON from 'graphql-type-json';
 
-import { getEntities } from '../../../../gcp/datastore/queries';
+import { getEntities } from '../../../gcp/datastore/queries';
 
-import CircleType from '../CircleType';
+import CircleType from '../Circle/CircleType';
 
 export const getAnythingByFilters = {
   name: 'GetAnythingByFilters',
