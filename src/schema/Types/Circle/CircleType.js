@@ -84,17 +84,7 @@ const CircleType = new GraphQLObjectType({
         'The type of data this node is holding, it allows the frontend to choose the perfect component to show you.',
       type: new GraphQLNonNull(GraphQLString),
     },
-    settings: {
-      description:
-        'This circle type will iteslf be a circle.lines, it will contain links to all the circles that build this circle settings',
-      type: new GraphQLList(CircleType),
-      resolve: (circle, args, { circleByKey }) => {
-        if (circle.settings && circle.settings.length) {
-          return circleByKey.loadMany(circle.settings);
-        }
-        return [];
-      },
-    },
+    settings: { type: GraphQLJSON },
     styles: {
       description:
         'This circle type will iteslf be a circle.lines, it will contain links to all the circles that build this circle styles',

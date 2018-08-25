@@ -16,39 +16,11 @@ export const globalSearch = {
   name: 'Search',
   type: CircleType,
   args: {
-    getMyCreations: {type: new GraphQLNonNull(GraphQLBoolean)},
-    getMyViewable: {type: new GraphQLNonNull(GraphQLBoolean)},
-    getMyEditable: {type: new GraphQLNonNull(GraphQLBoolean)},
-    getAllResults: {type: new GraphQLNonNull(GraphQLBoolean)},
-    kind: { type:   GraphQLString },
-    filters: { type: new GraphQLNonNull(GraphQLJSON) },
-    requestedNumberOfResults: { type: GraphQLInt },
-    cursor: { type: GraphQLString },
+    circle: { type: new GraphQLNonNull(GraphQLJSON) },
   },
   resolve: async (
     query,
-    {
-      getMyCreations,
-      getMyViewable,
-      getMyEditable,
-      getAllResults,
-      kind,
-      filters,
-      requestedNumberOfResults,
-      cursor
-    },
+    { circle },
     context,
-  ) => globalSearchFunction(
-    getMyCreations,
-    getMyViewable,
-    getMyEditable,
-    getAllResults,
-    kind,
-    filters.searchConditions,
-    requestedNumberOfResults,
-    cursor,
-    context.user.uid
-  ).then(res => {
-    return res;
-  }),
+  ) => globalSearchFunction( circle, context.user.uid).then(res => res),
 };

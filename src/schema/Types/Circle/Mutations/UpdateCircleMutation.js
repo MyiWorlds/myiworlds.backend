@@ -22,7 +22,7 @@ const UpdateCircleMutation = mutationWithClientMutationId({
     passwordRequired: { type: GraphQLBoolean },
     viewers: { type: new GraphQLList(GraphQLString) },
     type: { type: new GraphQLNonNull(GraphQLString) },
-    settings: { type: new GraphQLList(GraphQLString) },
+    settings: { type: GraphQLJSON },
     styles: { type: new GraphQLList(GraphQLString) },
     tags: { type: new GraphQLList(GraphQLString) },
     rating: { type: GraphQLString },
